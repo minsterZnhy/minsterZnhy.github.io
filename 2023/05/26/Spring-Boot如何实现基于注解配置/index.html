@@ -26,16 +26,16 @@
 <meta property="og:site_name" content="minster&#39;s Blog">
 <meta property="og:description" content="关于Spring Boot是如何实现基于注解的配置方式的理解">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3.assets/image-20230520162648142.png">
-<meta property="og:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3.assets/image-20230520163608571.png">
-<meta property="og:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3.assets/image-20230520164231835.png">
+<meta property="og:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520162648142.png">
+<meta property="og:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520163608571.png">
+<meta property="og:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520164231835.png">
 <meta property="article:published_time" content="2023-05-26T11:46:12.000Z">
-<meta property="article:modified_time" content="2023-05-26T11:48:55.280Z">
+<meta property="article:modified_time" content="2023-05-26T11:51:17.483Z">
 <meta property="article:author" content="Minster">
 <meta property="article:tag" content="Spring Boot">
 <meta property="article:tag" content="底层原理">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3.assets/image-20230520162648142.png">
+<meta name="twitter:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520162648142.png">
 
 
 <link rel="canonical" href="http://example.com/2023/05/26/Spring-Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/">
@@ -241,7 +241,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2023-05-26 19:46:12 / Modified: 19:48:55" itemprop="dateCreated datePublished" datetime="2023-05-26T19:46:12+08:00">2023-05-26</time>
+      <time title="Created: 2023-05-26 19:46:12 / Modified: 19:51:17" itemprop="dateCreated datePublished" datetime="2023-05-26T19:46:12+08:00">2023-05-26</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -306,12 +306,12 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> ConfigurableApplicationContext <span class="title function_">run</span><span class="params">(Class&lt;?&gt; primarySource, String... args)</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> run(<span class="keyword">new</span> <span class="title class_">Class</span>&lt;?&gt;[] &#123; primarySource &#125;, args);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
 
 <p>我本来以为un()方法中返回的<code>ConfigurableApplicationContext</code>会直接或者间接实现<code>AnnotationConfigRegistry</code>接口的，从而实现Spring Boot基于注解的配置的。于是我查看<code>ConfigurableApplicationContext</code>的类图，发现其并没有直接或间接实现上述的接口。</p>
-<p><img src="/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3.assets/image-20230520162648142.png" alt="image-20230520162648142"></p>
+<p><img src="/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520162648142.png" alt="image-20230520162648142"></p>
 <p>然后我继续查阅源码，找到了创建创建Spring应用上下文的方法<code>createApplicationContext</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> ConfigurableApplicationContext <span class="title function_">createApplicationContext</span><span class="params">()</span> &#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="built_in">this</span>.applicationContextFactory.create(<span class="built_in">this</span>.webApplicationType);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这段代码看不出来什么端倪，于是乎我看到方法上面的注释</p>
-<p><img src="/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3.assets/image-20230520163608571.png" alt="image-20230520163608571"></p>
+<p><img src="/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520163608571.png" alt="image-20230520163608571"></p>
 <p>这段注释的大概内容为</p>
 <blockquote>
 <p>这个方法使用了一个策略模式，它会根据应用程序上下文工厂（ApplicationContextFactory）来创建应用程序上下文。如果应用程序上下文工厂被设置了，它会使用这个工厂来创建应用程序上下文；否则，它会使用适当的默认实现来创建应用程序上下文。</p>
@@ -320,7 +320,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setApplicationContextFactory</span><span class="params">(ApplicationContextFactory applicationContextFactory)</span> &#123;</span><br><span class="line">   <span class="built_in">this</span>.applicationContextFactory = (applicationContextFactory != <span class="literal">null</span>) ? applicationContextFactory</span><br><span class="line">         : ApplicationContextFactory.DEFAULT;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>不难发现<code>setApplicationContextFactory</code>方法是用来设置<strong>ApplicationContextFactory</strong>的，查看该方法的注释</p>
-<p><img src="/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3.assets/image-20230520164231835.png" alt="image-20230520164231835"></p>
+<p><img src="/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520164231835.png" alt="image-20230520164231835"></p>
 <p>我们可以发现我们在创建Spring应用程序上下文时，如果设置了ApplicationContextFactory，则根据设置的Factory来创建Spring应用程序上下文。如果没有设置，根据应用程序的类型自动选择创建相应的ApplicationContext实现类，其中包括</p>
 <ul>
 <li><strong>对于基于Servlet的Web应用程序</strong>，创建<code>AnnotationConfigServletWebServerApplicationContext</code>实例。</li>
