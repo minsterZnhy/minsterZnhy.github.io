@@ -19,23 +19,23 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="关于Spring Boot是如何实现基于注解的配置方式的理解">
+    <meta name="description" content="前言我们在使用Spring注册Bean时，有很多方式，其中两种常用的配置方式如下 基于注解的配置：使用注解来定义 bean，如  @Component 、 @Autowired 、 @Configuration  等。这种方式相比于基于 XML 的配置更加简洁、易于阅读和维护，也是目前比较流行的一种方式。 基于 Java 配置类的配置：使用 Java 类来定义 bean 和它们之间的依赖关系，如">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Spring Boot如何实现基于注解配置">
 <meta property="og:url" content="http://example.com/2023/05/26/Spring-Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/index.html">
 <meta property="og:site_name" content="minster&#39;s Blog">
-<meta property="og:description" content="关于Spring Boot是如何实现基于注解的配置方式的理解">
+<meta property="og:description" content="前言我们在使用Spring注册Bean时，有很多方式，其中两种常用的配置方式如下 基于注解的配置：使用注解来定义 bean，如  @Component 、 @Autowired 、 @Configuration  等。这种方式相比于基于 XML 的配置更加简洁、易于阅读和维护，也是目前比较流行的一种方式。 基于 Java 配置类的配置：使用 Java 类来定义 bean 和它们之间的依赖关系，如">
 <meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520162648142.png">
-<meta property="og:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520163608571.png">
-<meta property="og:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520164231835.png">
+<meta property="og:image" content="http://example.com/Spring%20Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/image-20230520162648142.png">
+<meta property="og:image" content="http://example.com/Spring%20Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/image-20230520163608571.png">
+<meta property="og:image" content="http://example.com/Spring%20Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/image-20230520164231835.png">
 <meta property="article:published_time" content="2023-05-26T11:46:12.000Z">
-<meta property="article:modified_time" content="2023-05-26T11:51:17.483Z">
+<meta property="article:modified_time" content="2023-05-26T12:15:07.736Z">
 <meta property="article:author" content="Minster">
 <meta property="article:tag" content="Spring Boot">
 <meta property="article:tag" content="底层原理">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520162648142.png">
+<meta name="twitter:image" content="http://example.com/Spring%20Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/image-20230520162648142.png">
 
 
 <link rel="canonical" href="http://example.com/2023/05/26/Spring-Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/">
@@ -95,7 +95,7 @@
 
 
 <nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">6</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">3</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">4</span></a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">6</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">3</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">3</span></a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
       <li class="menu-item menu-item-search">
         <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
         </a>
@@ -161,7 +161,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-count">3</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
@@ -241,7 +241,7 @@
       <span class="post-meta-item-text">Posted on</span>
       
 
-      <time title="Created: 2023-05-26 19:46:12 / Modified: 19:51:17" itemprop="dateCreated datePublished" datetime="2023-05-26T19:46:12+08:00">2023-05-26</time>
+      <time title="Created: 2023-05-26 19:46:12 / Modified: 20:15:07" itemprop="dateCreated datePublished" datetime="2023-05-26T19:46:12+08:00">2023-05-26</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -276,12 +276,11 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>关于Spring Boot是如何实现基于注解的配置方式的理解</p>
-<span id="more"></span>
-
-<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们在使用Spring注册Bean时，有很多方式，其中两种常用的配置方式如下</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们在使用Spring注册Bean时，有很多方式，其中两种常用的配置方式如下</p>
 <p><strong>基于注解的配置</strong>：使用注解来定义 bean，如  <code>@Component</code> 、 <code>@Autowired</code> 、 <code>@Configuration</code>  等。这种方式相比于基于 XML 的配置更加简洁、易于阅读和维护，也是目前比较流行的一种方式。</p>
 <p><strong>基于 Java 配置类的配置</strong>：使用 Java 类来定义 bean 和它们之间的依赖关系，如  <code>@Bean</code> 、 <code>@Configuration</code> 、 <code>@Import</code>  等。这种方式也是基于注解的配置方式的一种扩展形式，它允许我们使用 Java 代码来定义 bean，从而更加灵活地控制应用程序的配置。 </p>
+<span id="more"></span>
+
 <p><strong>不难发现，上述两种配置方式的核心都是基于注解实现的，只是应用场景不同。</strong></p>
 <p>而我在使用基于Java配置类的配置时，发现在Spring中需要直接或间接实现<code>AnnotationConfigRegistry</code>接口时才能应用基于注解的配置方式；于是我便开始思考：Spring Boot是怎么实现的呢？通过查阅资料以及源码后，以下是我的拙见。</p>
 <h2 id="Spring使用注解-Java配置类-配置Bean"><a href="#Spring使用注解-Java配置类-配置Bean" class="headerlink" title="Spring使用注解(Java配置类)配置Bean"></a>Spring使用注解(Java配置类)配置Bean</h2><p>在Spring中，我们若想简单使用基于注解的配置方式，需要完成以下几步：</p>
@@ -306,12 +305,12 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> ConfigurableApplicationContext <span class="title function_">run</span><span class="params">(Class&lt;?&gt; primarySource, String... args)</span> &#123;</span><br><span class="line">		<span class="keyword">return</span> run(<span class="keyword">new</span> <span class="title class_">Class</span>&lt;?&gt;[] &#123; primarySource &#125;, args);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
 
 <p>我本来以为un()方法中返回的<code>ConfigurableApplicationContext</code>会直接或者间接实现<code>AnnotationConfigRegistry</code>接口的，从而实现Spring Boot基于注解的配置的。于是我查看<code>ConfigurableApplicationContext</code>的类图，发现其并没有直接或间接实现上述的接口。</p>
-<p><img src="/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520162648142.png" alt="image-20230520162648142"></p>
+<p><img src="/./Spring%20Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/image-20230520162648142.png" alt="image-20230520162648142"></p>
 <p>然后我继续查阅源码，找到了创建创建Spring应用上下文的方法<code>createApplicationContext</code></p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> ConfigurableApplicationContext <span class="title function_">createApplicationContext</span><span class="params">()</span> &#123;</span><br><span class="line">   <span class="keyword">return</span> <span class="built_in">this</span>.applicationContextFactory.create(<span class="built_in">this</span>.webApplicationType);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>这段代码看不出来什么端倪，于是乎我看到方法上面的注释</p>
-<p><img src="/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520163608571.png" alt="image-20230520163608571"></p>
+<p><img src="/./Spring%20Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/image-20230520163608571.png" alt="image-20230520163608571"></p>
 <p>这段注释的大概内容为</p>
 <blockquote>
 <p>这个方法使用了一个策略模式，它会根据应用程序上下文工厂（ApplicationContextFactory）来创建应用程序上下文。如果应用程序上下文工厂被设置了，它会使用这个工厂来创建应用程序上下文；否则，它会使用适当的默认实现来创建应用程序上下文。</p>
@@ -320,12 +319,18 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setApplicationContextFactory</span><span class="params">(ApplicationContextFactory applicationContextFactory)</span> &#123;</span><br><span class="line">   <span class="built_in">this</span>.applicationContextFactory = (applicationContextFactory != <span class="literal">null</span>) ? applicationContextFactory</span><br><span class="line">         : ApplicationContextFactory.DEFAULT;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>不难发现<code>setApplicationContextFactory</code>方法是用来设置<strong>ApplicationContextFactory</strong>的，查看该方法的注释</p>
-<p><img src="/%E5%85%B3%E4%BA%8ESpringBoot%E5%AE%9E%E7%8E%B0%E6%B3%A8%E8%A7%A3%E5%BC%80%E5%8F%91%E7%9A%84%E7%90%86%E8%A7%A3/image-20230520164231835.png" alt="image-20230520164231835"></p>
+<p><img src="/./Spring%20Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/image-20230520164231835.png" alt="image-20230520164231835"></p>
 <p>我们可以发现我们在创建Spring应用程序上下文时，如果设置了ApplicationContextFactory，则根据设置的Factory来创建Spring应用程序上下文。如果没有设置，根据应用程序的类型自动选择创建相应的ApplicationContext实现类，其中包括</p>
 <ul>
-<li><strong>对于基于Servlet的Web应用程序</strong>，创建<code>AnnotationConfigServletWebServerApplicationContext</code>实例。</li>
-<li><strong>对于基于Reactive的Web应用程序</strong>，创建<code>AnnotationConfigReactiveWebServerApplicationContext</code>实例。</li>
-<li><strong>对于非Web应用程序</strong>，创建<code>AnnotationConfigApplicationContext</code>实例。</li>
+<li><p><strong>对于基于Servlet的Web应用程序</strong></p>
+<p>创建<code>AnnotationConfigServletWebServerApplicationContext</code>实例。</p>
+</li>
+<li><p><strong>对于基于Reactive的Web应用程序</strong></p>
+<p>创建<code>AnnotationConfigReactiveWebServerApplicationContext</code>实例。</p>
+</li>
+<li><p><strong>对于非Web应用程序</strong></p>
+<p>创建<code>AnnotationConfigApplicationContext</code>实例。</p>
+</li>
 </ul>
 <p>而上述三个实现类，都实现了<code>AnnotationConfigRegistry</code>接口！所以，Spring Boot可以使用基于注解的配置方式的原因就在这里！</p>
 <h3 id="在开发中怎么设置ApplicationContextFactory"><a href="#在开发中怎么设置ApplicationContextFactory" class="headerlink" title="在开发中怎么设置ApplicationContextFactory"></a>在开发中怎么设置ApplicationContextFactory</h3><p>在Spring Boot应用程序中，可以通过继承SpringApplication类并重写其createApplicationContextFactory方法，来自定义应用程序上下文的创建过程，例如：</p>
