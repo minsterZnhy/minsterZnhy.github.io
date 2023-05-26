@@ -6,7 +6,7 @@
   <link href="http://example.com/atom.xml" rel="self"/>
   
   <link href="http://example.com/"/>
-  <updated>2023-05-25T14:08:56.201Z</updated>
+  <updated>2023-05-26T11:29:16.799Z</updated>
   <id>http://example.com/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>My First Blog</title>
+    <link href="http://example.com/2023/05/26/My-First-Blog/"/>
+    <id>http://example.com/2023/05/26/My-First-Blog/</id>
+    <published>2023-05-26T09:08:15.000Z</published>
+    <updated>2023-05-26T11:29:16.799Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我一直都想搭建一个用于记录生活和学习的博客，但是碍于懒惰，一直拖延到现在。直到昨天我在浏览Github的开源项目时，我看到了<a href="https://crossoverjie.top/">杰哥</a>的个人博客，很佩服<a href="https://crossoverjie.top/">杰哥</a>的经历，所以我也决定搭建一个博客来记录自己在工作中遇到的问题以及自己学习技术的一个理解等。</p><span id="more"></span><h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>我是一名Java菜鸟程序员，我在学习Java的时候一直有使用MarkDown去记录笔记。而我在之前也搭建一个基于<a href="https://minster77.github.io/">Hugo的博客</a>，上面的文章都是一些学习笔记，比较合适于初学Java的朋友们。</p><h2 id="博客主题"><a href="#博客主题" class="headerlink" title="博客主题"></a>博客主题</h2><p>在这个博客中，我将主要分享关于Java技术的一些知识和个人理解，也会分享一些编程技巧和实践经验。</p><p>同时我也会分享一些个人的学习方法和年度总结，希望通过这个博客能够为大家提供有价值的信息和帮助，输出一些有意义的内容！</p><h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>我搭建这个博客的初衷是为了记录一下自己的程序员生涯的故事，毕竟来都来了，怎么也得留下些什么吧！其次是希望能有大神能在这个过程中指出我的错误，能让我学习到更多！</p><p>在最后，祝你好运，也祝我好运！</p>]]></content>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;&lt;a href=&quot;#前言&quot; class=&quot;headerlink&quot; title=&quot;前言&quot;&gt;&lt;/a&gt;前言&lt;/h2&gt;&lt;p&gt;我一直都想搭建一个用于记录生活和学习的博客，但是碍于懒惰，一直拖延到现在。直到昨天我在浏览Github的开源项目时，我看到了&lt;a href=&quot;https://crossoverjie.top/&quot;&gt;杰哥&lt;/a&gt;的个人博客，很佩服&lt;a href=&quot;https://crossoverjie.top/&quot;&gt;杰哥&lt;/a&gt;的经历，所以我也决定搭建一个博客来记录自己在工作中遇到的问题以及自己学习技术的一个理解等。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="生活" scheme="http://example.com/categories/%E7%94%9F%E6%B4%BB/"/>
+    
+    
+    <category term="LifeNode" scheme="http://example.com/tags/LifeNode/"/>
+    
+  </entry>
   
   <entry>
     <title>Hello World</title>
