@@ -44,22 +44,30 @@
       </tags>
   </entry>
   <entry>
-    <title>My First Blog</title>
-    <url>/2023/05/26/My-First-Blog/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我一直都想搭建一个用于记录生活和学习的博客，但是碍于懒惰，一直拖延到现在。直到昨天我在浏览Github的开源项目时，我看到了<a href="https://crossoverjie.top/">杰哥</a>的个人博客，很佩服<a href="https://crossoverjie.top/">杰哥</a>的经历，所以我也决定搭建一个博客来记录自己在工作中遇到的问题以及自己学习技术的一个理解等。</p>
+    <title>懒汉式单例模式下的双检锁机制的理解</title>
+    <url>/2023/05/26/%E6%87%92%E6%B1%89%E5%BC%8F%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E4%B8%8B%E7%9A%84%E5%8F%8C%E6%A3%80%E9%94%81%E6%9C%BA%E5%88%B6%E7%9A%84%E7%90%86%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我在学习懒汉式单例模式时，发现了懒汉双检锁的实现方式，当时不是很理解，查阅资料后得出以下结论</p>
 <span id="more"></span>
 
-<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>我是一名Java菜鸟程序员，我在学习Java的时候一直有使用MarkDown去记录笔记。而我在之前也搭建一个基于<a href="https://minster77.github.io/">Hugo的博客</a>，上面的文章都是一些学习笔记，比较合适于初学Java的朋友们。</p>
-<h2 id="博客主题"><a href="#博客主题" class="headerlink" title="博客主题"></a>博客主题</h2><p>在这个博客中，我将主要分享关于Java技术的一些知识和个人理解，也会分享一些编程技巧和实践经验。</p>
-<p>同时我也会分享一些个人的学习方法和年度总结，希望通过这个博客能够为大家提供有价值的信息和帮助，输出一些有意义的内容！</p>
-<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>我搭建这个博客的初衷是为了记录一下自己的程序员生涯的故事，毕竟来都来了，怎么也得留下些什么吧！其次是希望能有大神能在这个过程中指出我的错误，能让我学习到更多！</p>
-<p>在最后，祝你好运，也祝我好运！</p>
+<h2 id="双检锁机制"><a href="#双检锁机制" class="headerlink" title="双检锁机制"></a>双检锁机制</h2><p>在多个线程同时请求一个获取一个懒汉式单例对象时，可能会导致创建多个对象的问题，为了确保只有一个对象被创建，可以使用双检锁机制。（双检锁机制不是创建两个锁实现，而是再方法内部实现两种检锁）</p>
+<p>双检锁机制基于懒汉模式，在第一次获取单例对象时才创建它；</p>
+<p>为了提高程序的性能，我们不在方法前使用syschronized关键字，而是在方法内部使用，同时也在方法内部实现了双重检查锁定机制。</p>
+<p>示例代码</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Singleton</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton uniqueInstance;</span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">Singleton</span><span class="params">()</span> &#123;&#125;</span><br><span class="line">     <span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">         <span class="comment">//第一重检锁</span></span><br><span class="line">        <span class="keyword">if</span> (uniqueInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">//第二重检锁，只有uniqueInstance为null时才会生效</span></span><br><span class="line">            <span class="keyword">synchronized</span> (Singleton.class) &#123;</span><br><span class="line">                <span class="keyword">if</span> (uniqueInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">                    uniqueInstance = <span class="keyword">new</span> <span class="title class_">Singleton</span>();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在双检锁机制中，我们使用了synchronized关键字来创建一个锁，确保只有一个线程能进入if语句块内部。在此之前，我们首先检查uniqueInstance变量是否为null。如果为null我们才进入if语句块，获取锁，并再次检查uniqueInstance变量是否为null。这是因为在多线程环境下，可能会有多个线程同时进入第一个if语句块，如果不在此检查uniqueInstance变量是否为null，就有可能会创建多个Singleton对象，违反了单例模式的原则。</p>
+<p>一旦我们进入了if语句块，获取了锁，就可以创建唯一的Singleton对象。其他线程尝试进入if语句块时，由于uniqueInstance变量已经不为null，所以它们不会执行if语句块内的代码，而是直接返回uniqueInstance变量的值。</p>
+<p>在整个过程中，synchronized关键字可以确保只有一个线程能够访问if一句话内的代码，在这之前和之后，uniqueInstance变量由于是用volatile关键字进行了修饰，可以被确保它在多线程环境下的可见性，从而避免了问题的发生。</p>
+<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>除了单例模式之外，它还可以用于其他需要保证线程安全的场景。例如，我们可以使用双检锁机制来确保在多线程环境下只创建一个实例化某个对象的方法。<br>双检锁机制在多线程环境下会有比较好的性能表现，因为它只在第一次创建对象时使用synchronized关键字来获取锁，在之后的访问中不需要获取锁，因此避免了不必要的开销。如果在多线程环境下需要频繁创建对象，使用双检锁机制会比使用简单的synchronized关键字更加高效。<br>需要注意的是，虽然双检锁机制可以确保在多线程环境下只创建一个对象，但是如果对象的初始化操作耗时较长，可能会造成性能问题。此外，还需要注意正确使用volatile关键字，确保变量的可见性。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总之，双检锁机制是一种比较常见的保证线程安全的方式，可以用于单例模式等需要确保只有一个对象被创建的场景。在使用双检锁机制时，需要注意并发情况下的安全性和性能问题。</p>
 ]]></content>
       <categories>
-        <category>生活</category>
+        <category>Design Patterns</category>
       </categories>
       <tags>
-        <tag>LifeNode</tag>
+        <tag>Singleton Pattern</tag>
+        <tag>Lazy Singleton</tag>
+        <tag>Design Patterns</tag>
       </tags>
   </entry>
   <entry>
@@ -148,30 +156,22 @@
       </tags>
   </entry>
   <entry>
-    <title>懒汉式单例模式下的双检锁机制的理解</title>
-    <url>/2023/05/26/%E6%87%92%E6%B1%89%E5%BC%8F%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E4%B8%8B%E7%9A%84%E5%8F%8C%E6%A3%80%E9%94%81%E6%9C%BA%E5%88%B6%E7%9A%84%E7%90%86%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我在学习懒汉式单例模式时，发现了懒汉双检锁的实现方式，当时不是很理解，查阅资料后得出以下结论</p>
+    <title>My First Blog</title>
+    <url>/2023/05/26/My-First-Blog/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我一直都想搭建一个用于记录生活和学习的博客，但是碍于懒惰，一直拖延到现在。直到昨天我在浏览Github的开源项目时，我看到了<a href="https://crossoverjie.top/">杰哥</a>的个人博客，很佩服<a href="https://crossoverjie.top/">杰哥</a>的经历，所以我也决定搭建一个博客来记录自己在工作中遇到的问题以及自己学习技术的一个理解等。</p>
 <span id="more"></span>
 
-<h2 id="双检锁机制"><a href="#双检锁机制" class="headerlink" title="双检锁机制"></a>双检锁机制</h2><p>在多个线程同时请求一个获取一个懒汉式单例对象时，可能会导致创建多个对象的问题，为了确保只有一个对象被创建，可以使用双检锁机制。（双检锁机制不是创建两个锁实现，而是再方法内部实现两种检锁）</p>
-<p>双检锁机制基于懒汉模式，在第一次获取单例对象时才创建它；</p>
-<p>为了提高程序的性能，我们不在方法前使用syschronized关键字，而是在方法内部使用，同时也在方法内部实现了双重检查锁定机制。</p>
-<p>示例代码</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Singleton</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton uniqueInstance;</span><br><span class="line">    <span class="keyword">private</span> <span class="title function_">Singleton</span><span class="params">()</span> &#123;&#125;</span><br><span class="line">     <span class="keyword">public</span> <span class="keyword">static</span> Singleton <span class="title function_">getInstance</span><span class="params">()</span> &#123;</span><br><span class="line">         <span class="comment">//第一重检锁</span></span><br><span class="line">        <span class="keyword">if</span> (uniqueInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">//第二重检锁，只有uniqueInstance为null时才会生效</span></span><br><span class="line">            <span class="keyword">synchronized</span> (Singleton.class) &#123;</span><br><span class="line">                <span class="keyword">if</span> (uniqueInstance == <span class="literal">null</span>) &#123;</span><br><span class="line">                    uniqueInstance = <span class="keyword">new</span> <span class="title class_">Singleton</span>();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>在双检锁机制中，我们使用了synchronized关键字来创建一个锁，确保只有一个线程能进入if语句块内部。在此之前，我们首先检查uniqueInstance变量是否为null。如果为null我们才进入if语句块，获取锁，并再次检查uniqueInstance变量是否为null。这是因为在多线程环境下，可能会有多个线程同时进入第一个if语句块，如果不在此检查uniqueInstance变量是否为null，就有可能会创建多个Singleton对象，违反了单例模式的原则。</p>
-<p>一旦我们进入了if语句块，获取了锁，就可以创建唯一的Singleton对象。其他线程尝试进入if语句块时，由于uniqueInstance变量已经不为null，所以它们不会执行if语句块内的代码，而是直接返回uniqueInstance变量的值。</p>
-<p>在整个过程中，synchronized关键字可以确保只有一个线程能够访问if一句话内的代码，在这之前和之后，uniqueInstance变量由于是用volatile关键字进行了修饰，可以被确保它在多线程环境下的可见性，从而避免了问题的发生。</p>
-<h2 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h2><p>除了单例模式之外，它还可以用于其他需要保证线程安全的场景。例如，我们可以使用双检锁机制来确保在多线程环境下只创建一个实例化某个对象的方法。<br>双检锁机制在多线程环境下会有比较好的性能表现，因为它只在第一次创建对象时使用synchronized关键字来获取锁，在之后的访问中不需要获取锁，因此避免了不必要的开销。如果在多线程环境下需要频繁创建对象，使用双检锁机制会比使用简单的synchronized关键字更加高效。<br>需要注意的是，虽然双检锁机制可以确保在多线程环境下只创建一个对象，但是如果对象的初始化操作耗时较长，可能会造成性能问题。此外，还需要注意正确使用volatile关键字，确保变量的可见性。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>总之，双检锁机制是一种比较常见的保证线程安全的方式，可以用于单例模式等需要确保只有一个对象被创建的场景。在使用双检锁机制时，需要注意并发情况下的安全性和性能问题。</p>
+<h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>我是一名Java菜鸟程序员，我在学习Java的时候一直有使用MarkDown去记录笔记。而我在之前也搭建一个基于<a href="https://minster77.github.io/">Hugo的博客</a>，上面的文章都是一些学习笔记，比较合适于初学Java的朋友们。</p>
+<h2 id="博客主题"><a href="#博客主题" class="headerlink" title="博客主题"></a>博客主题</h2><p>在这个博客中，我将主要分享关于Java技术的一些知识和个人理解，也会分享一些编程技巧和实践经验。</p>
+<p>同时我也会分享一些个人的学习方法和年度总结，希望通过这个博客能够为大家提供有价值的信息和帮助，输出一些有意义的内容！</p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>我搭建这个博客的初衷是为了记录一下自己的程序员生涯的故事，毕竟来都来了，怎么也得留下些什么吧！其次是希望能有大神能在这个过程中指出我的错误，能让我学习到更多！</p>
+<p>在最后，祝你好运，也祝我好运！</p>
 ]]></content>
       <categories>
-        <category>Design Patterns</category>
+        <category>生活</category>
       </categories>
       <tags>
-        <tag>Singleton Pattern</tag>
-        <tag>Lazy Singleton</tag>
-        <tag>Design Patterns</tag>
+        <tag>LifeNode</tag>
       </tags>
   </entry>
 </search>

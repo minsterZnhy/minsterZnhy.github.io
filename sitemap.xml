@@ -56,7 +56,7 @@
   </url>
   
   <url>
-    <loc>https://minster.top/categories/index.html</loc>
+    <loc>https://minster.top/tags/index.html</loc>
     
     <lastmod>2023-05-26</lastmod>
     
@@ -65,7 +65,7 @@
   </url>
   
   <url>
-    <loc>https://minster.top/tags/index.html</loc>
+    <loc>https://minster.top/categories/index.html</loc>
     
     <lastmod>2023-05-26</lastmod>
     
@@ -97,27 +97,6 @@
   </url>
   
   <url>
-    <loc>https://minster.top/tags/LifeNode/</loc>
-    <lastmod>2023-05-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://minster.top/tags/Spring-Boot/</loc>
-    <lastmod>2023-05-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://minster.top/tags/%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/</loc>
-    <lastmod>2023-05-28</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://minster.top/tags/Singleton-Pattern/</loc>
     <lastmod>2023-05-28</lastmod>
     <changefreq>weekly</changefreq>
@@ -138,6 +117,27 @@
     <priority>0.2</priority>
   </url>
   
+  <url>
+    <loc>https://minster.top/tags/Spring-Boot/</loc>
+    <lastmod>2023-05-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://minster.top/tags/%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86/</loc>
+    <lastmod>2023-05-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://minster.top/tags/LifeNode/</loc>
+    <lastmod>2023-05-28</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
 
   
   <url>
@@ -148,7 +148,7 @@
   </url>
   
   <url>
-    <loc>https://minster.top/categories/%E7%94%9F%E6%B4%BB/</loc>
+    <loc>https://minster.top/categories/Design-Patterns/</loc>
     <lastmod>2023-05-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -162,7 +162,7 @@
   </url>
   
   <url>
-    <loc>https://minster.top/categories/Design-Patterns/</loc>
+    <loc>https://minster.top/categories/%E7%94%9F%E6%B4%BB/</loc>
     <lastmod>2023-05-28</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
