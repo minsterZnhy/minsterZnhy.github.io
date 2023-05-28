@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://example.com/baidu_verify_codeva-8GBfkUDGpy.html</loc>
+    
+    <lastmod>2023-05-28</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://example.com/2023/05/27/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E4%BC%91%E7%9C%A0%EF%BC%9Await-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/</loc>
     
     <lastmod>2023-05-27</lastmod>
