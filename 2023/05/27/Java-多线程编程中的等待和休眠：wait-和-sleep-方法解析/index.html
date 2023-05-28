@@ -19,12 +19,12 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
 
-<script class="next-config" data-name="main" type="application/json">{"hostname":"example.com","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+<script class="next-config" data-name="main" type="application/json">{"hostname":"minster.top","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
     <meta name="description" content="背景在Java多线程中，线程的状态如上图所示（图来自JavaGuide），可以发现，当前线程调用wait(long time)方法或者执行Thread.sleep(long time)方法都会进入到一个TIMED_WAITING的状态。那么，这个状态下的线程的锁资源是怎么样的呢？">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Java 多线程编程中的等待和休眠：wait() 和 sleep() 方法解析">
-<meta property="og:url" content="http://example.com/2023/05/27/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E4%BC%91%E7%9C%A0%EF%BC%9Await-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:url" content="https://minster.top/2023/05/27/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E4%BC%91%E7%9C%A0%EF%BC%9Await-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/index.html">
 <meta property="og:site_name" content="minster&#39;s Blog">
 <meta property="og:description" content="背景在Java多线程中，线程的状态如上图所示（图来自JavaGuide），可以发现，当前线程调用wait(long time)方法或者执行Thread.sleep(long time)方法都会进入到一个TIMED_WAITING的状态。那么，这个状态下的线程的锁资源是怎么样的呢？">
 <meta property="og:locale" content="en_US">
@@ -40,11 +40,11 @@
 <meta name="twitter:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/640.png">
 
 
-<link rel="canonical" href="http://example.com/2023/05/27/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E4%BC%91%E7%9C%A0%EF%BC%9Await-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/">
+<link rel="canonical" href="https://minster.top/2023/05/27/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E4%BC%91%E7%9C%A0%EF%BC%9Await-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"http://example.com/2023/05/27/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E4%BC%91%E7%9C%A0%EF%BC%9Await-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/","path":"2023/05/27/Java-多线程编程中的等待和休眠：wait-和-sleep-方法解析/","title":"Java 多线程编程中的等待和休眠：wait() 和 sleep() 方法解析"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://minster.top/2023/05/27/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E4%BC%91%E7%9C%A0%EF%BC%9Await-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/","path":"2023/05/27/Java-多线程编程中的等待和休眠：wait-和-sleep-方法解析/","title":"Java 多线程编程中的等待和休眠：wait() 和 sleep() 方法解析"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
 <title>Java 多线程编程中的等待和休眠：wait() 和 sleep() 方法解析 | minster's Blog</title>
@@ -213,7 +213,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/05/27/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E4%BC%91%E7%9C%A0%EF%BC%9Await-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/">
+    <link itemprop="mainEntityOfPage" href="https://minster.top/2023/05/27/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E4%BC%91%E7%9C%A0%EF%BC%9Await-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/avatar.png">
