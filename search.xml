@@ -177,9 +177,10 @@
   <entry>
     <title>Java面试题汇总（持续更新！）</title>
     <url>/2023/06/03/Java%E9%9D%A2%E8%AF%95%E9%A2%98%E6%B1%87%E6%80%BB%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%EF%BC%81%EF%BC%89/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/20211007194836.jpg" alt="20211007194836"></p>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>![moon-4919501_1920 (2)](<a href="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/moon-4919501_1920">http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/moon-4919501_1920</a> (2).jpg)</p>
 <p>以下是我对Java高频面试题的一个总结，后面我会持续更新，希望对你有所帮助。</p>
 <p>当然，如果有哪道题目我理解错误了，或者是你有更好的见解，非常欢迎你在评论区中留下宝贵的意见！</p>
+<p>本文有一些内容是参考<a href="https://javaguide.cn/">Guide哥</a>的，有兴趣的可以去了解一下~</p>
 <span id="more"></span>
 
 <h2 id="JavaSE基础"><a href="#JavaSE基础" class="headerlink" title="JavaSE基础"></a>JavaSE基础</h2><h3 id="1-JDK、JRE、JVM分别是什么，有什么区别"><a href="#1-JDK、JRE、JVM分别是什么，有什么区别" class="headerlink" title="1. JDK、JRE、JVM分别是什么，有什么区别"></a>1. JDK、JRE、JVM分别是什么，有什么区别</h3><ul>
