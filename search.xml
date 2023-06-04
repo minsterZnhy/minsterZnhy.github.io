@@ -150,7 +150,7 @@
   <entry>
     <title>Java面试题汇总（持续更新！）</title>
     <url>/2023/06/03/Java%E9%9D%A2%E8%AF%95%E9%A2%98%E6%B1%87%E6%80%BB%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%EF%BC%81%EF%BC%89/</url>
-    <content><![CDATA[<p><img src="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/moon-4919501_1920.jpg" alt="moon-4919501_1920"></p>
+    <content><![CDATA[<p><img src="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/moon-4919501_1920.jpg" alt="moon"></p>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>以下是我对Java高频面试题的一个总结，后面我会持续更新，希望对你有所帮助。<br>当然，如果有哪道题目我理解错误了，或者是你有更好的见解，非常欢迎你在评论区中留下宝贵的意见！</p>
 <span id="more"></span>
 
@@ -225,7 +225,7 @@
 <h3 id="10-深克隆与浅克隆的区别（深拷贝和浅拷贝）"><a href="#10-深克隆与浅克隆的区别（深拷贝和浅拷贝）" class="headerlink" title="10. 深克隆与浅克隆的区别（深拷贝和浅拷贝）"></a>10. 深克隆与浅克隆的区别（深拷贝和浅拷贝）</h3><p>浅克隆（默认）</p>
 <ul>
 <li><p>拷贝出的新对象，与原对象中的数据一模一样（引用类型拷贝的是地址）</p>
-<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230509175906576.png" alt="image-20230509175906576"></p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230509175906576.png" alt="shallow-copy"></p>
 </li>
 </ul>
 <p>深克隆（避免新对象修改其他对象内容时，影响原对象的对象内容）</p>
@@ -235,7 +235,7 @@
 <li><p>对象中的字符串数据拷贝的还是地址</p>
 </li>
 <li><p>对象中还包含的其他对象，不会拷贝地址，会创建新对象</p>
-<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230509175922784.png" alt="image-20230509175922784"></p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230509175922784.png" alt="deep-copy"></p>
 </li>
 </ul>
 <h3 id="11-Java-是编译执行的语言，还是解释执行的语言"><a href="#11-Java-是编译执行的语言，还是解释执行的语言" class="headerlink" title="11. Java 是编译执行的语言，还是解释执行的语言?"></a>11. Java 是编译执行的语言，还是解释执行的语言?</h3><p><strong>Java即是编译型的，也是解释型语言，总的来说Java更接近解释型语言</strong></p>
@@ -399,7 +399,7 @@
 <li><strong>TERMINATED</strong>：终止状态，表示该线程已经运行完毕</li>
 </ul>
 <p>线程在生命周期中并不是固定处于某一个状态而是随着代码的执行在不同状态之间转换。</p>
-<p><img src="https://oss.javaguide.cn/github/javaguide/java/concurrent/640.png" alt="Java 线程状态变迁图"></p>
+<p><img src="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/640.png" alt="Java-thread-status"></p>
 <h3 id="7-线程相关的基本方法都有哪些"><a href="#7-线程相关的基本方法都有哪些" class="headerlink" title="7. 线程相关的基本方法都有哪些"></a>7. 线程相关的基本方法都有哪些</h3><p>线程相关的基本方法有6种，分别是wait、sleep、notifyAll、notify、join、yield</p>
 <ol>
 <li><p><strong>wait方法（线程等待）：</strong></p>
