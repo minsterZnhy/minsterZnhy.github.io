@@ -155,7 +155,7 @@
 <span id="more"></span>
 
 <h2 id="JavaSE基础"><a href="#JavaSE基础" class="headerlink" title="JavaSE基础"></a>JavaSE基础</h2><h3 id="1-JDK、JRE、JVM分别是什么，有什么区别"><a href="#1-JDK、JRE、JVM分别是什么，有什么区别" class="headerlink" title="1. JDK、JRE、JVM分别是什么，有什么区别"></a>1. JDK、JRE、JVM分别是什么，有什么区别</h3><ul>
-<li>**JDK(Java Development Kit)**是Java标准开发包，它提供了编译、运行Java所需要的各种工具和资源，包括Java编译器、Java运行环境、以及常用的类库等</li>
+<li><strong>JDK(Java Development Kit) ：</strong> 是Java标准开发包，它提供了编译、运行Java所需要的各种工具和资源，包括Java编译器、Java运行环境、以及常用的类库等</li>
 <li><strong>JRE(Java Runtime Enviroment)：</strong>Java的运行环境，它是运行已编译 Java 程序所需的所有内容的集合，包括 Java 虚拟机（JVM），Java 类库，java 命令和其他的一些基础构件</li>
 <li><strong>JVM(Java Virtual Mechinal)：</strong>Java虚拟机，是JRE的一部分，它用于编译执行字节码文件，是可运行Java字节码文件的虚拟计算机</li>
 </ul>
@@ -170,14 +170,19 @@
 <li>重写发生在类的父子关系中，当一个类继承另一个类或者实现了某一个接口，就可以重写该类的非私有方法，从而实现功能的拓展；重写要求方法名、参数列表相同</li>
 </ul>
 <h3 id="3-x3D-x3D-和equals的区别是什么"><a href="#3-x3D-x3D-和equals的区别是什么" class="headerlink" title="3. &#x3D;&#x3D;和equals的区别是什么"></a>3. &#x3D;&#x3D;和equals的区别是什么</h3><p>&#x3D;&#x3D;对于基本类型来说就是值的比较，对于引用类型来说就是引用的比较。</p>
-<p>而equals默认情况下是引用的比较，只是因为有很多类都重写了equals方法，比如String、Integer等类都把它变成了值的比较，所以一般情况下，equals是比较的是值是否相等，也就是值比较。</p>
+<p>而equals默认情况下是引用的比较，只是因为有很多类都重写了equals方法，比如String、Integer等类都把它变成了值的比较。</p>
 <h3 id="4-什么是hashCode"><a href="#4-什么是hashCode" class="headerlink" title="4. 什么是hashCode()"></a>4. 什么是hashCode()</h3><p>hashCode()方法作用获取一个哈希码，即散列码，它实际上是一个int整数。哈希码可以确定该对象在哈希表中的索引位置。hashCode的定义在Object类中，所以java中任何类都包含了hashCode函数。</p>
 <p>散列表其实就是用来存放键值对（key-value），我们可以通过key快速检索出对应的value。其中就使用了散列码。</p>
-<h3 id="5-hashCode与equals有什么关系"><a href="#5-hashCode与equals有什么关系" class="headerlink" title="5. hashCode与equals有什么关系"></a>5. hashCode与equals有什么关系</h3><p>要搞清楚他们之间的关系，我们可以从hash表的结构出发，其实hash表是一个数组+链表或红黑树的结构，Java的集合容器就有使用到这种数据结构的，然后在我们要存储对象到容器时可以先通过hashCode方法返回了一个hash值，这个hash与数组长度取余之后就能获取到该对象的存放在数组结构的一个对应的下标，当两个对象有相同的hash值的时候，说明存放的数组下标是一样的，那么此时我们就需要通过equals方法判断这两个对象是不是相同的对象，如果是相同的对象会直接将原来的对象覆盖掉，如果不是则插入在链表中，所以我们可以得下面结论：</p>
+<h3 id="5-hashCode与equals有什么关系"><a href="#5-hashCode与equals有什么关系" class="headerlink" title="5. hashCode与equals有什么关系"></a>5. hashCode与equals有什么关系</h3><p>要搞清楚他们之间的关系，我们可以从hash表的结构出发，其实hash表是一个数组+链表或红黑树的结构，Java的集合容器就有使用到这种数据结构的，然后在我们要存储对象到容器时可以先通过hashCode方法返回了一个hash值，这个hash与数组长度取余之后就能获取到该对象的存放在数组结构的一个对应的下标，<strong>当两个对象有相同的hash值的时候，说明存放的数组下标是一样的（也就是产生了哈希冲突）</strong>，那么此时我们就需要通过equals方法判断这两个对象是不是相同的对象，如果不是则插入在链表中，所以我们可以得下面结论：</p>
 <ol>
 <li>当两个对象相同时，它们的hash值也相同，它们之间的互相调用equals方法结果为true</li>
 <li>当两个对象有相同的hashCode的值，那么它们也不一定相等。</li>
 </ol>
+<blockquote>
+<p>补充：</p>
+<p>对于HashSet存放的自定义类型来说，如果是同一个对象会插入失败</p>
+<p>对于HashMap存放的自定义类型来说，如果是同一个对象会覆盖掉原来的value</p>
+</blockquote>
 <h3 id="6-为什么重写equals方法必须重写hashCode方法呢"><a href="#6-为什么重写equals方法必须重写hashCode方法呢" class="headerlink" title="6. 为什么重写equals方法必须重写hashCode方法呢"></a>6. 为什么重写equals方法必须重写hashCode方法呢</h3><p>首先在java的一些容器中，是不允许存放两个相同的对象的，如果对象相同会覆盖掉，而在散列表中我们存放对象时，会首先判断两个对象的hash值是否相同，如果相同再通过equals方法来判断是否为相同对象，如果是相同对象就会在散列表中覆盖掉，否则就插入到相关链表中，那么如果我们只重写了equals方法，而不重写hashCode方法，那么那么相同对象的值就无法覆盖了。</p>
 <h3 id="7-面向对象的特征"><a href="#7-面向对象的特征" class="headerlink" title="7. 面向对象的特征"></a>7. 面向对象的特征</h3><p>面向对象主要有三大特征：封装性、继承、多态</p>
 <ol>
@@ -206,11 +211,16 @@
 <li>抽象类中的成员变量默认是default，可以被子类重新定义赋值，接口中的成员变量是常量，不能被修改且必须要有初始值</li>
 </ul>
 <h3 id="9-java中操作字符串的类有哪些？他们之间有什么区别"><a href="#9-java中操作字符串的类有哪些？他们之间有什么区别" class="headerlink" title="9. java中操作字符串的类有哪些？他们之间有什么区别"></a>9. java中操作字符串的类有哪些？他们之间有什么区别</h3><p>操作字符串的类有主要有String、StringBuffer、StringBuilder三种。</p>
-<p>首先String、StringBuffer底层都是char数组，然后因为String类的char数组是由Final修饰的，所以String类的长度是不会变化，每当我们新建一个String类时都需要new一个对象，让指针指向新的对象。而StringBuffer维护的char数组以及在JDK1.5之后出现的StringBuilder维护的byte数组都没有使用Final修饰，所以他们存放的字符串内容是可变的。而且存在扩容机制。</p>
+<p>在jdk1.8及以前String、StringBuffer、StringBuilder底层都是char数组。</p>
+<p>在jdk1.9及以后，三者的底层都是byte数组。</p>
+<blockquote>
+<p>使用byte[]还能存放中文的原因是因为他们的底层会有一个coder的值，该值可以是<code>LATIN1</code>和<code>UTF16</code>的一种，所以能存放中文字符</p>
+</blockquote>
+<p>因为String类是由Final修饰的，所以String类的长度是不会变化，每当我们新建一个String类时都需要new一个对象，让指针指向新的对象。而StringBuffer、StringBuilder都是继承于AbstractStringBuilder，而AbstractStringBuilder底层是使用一个可变数组来存放字符串的，所以他们存放的字符串内容是可变的。而且存在扩容机制。</p>
 <blockquote>
 <p>扩容机制：</p>
-<p>因为他们都是继承了AbstractStirngBuilder类，而该类有一个方法会检测当前字符串类的char的容量是否足够来存放新的字符串，如果不能，进行扩容</p>
-<p>扩容的逻辑就是new一个相同大小的char+2然后调用数组的copyOf方法将两个char数组合成一个新的。</p>
+<p>因为他们都是继承了AbstractStirngBuilder类，而该类有一个方法会检测当前字符串类的byte的容量是否足够来存放新的字符串，如果不能，进行扩容</p>
+<p>扩容的逻辑就是先判断是字符串是否含有中文，在根据相应的一个处理得到一个新的byte数组，最后通过Arrays.copyOf方法将原来byte数组的值复制到新的byte值当中去。</p>
 </blockquote>
 <p>然后StringBuffer和StringBuilder之间是有线程是否安全的区别的。</p>
 <p>StringBuffer因为加了同步锁synchronized所以线程安全，因为synchronized同步锁会有一个获取锁和释放锁的操作，所以StringBuffer的效率更低。</p>
@@ -222,7 +232,24 @@
 <p>当前锁是轻量级锁时，另外一个线程不会一直自旋，当其自旋到一定次数后，轻量级锁会升级为重量级锁，其他线程进入阻塞状态，性能降低。因为线程自旋需要消耗cpu性能，所以自旋到一定次数后轻量级锁会膨胀成重量级锁。</p>
 </blockquote>
 <p>StringBuilde因为没有加入锁，所以效率更高，适合高并发时候使用。</p>
-<h3 id="10-深克隆与浅克隆的区别（深拷贝和浅拷贝）"><a href="#10-深克隆与浅克隆的区别（深拷贝和浅拷贝）" class="headerlink" title="10. 深克隆与浅克隆的区别（深拷贝和浅拷贝）"></a>10. 深克隆与浅克隆的区别（深拷贝和浅拷贝）</h3><p>浅克隆（默认）</p>
+<h3 id="10-String为什么要设计成不可变的？"><a href="#10-String为什么要设计成不可变的？" class="headerlink" title="10. String为什么要设计成不可变的？"></a>10. String为什么要设计成不可变的？</h3><p>String设计成不可变的原因主要有以下四点：</p>
+<ol>
+<li><p>便于实现字符串池（String pool）</p>
+<p>因为在实际开发中，我们会大量的使用String常量，如果每次声明一个String类型都创建一个String对象的话，那将会造成极大的空间资源浪费。所以Java提出了String pool的概念，并且在堆中开放了一块专门用来存放String常量的字符串常量池(String Pool)。当我们初始化一个String变量时，JVM会先去查找字符串常量池是否已经存在该字符串了，如果存在则直接引用，如果不存在则新建一个字符串对象。</p>
+<p>如果String是可以变的，那么一个字符串变量改变了他的值，都会指向一个新的String对象了，而String Pool也无法实现了</p>
+</li>
+<li><p>线程安全</p>
+<p>在多线程环境下如果对同一个资源同时进行写操作时会引发一个线程安全的问题，而String设计成了不可变，确保了String对象不能被写，所以保证了多线程的安全。</p>
+</li>
+<li><p>避免安全问题</p>
+<p>在网络连接和数据库连接中字符串常常作为参数，例如，网络连接地址URL，文件路径path，反射机制所需要的String参数。其不可变性可以保证连接的安全性。如果字符串是可变的，黑客就有可能改变字符串指向对象的值，那么会引起很严重的安全问题。</p>
+</li>
+<li><p>加快字符串处理速度</p>
+<p>由于String是不可变的，保证了hashcode的唯一性，于是在创建对象时其hashcode就可以放心的缓存了，不需要重新计算。这也就是Map喜欢将String作为Key的原因，处理速度要快过其它的键对象。所以HashMap中的键往往都使用String。</p>
+</li>
+</ol>
+<p>总体来说，String不可变的原因要包括 设计考虑，效率优化，以及安全性这三大方面。</p>
+<h3 id="11-深克隆与浅克隆的区别（深拷贝和浅拷贝）"><a href="#11-深克隆与浅克隆的区别（深拷贝和浅拷贝）" class="headerlink" title="11. 深克隆与浅克隆的区别（深拷贝和浅拷贝）"></a>11. 深克隆与浅克隆的区别（深拷贝和浅拷贝）</h3><p>浅克隆（默认）</p>
 <ul>
 <li><p>拷贝出的新对象，与原对象中的数据一模一样（引用类型拷贝的是地址）</p>
 <p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230509175906576.png" alt="shallow-copy"></p>
@@ -238,7 +265,7 @@
 <p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230509175922784.png" alt="deep-copy"></p>
 </li>
 </ul>
-<h3 id="11-Java-是编译执行的语言，还是解释执行的语言"><a href="#11-Java-是编译执行的语言，还是解释执行的语言" class="headerlink" title="11. Java 是编译执行的语言，还是解释执行的语言?"></a>11. Java 是编译执行的语言，还是解释执行的语言?</h3><p><strong>Java即是编译型的，也是解释型语言，总的来说Java更接近解释型语言</strong></p>
+<h3 id="12-Java-是编译执行的语言，还是解释执行的语言"><a href="#12-Java-是编译执行的语言，还是解释执行的语言" class="headerlink" title="12. Java 是编译执行的语言，还是解释执行的语言?"></a>12. Java 是编译执行的语言，还是解释执行的语言?</h3><p><strong>Java即是编译型的，也是解释型语言，总的来说Java更接近解释型语言</strong></p>
 <ul>
 <li>可以说它是编译型的。因为所有的Java代码都是要编译的，Java不经过编译就什么用都没有。同时围绕JVM的效率问题，会涉及一些如JIT、AOT等优化技术，例如JIT技术，会将热点代码编异成机器码。而AOT技术，是在运行前，通过工具直接将字节码转换为机器码</li>
 <li>可以说它是解释型的。因为Java代码编译后不能直接运行，它是解释运行在JVM上的，所以它是解释运行的。</li>
