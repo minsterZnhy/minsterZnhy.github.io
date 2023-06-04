@@ -16,6 +16,7 @@
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"minster.top","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
@@ -29,11 +30,13 @@
 <meta property="og:image" content="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/moon-4919501_1920.jpg">
 <meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230509175906576.png">
 <meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230509175922784.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/hotspot-heap-structure.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/rf-hotspot-vm-gc.png">
 <meta property="og:image" content="https://oss.javaguide.cn/github/javaguide/java/concurrent/640.png">
 <meta property="og:image" content="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230602143058557.png">
 <meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230603073012982.png">
 <meta property="article:published_time" content="2023-06-03T13:21:04.000Z">
-<meta property="article:modified_time" content="2023-06-03T13:49:27.529Z">
+<meta property="article:modified_time" content="2023-06-04T00:03:24.979Z">
 <meta property="article:author" content="Minster">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="interview">
@@ -150,7 +153,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaSE%E5%9F%BA%E7%A1%80"><span class="nav-text">JavaSE基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-JDK%E3%80%81JRE%E3%80%81JVM%E5%88%86%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">1. JDK、JRE、JVM分别是什么，有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%87%8D%E8%BD%BD%E5%92%8C%E9%87%8D%E5%86%99%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. 重载和重写的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-x3D-x3D-%E5%92%8Cequals%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">3. &#x3D;&#x3D;和equals的区别是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BB%80%E4%B9%88%E6%98%AFhashCode"><span class="nav-text">4. 什么是hashCode()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-hashCode%E4%B8%8Eequals%E6%9C%89%E4%BB%80%E4%B9%88%E5%85%B3%E7%B3%BB"><span class="nav-text">5. hashCode与equals有什么关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%87%8D%E5%86%99equals%E6%96%B9%E6%B3%95%E5%BF%85%E9%A1%BB%E9%87%8D%E5%86%99hashCode%E6%96%B9%E6%B3%95%E5%91%A2"><span class="nav-text">6. 为什么重写equals方法必须重写hashCode方法呢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%89%B9%E5%BE%81"><span class="nav-text">7. 面向对象的特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E6%8E%A5%E5%8F%A3%E5%92%8C%E6%8A%BD%E8%B1%A1%E7%B1%BB%E7%9A%84%E5%85%B1%E5%90%8C%E7%82%B9%E5%92%8C%E5%8C%BA%E5%88%AB"><span class="nav-text">8. 接口和抽象类的共同点和区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-java%E4%B8%AD%E6%93%8D%E4%BD%9C%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E7%B1%BB%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F%E4%BB%96%E4%BB%AC%E4%B9%8B%E9%97%B4%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">9. java中操作字符串的类有哪些？他们之间有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-%E6%B7%B1%E5%85%8B%E9%9A%86%E4%B8%8E%E6%B5%85%E5%85%8B%E9%9A%86%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%88%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B5%85%E6%8B%B7%E8%B4%9D%EF%BC%89"><span class="nav-text">10. 深克隆与浅克隆的区别（深拷贝和浅拷贝）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-Java-%E6%98%AF%E7%BC%96%E8%AF%91%E6%89%A7%E8%A1%8C%E7%9A%84%E8%AF%AD%E8%A8%80%EF%BC%8C%E8%BF%98%E6%98%AF%E8%A7%A3%E9%87%8A%E6%89%A7%E8%A1%8C%E7%9A%84%E8%AF%AD%E8%A8%80"><span class="nav-text">11. Java 是编译执行的语言，还是解释执行的语言?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaSE%E8%BF%9B%E9%98%B6-%E9%9B%86%E5%90%88"><span class="nav-text">JavaSE进阶-集合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81Array-%E5%92%8C-ArrayList-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-text">1、Array 和 ArrayList 有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E5%B8%B8%E8%A7%81%E7%9A%84%E9%9B%86%E5%90%88%E7%B1%BB%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">2、常见的集合类有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81ArrayList%E4%B8%8ELinkedList%E7%9A%84%E5%BC%82%E5%90%8C"><span class="nav-text">3、ArrayList与LinkedList的异同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81ArrayList%E7%9A%84%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6"><span class="nav-text">4、ArrayList的扩容机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap%E7%9A%84%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">HashMap的底层数据结构是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashMap%E7%9A%84%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6"><span class="nav-text">HashMap的扩容机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM"><span class="nav-text">JVM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%8F%8F%E8%BF%B0%E4%B8%80%E4%B8%8Bjvm%E5%8A%A0%E8%BD%BD-class%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%87%E7%A8%8B%E5%90%97%EF%BC%9F%EF%BC%88%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B%EF%BC%89"><span class="nav-text">1. 描述一下jvm加载.class文件的过程吗？（类加载过程）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8"><span class="nav-text">2. 什么是双亲委派模型，为什么要使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%AE%97%E6%B3%95"><span class="nav-text">3. 可达性算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BD%A0%E8%83%BD%E8%AF%B4%E4%B8%80%E4%B8%8B%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E5%90%97%EF%BC%9F"><span class="nav-text">4. 你能说一下垃圾回收机制吗？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B"><span class="nav-text">并发编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BD%A0%E8%83%BD%E8%AF%B4%E4%B8%80%E4%B8%8B%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%96%B9%E6%B3%95%E6%9C%89%E5%93%AA%E4%BA%9B%E5%90%97"><span class="nav-text">1. 你能说一下创建线程的方法有哪些吗</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Runnable%E6%8E%A5%E5%8F%A3%E5%92%8CCallable%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. Runnable接口和Callable接口的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-sleep%E6%96%B9%E6%B3%95%E5%92%8Cyield%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">3. sleep方法和yield方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%BA%BF%E7%A8%8B%E4%B8%ADsleep%E5%92%8Cwait%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">4. 线程中sleep和wait方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BA%BF%E7%A8%8B%E7%9A%84run%E6%96%B9%E6%B3%95%E5%92%8Cstart%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">5. 线程的run方法和start方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BA%BF%E7%A8%8B%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E7%8A%B6%E6%80%81%EF%BC%9F%EF%BC%88%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%EF%BC%89"><span class="nav-text">6. 线程有哪几种状态？（线程的生命周期）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%BA%BF%E7%A8%8B%E7%9B%B8%E5%85%B3%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95%E9%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">7. 线程相关的基本方法都有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-wait-%E5%92%8Csleep-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">8. wait() 和sleep()的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-Java%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">9. Java中常用的线程池有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8F%82%E6%95%B0%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%88%E5%88%9B%E5%BB%BA%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%89"><span class="nav-text">10. Java线程池的核心参数有哪些（创建的时候）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">11. 线程池的执行流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%BD%91%E7%BB%9C%E7%9A%847%E5%B1%82%E6%9E%B6%E6%9E%84"><span class="nav-text">1. 网络的7层架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-TCP%E4%B8%8EUDP%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. TCP与UDP的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-TCP%E4%B8%8EUDP%E7%9A%84%E8%BF%90%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">3. TCP与UDP的运用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-TCP%E7%9A%84%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-text">4. TCP的三次握手和四次挥手</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-text">算法</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaSE%E5%9F%BA%E7%A1%80"><span class="nav-text">JavaSE基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-JDK%E3%80%81JRE%E3%80%81JVM%E5%88%86%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">1. JDK、JRE、JVM分别是什么，有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%87%8D%E8%BD%BD%E5%92%8C%E9%87%8D%E5%86%99%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. 重载和重写的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-x3D-x3D-%E5%92%8Cequals%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">3. &#x3D;&#x3D;和equals的区别是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BB%80%E4%B9%88%E6%98%AFhashCode"><span class="nav-text">4. 什么是hashCode()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-hashCode%E4%B8%8Eequals%E6%9C%89%E4%BB%80%E4%B9%88%E5%85%B3%E7%B3%BB"><span class="nav-text">5. hashCode与equals有什么关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%87%8D%E5%86%99equals%E6%96%B9%E6%B3%95%E5%BF%85%E9%A1%BB%E9%87%8D%E5%86%99hashCode%E6%96%B9%E6%B3%95%E5%91%A2"><span class="nav-text">6. 为什么重写equals方法必须重写hashCode方法呢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%89%B9%E5%BE%81"><span class="nav-text">7. 面向对象的特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E6%8E%A5%E5%8F%A3%E5%92%8C%E6%8A%BD%E8%B1%A1%E7%B1%BB%E7%9A%84%E5%85%B1%E5%90%8C%E7%82%B9%E5%92%8C%E5%8C%BA%E5%88%AB"><span class="nav-text">8. 接口和抽象类的共同点和区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-java%E4%B8%AD%E6%93%8D%E4%BD%9C%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E7%B1%BB%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F%E4%BB%96%E4%BB%AC%E4%B9%8B%E9%97%B4%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">9. java中操作字符串的类有哪些？他们之间有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-%E6%B7%B1%E5%85%8B%E9%9A%86%E4%B8%8E%E6%B5%85%E5%85%8B%E9%9A%86%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%88%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B5%85%E6%8B%B7%E8%B4%9D%EF%BC%89"><span class="nav-text">10. 深克隆与浅克隆的区别（深拷贝和浅拷贝）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-Java-%E6%98%AF%E7%BC%96%E8%AF%91%E6%89%A7%E8%A1%8C%E7%9A%84%E8%AF%AD%E8%A8%80%EF%BC%8C%E8%BF%98%E6%98%AF%E8%A7%A3%E9%87%8A%E6%89%A7%E8%A1%8C%E7%9A%84%E8%AF%AD%E8%A8%80"><span class="nav-text">11. Java 是编译执行的语言，还是解释执行的语言?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaSE%E8%BF%9B%E9%98%B6-%E9%9B%86%E5%90%88"><span class="nav-text">JavaSE进阶-集合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Array-%E5%92%8C-ArrayList-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-text">1. Array 和 ArrayList 有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%B8%B8%E8%A7%81%E7%9A%84%E9%9B%86%E5%90%88%E7%B1%BB%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">2. 常见的集合类有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ArrayList%E4%B8%8ELinkedList%E7%9A%84%E5%BC%82%E5%90%8C"><span class="nav-text">3. ArrayList与LinkedList的异同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-ArrayList%E7%9A%84%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6"><span class="nav-text">4. ArrayList的扩容机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-HashMap%E7%9A%84%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">5. HashMap的底层数据结构是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-HashMap%E7%9A%84%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6"><span class="nav-text">6. HashMap的扩容机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM"><span class="nav-text">JVM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%8F%8F%E8%BF%B0%E4%B8%80%E4%B8%8Bjvm%E5%8A%A0%E8%BD%BD-class%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%87%E7%A8%8B%E5%90%97%EF%BC%9F%EF%BC%88%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B%EF%BC%89"><span class="nav-text">1. 描述一下jvm加载.class文件的过程吗？（类加载过程）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8"><span class="nav-text">2. 什么是双亲委派模型，为什么要使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%AE%97%E6%B3%95"><span class="nav-text">3. 可达性算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BD%A0%E8%83%BD%E8%AF%B4%E4%B8%80%E4%B8%8B%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E5%90%97%EF%BC%9F"><span class="nav-text">4. 你能说一下垃圾回收机制吗？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B"><span class="nav-text">并发编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BD%A0%E8%83%BD%E8%AF%B4%E4%B8%80%E4%B8%8B%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%96%B9%E6%B3%95%E6%9C%89%E5%93%AA%E4%BA%9B%E5%90%97"><span class="nav-text">1. 你能说一下创建线程的方法有哪些吗</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Runnable%E6%8E%A5%E5%8F%A3%E5%92%8CCallable%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. Runnable接口和Callable接口的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-sleep%E6%96%B9%E6%B3%95%E5%92%8Cyield%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">3. sleep方法和yield方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%BA%BF%E7%A8%8B%E4%B8%ADsleep%E5%92%8Cwait%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">4. 线程中sleep和wait方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BA%BF%E7%A8%8B%E7%9A%84run%E6%96%B9%E6%B3%95%E5%92%8Cstart%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">5. 线程的run方法和start方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BA%BF%E7%A8%8B%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E7%8A%B6%E6%80%81%EF%BC%9F%EF%BC%88%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%EF%BC%89"><span class="nav-text">6. 线程有哪几种状态？（线程的生命周期）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%BA%BF%E7%A8%8B%E7%9B%B8%E5%85%B3%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95%E9%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">7. 线程相关的基本方法都有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-wait-%E5%92%8Csleep-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">8. wait() 和sleep()的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-Java%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">9. Java中常用的线程池有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8F%82%E6%95%B0%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%88%E5%88%9B%E5%BB%BA%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%89"><span class="nav-text">10. Java线程池的核心参数有哪些（创建的时候）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">11. 线程池的执行流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%BD%91%E7%BB%9C%E7%9A%847%E5%B1%82%E6%9E%B6%E6%9E%84"><span class="nav-text">1. 网络的7层架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-TCP%E4%B8%8EUDP%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. TCP与UDP的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-TCP%E4%B8%8EUDP%E7%9A%84%E8%BF%90%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">3. TCP与UDP的运用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-TCP%E7%9A%84%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-text">4. TCP的三次握手和四次挥手</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-text">算法</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -243,9 +246,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">Posted on</span>
-      
 
-      <time title="Created: 2023-06-03 21:21:04 / Modified: 21:49:27" itemprop="dateCreated datePublished" datetime="2023-06-03T21:21:04+08:00">2023-06-03</time>
+      <time title="Created: 2023-06-03 21:21:04" itemprop="dateCreated datePublished" datetime="2023-06-03T21:21:04+08:00">2023-06-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-06-04 08:03:24" itemprop="dateModified" datetime="2023-06-04T08:03:24+08:00">2023-06-04</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -387,7 +396,7 @@
 <li>可以说它是编译型的。因为所有的Java代码都是要编译的，Java不经过编译就什么用都没有。同时围绕JVM的效率问题，会涉及一些如JIT、AOT等优化技术，例如JIT技术，会将热点代码编异成机器码。而AOT技术，是在运行前，通过工具直接将字节码转换为机器码</li>
 <li>可以说它是解释型的。因为Java代码编译后不能直接运行，它是解释运行在JVM上的，所以它是解释运行的。</li>
 </ul>
-<h2 id="JavaSE进阶-集合"><a href="#JavaSE进阶-集合" class="headerlink" title="JavaSE进阶-集合"></a>JavaSE进阶-集合</h2><h3 id="1、Array-和-ArrayList-有什么区别？"><a href="#1、Array-和-ArrayList-有什么区别？" class="headerlink" title="1、Array 和 ArrayList 有什么区别？"></a>1、Array 和 ArrayList 有什么区别？</h3><ul>
+<h2 id="JavaSE进阶-集合"><a href="#JavaSE进阶-集合" class="headerlink" title="JavaSE进阶-集合"></a>JavaSE进阶-集合</h2><h3 id="1-Array-和-ArrayList-有什么区别？"><a href="#1-Array-和-ArrayList-有什么区别？" class="headerlink" title="1. Array 和 ArrayList 有什么区别？"></a>1. Array 和 ArrayList 有什么区别？</h3><ul>
 <li><p>Array 可以包含基本类型和对象类型，ArrayList 只能包含对象类型。</p>
 </li>
 <li><p>Array 大小是固定的，ArrayList 的大小是动态变化的。</p>
@@ -395,24 +404,24 @@
 <li><p>ArrayList 提供了更多的方法和特性，比如：addAll()，removeAll()，iterator() 等等。</p>
 </li>
 </ul>
-<h3 id="2、常见的集合类有哪些"><a href="#2、常见的集合类有哪些" class="headerlink" title="2、常见的集合类有哪些"></a>2、常见的集合类有哪些</h3><p>Java的集合容器有单列集合和双列集合两种，单列集合指的是Collection接口下的派生类：List、Set、Queue（Jdk5 新增的队列）；双列集合则是Map接口下的派生类。</p>
+<h3 id="2-常见的集合类有哪些"><a href="#2-常见的集合类有哪些" class="headerlink" title="2. 常见的集合类有哪些"></a>2. 常见的集合类有哪些</h3><p>Java的集合容器有单列集合和双列集合两种，单列集合指的是Collection接口下的派生类：List、Set、Queue（JDK5 新增的队列）；双列集合则是Map接口下的派生类。</p>
 <blockquote>
 <p><strong>注意：Collection是一个接口，Collections是一个工具类，Map不是Collection的子接口</strong>。</p>
 </blockquote>
-<p>在集合体系中，List集合代表了由许可重复集合，他们是有索引的；Set集合代表无序不可重复的集合，只能根据元素本身来访问（无索引）。Queue集合时一个队列集合。</p>
+<p>在集合体系中，List集合代表了可重复集合，他们是有索引的；Set集合代表无序不可重复的集合，只能根据元素本身来访问（无索引）。Queue集合是一个队列集合。</p>
 <p>Map集合时可以存放key-value键值对的集合，他的key是不可重复的，value是可以重复的。</p>
 <p>List集合常用的有ArrayList、LinkedList</p>
 <p>Set集合中常用的有HashSet、TreeSet</p>
 <p>Queue集合常用的有ArrayQueue</p>
 <p>Map集合中常用的有HashMap、TreeMap、ConcurrentHashMap</p>
-<h3 id="3、ArrayList与LinkedList的异同"><a href="#3、ArrayList与LinkedList的异同" class="headerlink" title="3、ArrayList与LinkedList的异同"></a>3、ArrayList与LinkedList的异同</h3><ul>
+<h3 id="3-ArrayList与LinkedList的异同"><a href="#3-ArrayList与LinkedList的异同" class="headerlink" title="3. ArrayList与LinkedList的异同"></a>3. ArrayList与LinkedList的异同</h3><ul>
 <li><strong>是否保证线程安全：</strong> ArrayList 和 LinkedList 都是不同步的，也就是不保证线程安全；</li>
 <li><strong>底层数据结构：</strong> Arraylist 底层使用的是Object数组（动态数组）；LinkedList 底层使用的是双向循环链表数据结构；</li>
 <li><strong>插入和删除是否受元素位置的影响：</strong> <strong>ArrayList 采用数组存储，所以插入和删除元素的时间复杂度受元素位置的影响。</strong> 比如：执行<code>add(E e)</code>方法的时候， ArrayList 会默认在将指定的元素追加到此列表的末尾，这种情况时间复杂度就是O(1)。但是如果要在指定位置 i 插入和删除元素的话（<code>add(int index, E element)</code>）时间复杂度就为 O(n-i)。因为在进行上述操作的时候集合中第 i 和第 i 个元素之后的(n-i)个元素都要执行向后位&#x2F;向前移一位的操作。  <strong>LinkedList 采用链表存储，所以插入，删除元素时间复杂度不受元素位置的影响，都是近似 O（1）而数组为近似 O（n）。</strong></li>
 <li><strong>是否支持快速随机访问：</strong> LinkedList 不支持高效的随机元素访问，而ArrayList 实现了RandmoAccess 接口，所以有随机访问功能。快速随机访问就是通过元素的序号快速获取元素对象(对应于<code>get(int index)</code>方法)。</li>
 <li><strong>内存空间占用：</strong> ArrayList的空 间浪费主要体现在在list列表的结尾会预留一定的容量空间，而LinkedList的空间花费则体现在它的每一个元素都需要消耗比ArrayList更多的空间（因为要存放直接后继和直接前驱以及数据）。</li>
 </ul>
-<h3 id="4、ArrayList的扩容机制"><a href="#4、ArrayList的扩容机制" class="headerlink" title="4、ArrayList的扩容机制"></a>4、ArrayList的扩容机制</h3><p>因为ArrayList底层维护的是一个数组，所以ArrayList的扩容机制是基于Arrays.copyOf方法实现的。</p>
+<h3 id="4-ArrayList的扩容机制"><a href="#4-ArrayList的扩容机制" class="headerlink" title="4. ArrayList的扩容机制"></a>4. ArrayList的扩容机制</h3><p>因为ArrayList底层维护的是一个数组，所以ArrayList的扩容机制是基于Arrays.copyOf方法实现的。</p>
 <p>当我们用默认的无参构造方法创建ArrayList集合的时候，ArrayList的初始长度为0。<strong>当我们向集合添加第一个元素的时候，ArrayList集合的长度为10；</strong></p>
 <p>当我们向集合添加元素时都会有一个判断，就是查看当前容量是否可以继续添加元素，<strong>如果集合的容量够就添加到集合中，如果容量不够则触发扩容机制，扩容的大小为原集合容量的1.5倍。</strong></p>
 <blockquote>
@@ -420,8 +429,8 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="variable">newCapacity</span> <span class="operator">=</span> oldCapacity + (oldCapacity &gt;&gt; <span class="number">1</span>);</span><br></pre></td></tr></table></figure>
 </blockquote>
 <p>当我们使用有参构造去创建ArrayList集合时，扩容机制也与上面的一样，不过需要注意的是他扩容的大小为你传进去的参数的1.5倍</p>
-<h3 id="HashMap的底层数据结构是什么"><a href="#HashMap的底层数据结构是什么" class="headerlink" title="HashMap的底层数据结构是什么"></a>HashMap的底层数据结构是什么</h3><p><strong>在JDK1.8以前，HashMap底层维护的是一个”数组+链表“的结构</strong>，数组是HashMap的主体，链表是为了解决哈希冲突而存在的。</p>
-<p><strong>在JDK1.8之后，HashMap的底层数据结构变成了”数组+链表+红黑树“的结构了</strong>。</p>
+<h3 id="5-HashMap的底层数据结构是什么"><a href="#5-HashMap的底层数据结构是什么" class="headerlink" title="5. HashMap的底层数据结构是什么"></a>5. HashMap的底层数据结构是什么</h3><p><strong>在JDK1.8以前，HashMap底层维护的是一个”数组+链表“的结构</strong>，数组是HashMap的主体，链表是为了解决哈希冲突而存在的。</p>
+<p><strong>在JDK1.8之后，HashMap的底层变成了”数组+链表+红黑树“的数据结构了</strong>。</p>
 <p>在JDK1.8之前，如果我们使用HashMap存放大量数据时，会使HashMap的链表结构变得非常长，这样会导致我们的查询效率变慢，严重的影响了HashMap的性能。</p>
 <p>因此，在JDK1.8之后对数据结构做了进一步的优化，引进了红黑树，链表和红黑树会在达到一定条件时会进行转换：</p>
 <ul>
@@ -436,7 +445,7 @@
 <p>但是当数据量多了之后，因为红黑树搜索的时间复杂度为Olog(n)，而链表的是O(n)，因此选择红黑树可以增加的查询效率，但是新增的效率变慢了。</p>
 <p>因此，如果一开始就用红黑树结构，元素太少，新增效率又比较慢，无疑这是浪费性能的。</p>
 </blockquote>
-<h3 id="HashMap的扩容机制"><a href="#HashMap的扩容机制" class="headerlink" title="HashMap的扩容机制"></a>HashMap的扩容机制</h3><ul>
+<h3 id="6-HashMap的扩容机制"><a href="#6-HashMap的扩容机制" class="headerlink" title="6. HashMap的扩容机制"></a>6. HashMap的扩容机制</h3><ul>
 <li>HashMap底层维护了Node类型的数组table，默认为null，链表与红黑树是为了解决哈希冲突而存在的。</li>
 <li>当创建对象时，将加载因子(loadfactor)初始化为0.75；</li>
 <li>当添加key-value时，通过<strong>key</strong>的hash值得到在table的索引。然后判断该索引处是否有元素，如果没有元素直接添加。如果该索引处有元素，继续判断该元素的key和准备加入的key是否相等，如果相等，则直接替换<strong>value</strong>；<strong>如果不相等需要判断是树结构还是链表结构，做出相应处理。如果添加时发现容量不够，则需要扩容。</strong></li>
@@ -445,7 +454,7 @@
 <li>在Java8中，如果一条链表的元素个数到达TREEIFY_THRESHOLD(默认是8)，并且table的大小&gt;&#x3D;MIN_TREEIFY_CAPACITY(默认是64)，就会进行树化（转换红黑树），<strong>否则任然采用数组扩容机制</strong></li>
 </ul>
 <blockquote>
-<p>HashSet的底层就是HashMap，唯一区别是HashSet的value值为一个常量，所以当同一hash值中的key相同时，会添加失败；而HashMap会替换掉key的值。</p>
+<p>HashSet的底层就是HashMap，唯一区别是HashSet的value值为一个常量，所以当同一hash值中的key相同时，会添加失败；而HashMap会替换掉key对应的value。</p>
 </blockquote>
 <h2 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h2><h3 id="1-描述一下jvm加载-class文件的过程吗？（类加载过程）"><a href="#1-描述一下jvm加载-class文件的过程吗？（类加载过程）" class="headerlink" title="1. 描述一下jvm加载.class文件的过程吗？（类加载过程）"></a>1. 描述一下jvm加载.class文件的过程吗？（类加载过程）</h3><p>因为Class文件需要加载到虚拟机中才能运行和使用，所以就有了类加载的过程</p>
 <p>类在JVM中的生命周期主要有：<strong>加载、连接、初始化、使用、卸载五部分组成。</strong></p>
@@ -466,7 +475,7 @@
 </blockquote>
 <h3 id="2-什么是双亲委派模型，为什么要使用"><a href="#2-什么是双亲委派模型，为什么要使用" class="headerlink" title="2. 什么是双亲委派模型，为什么要使用"></a>2. 什么是双亲委派模型，为什么要使用</h3><p>双亲委派原则指的是类加载器在接收到类加载的一个请求时，不会立刻加载，会先委派该类的父类加载器去加载，只有当父类加载器在他的搜索范围内没有搜索到该类时，子类的加载器才会对该类进行加载。</p>
 <p>这样做可以防止内存中出现多个相同的字节码；因为如果没有双亲委派模型的话，那么用户自己再定义了一个java.lang.String的类，就无法保证类的唯一性了。</p>
-<h3 id="3-可达性算法"><a href="#3-可达性算法" class="headerlink" title="3. 可达性算法"></a>3. 可达性算法</h3><p>可达性算法的逻辑就是，在以一个GC Root为根节点的对象作为起点开始搜索，能遍历的对象其实就是可达的对象，亦就是说该对象还存在对他的引用，而不能遍历到的对象，就是不可达，也就是被GC回收的对象。</p>
+<h3 id="3-可达性算法"><a href="#3-可达性算法" class="headerlink" title="3. 可达性算法"></a>3. 可达性算法</h3><p>可达性算法的逻辑就是，在以一个GC Root为根节点的对象作为起点开始搜索，能遍历到的对象，也就是说该对象的引用还存在，就是可达的对象。而不能遍历到的对象，说明对象的引用已经不存在了，所以是不可达对象，也就是被GC回收的对象。</p>
 <p>可以作为GC Roots的对象有哪些呢？</p>
 <blockquote>
 <ul>
@@ -476,27 +485,45 @@
 </ul>
 </blockquote>
 <h3 id="4-你能说一下垃圾回收机制吗？"><a href="#4-你能说一下垃圾回收机制吗？" class="headerlink" title="4. 你能说一下垃圾回收机制吗？"></a>4. 你能说一下垃圾回收机制吗？</h3><p>首先我们要理解JVM的一个内存模型，因为JVM的内存模型是由栈、本地方法区、程序计算器、元空间、堆这5部分组成。</p>
-<p>然后因为我们创建的对象，是存在在堆的，然后当我们一段代码执行完成之后，只有存放在栈的局部变量可以自动删除，而存放在堆的对象仍然存在，这时候就需要垃圾回收机制来回收堆的内存了。</p>
+<p>然后因为我们创建的对象，是存放在堆的，然后当我们一段代码执行完成之后，只有存放在栈的局部变量可以自动删除，而存放在堆的对象仍然存在，这时候就需要垃圾回收机制来回收堆的内存了。</p>
 <p>然后垃圾回收的算法主要有三种</p>
 <ul>
-<li><p>标记清理法：就是先遍历一次堆里面的所有对象，把要删除的对象标记，然后再遍历一次，把第一次遍历的对象都删除掉，就完成了，但是有一个缺点，就是会存在内存碎片</p>
+<li><p>标记清理法：就是先遍历一次堆里面的所有对象，把要删除的对象标记，然后再遍历一次，把第一次遍历标记的对象都删除掉，就完成了，但是有一个缺点，就是会存在内存碎片</p>
 <blockquote>
 <p>什么是内存碎片？</p>
-<p>内存碎片我是这样理解的，比如我们在堆中的两个不相连的位置中分别有一个1KB大小的对象，然后我们通过标记清理法把他们删除了，那么堆中就挤出来2KB的内存空间了，如果我们这个时候新建一个2KB大小的对象，是无法存在在堆中的，因为上面清理出来的2KB空间不是连续的，所以就会产生内存碎片问题</p>
+<p>内存碎片我是这样理解的，比如我们在堆中的两个不相连的位置中分别有一个1KB大小的对象，然后我们通过标记清理法把他们删除了，那么堆中就挤出来2KB的内存空间了，如果我们这个时候新建一个2KB大小的对象，是无法存放在堆中的，因为上面清理出来的2KB空间不是连续的，所以就会产生内存碎片问题</p>
 </blockquote>
 </li>
-<li><p>标记-整理法：他跟标记清理法原理是差不多的，但是他会在删除对象后，把后面的对象往前推，这样子就解决了内存碎片的问题，但是由于每删一个对象都需要移动一次后面的对象，缺点就是代价太大了。</p>
+<li><p>标记-整理法：他跟标记清理法原理是差不多的，但是他会在删除对象后，把后面的对象往前推，这样子就解决了内存碎片的问题，但是由于每删一个对象都需要移动一次后面的对象，会导致性能会有所降低，而且这样做的代价太大了。</p>
 </li>
 </ul>
 <ul>
-<li>复制法：复制法会把内存分成两块大小一样的内存，然后再其中一块内存通过GC ROOT标记，把存活的对象复制到另一块内存中去，然后再把存放垃圾对象的内存清理掉，缺点就是需要双倍的内存，太消耗内存了。</li>
+<li>复制法：复制法会把内存分成两块大小一样的内存，首先把其中一块内存通过GC ROOT标记，再把标记过后存活的对象复制到另一块内存中去，最后把存放垃圾对象的内存清理掉，缺点就是需要双倍的内存，太消耗内存了。</li>
 </ul>
 <p>所以GC综合了上面三个算法，创建了一个分代收集的算法出来</p>
-<p>分代收集算法就是先把内存分为young跟old两块，分别代表年轻代和老年代。</p>
-<p>然后再young那一块内存中，又分为E空间、S0空间、S1空间；</p>
+<p>分代收集算法就是先把内存分为young区跟old区两块，分别代表年轻代和老年代。</p>
+<p>然后再young区那一块内存中，又分为E空间、S0空间、S1空间；</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/hotspot-heap-structure.png" alt="hotspot-heap-structure"></p>
+<p><strong>简单的概括就是：</strong></p>
+<p>大部分情况，对象都会首先在 Eden 区域分配。</p>
 <p>然后在一次GC之后，E空间和S0空间存活的对象会移到S1空间去，再回收E空间和S0空间的垃圾对象</p>
 <p>在下一次GC完成后，E空间和S1空间存活的对象会移到S0空间去，然后回收E空间和S1空间的垃圾对象</p>
-<p>每一次被标记存活的对象，都会有一个类似于age的变量，都会加一，当age&gt;一个阈值时，他会晋升到老年区去。</p>
+<p>每一次被标记存活的对象，都会有一个类似于age的变量，都会加一，当age&gt;一个阈值时，他会晋升到老年代去。需要注意的是，大对象（需要大量内存的对象，例如集合、数组）会直接存放在老年代</p>
+<blockquote>
+<p>Hotspot 遍历所有对象时，按照年龄从小到大对其所占用的大小进行累积，当累积的某个年龄大小超过了 survivor 区的 50% 时（默认值是 50%，可以通过 <code>-XX:TargetSurvivorRatio=percent</code> 来设置），<strong>取这个年龄和 MaxTenuringThreshold 中更小的一个值</strong>，作为新的晋升年龄阈值”</p>
+</blockquote>
+<p><strong>补充：垃圾回收机制中会触发的几种GC方式的区别以及详解</strong></p>
+<blockquote>
+<p>针对 HotSpot VM 的实现，它里面的 GC 其实准确分类只有两大种：</p>
+<p>部分收集 (Partial GC)：</p>
+<ul>
+<li>新生代收集（Minor GC &#x2F; Young GC）：只对新生代进行垃圾收集；</li>
+<li>老年代收集（Major GC &#x2F; Old GC）：只对老年代进行垃圾收集。需要注意的是 Major GC 在有的语境中也用于指代整堆收集；</li>
+<li>混合收集（Mixed GC）：对整个新生代和部分老年代进行垃圾收集。</li>
+</ul>
+<p>整堆收集 (Full GC)：收集整个 Java 堆和方法区。</p>
+</blockquote>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/rf-hotspot-vm-gc.png" alt="rf-hotspot-vm-gc"></p>
 <h2 id="并发编程"><a href="#并发编程" class="headerlink" title="并发编程"></a>并发编程</h2><h3 id="1-你能说一下创建线程的方法有哪些吗"><a href="#1-你能说一下创建线程的方法有哪些吗" class="headerlink" title="1. 你能说一下创建线程的方法有哪些吗"></a>1. 你能说一下创建线程的方法有哪些吗</h3><p>创建线程的方式有四种，分别是</p>
 <ol>
 <li>继承Thread类并重写run方法创建线程，虽然实现简单，但是不可以继承其他类</li>
@@ -505,7 +532,7 @@
 <li>通过线程池创建。（使用java.util.concurrent.Executor接口）</li>
 </ol>
 <h3 id="2-Runnable接口和Callable接口的区别"><a href="#2-Runnable接口和Callable接口的区别" class="headerlink" title="2. Runnable接口和Callable接口的区别"></a>2. Runnable接口和Callable接口的区别</h3><p>Runnable接口的run方法没有返回值，Callable接口的call方法有返回值，并且支持泛型</p>
-<p>Runnable接口的run方法只能抛出运行时异常，且只能在内部出了异常，而Callable接口可以抛出所有的异常，以及在内部处理。</p>
+<p>Runnable接口的run方法只能抛出运行时异常，且其他异常只能在内部处理异常，而Callable接口可以抛出所有的异常，以及在内部处理。</p>
 <h3 id="3-sleep方法和yield方法有什么区别"><a href="#3-sleep方法和yield方法有什么区别" class="headerlink" title="3. sleep方法和yield方法有什么区别"></a>3. sleep方法和yield方法有什么区别</h3><ol>
 <li>sleep方法不会考虑优先级问题，然后优先级低的线程也能拿到CPU资源，而yield方法会考虑优先级的问题，调用该方法只会给同等优先级或高优先级的线程CPU资源</li>
 <li>Sleep方法有声明InterruptedExcetion异常抛出，yield是没有异常抛出的</li>
@@ -517,7 +544,7 @@
 <p>就比如说你在主线程中调用了run()方法，那么你要等run()方法执行完之后才会继续执行下面的代码，而调用了start()方法，会开启一条线程去执行Thread对象中对应的run方法，即使run方法没有执行完，主线程中还会执行start()下面的代码。</p>
 <h3 id="6-线程有哪几种状态？（线程的生命周期）"><a href="#6-线程有哪几种状态？（线程的生命周期）" class="headerlink" title="6. 线程有哪几种状态？（线程的生命周期）"></a>6. 线程有哪几种状态？（线程的生命周期）</h3><p>Java线程在运行的生命周期中的指定时刻只可能处于下面6中不同状态的其中一个状态</p>
 <ul>
-<li>线程：初始状态，线程被创建出来但没有被调用start()方法的状态</li>
+<li><strong>NEW</strong>：线程初始状态，线程被创建出来但没有被调用start()方法的状态</li>
 <li><strong>RUNNABLE</strong>：运行状态，线程被调用了start()等待运行的状态。<code>RUNNABLE</code>状态细分一下会有一个<code>RUNNING</code>状态以及<code>READY</code>状态的</li>
 <li><strong>BLOCKED</strong>：阻塞状态，需要等待锁释放。</li>
 <li><strong>WAITING</strong>：等待状态，调用wait方法后的一个状态，表示该线程需要等待其他线程做出一些特定动作（通知或中断）</li>
@@ -734,7 +761,7 @@
       <i class="fa fa-chart-line"></i>
     </span>
       <span>Word count total: </span>
-    <span title="Word count total">22k</span>
+    <span title="Word count total">23k</span>
   </span>
 </div>
 <div class="busuanzi-count">
@@ -776,6 +803,8 @@
 
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
 <script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
@@ -784,6 +813,7 @@
 
 
 
+  <script src="/js/third-party/fancybox.js"></script>
 
 
 
