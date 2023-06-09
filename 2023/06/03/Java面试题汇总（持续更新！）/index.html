@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230602143058557.png">
 <meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230603073012982.png">
 <meta property="article:published_time" content="2023-06-03T13:21:04.000Z">
-<meta property="article:modified_time" content="2023-06-04T23:56:40.308Z">
+<meta property="article:modified_time" content="2023-06-09T04:08:11.381Z">
 <meta property="article:author" content="Minster">
 <meta property="article:tag" content="Java">
 <meta property="article:tag" content="interview">
@@ -153,7 +153,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaSE%E5%9F%BA%E7%A1%80"><span class="nav-text">JavaSE基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-JDK%E3%80%81JRE%E3%80%81JVM%E5%88%86%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">1. JDK、JRE、JVM分别是什么，有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%87%8D%E8%BD%BD%E5%92%8C%E9%87%8D%E5%86%99%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. 重载和重写的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-x3D-x3D-%E5%92%8Cequals%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">3. &#x3D;&#x3D;和equals的区别是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BB%80%E4%B9%88%E6%98%AFhashCode"><span class="nav-text">4. 什么是hashCode()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-hashCode%E4%B8%8Eequals%E6%9C%89%E4%BB%80%E4%B9%88%E5%85%B3%E7%B3%BB"><span class="nav-text">5. hashCode与equals有什么关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%87%8D%E5%86%99equals%E6%96%B9%E6%B3%95%E5%BF%85%E9%A1%BB%E9%87%8D%E5%86%99hashCode%E6%96%B9%E6%B3%95%E5%91%A2"><span class="nav-text">6. 为什么重写equals方法必须重写hashCode方法呢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%89%B9%E5%BE%81"><span class="nav-text">7. 面向对象的特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E6%8E%A5%E5%8F%A3%E5%92%8C%E6%8A%BD%E8%B1%A1%E7%B1%BB%E7%9A%84%E5%85%B1%E5%90%8C%E7%82%B9%E5%92%8C%E5%8C%BA%E5%88%AB"><span class="nav-text">8. 接口和抽象类的共同点和区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-java%E4%B8%AD%E6%93%8D%E4%BD%9C%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E7%B1%BB%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F%E4%BB%96%E4%BB%AC%E4%B9%8B%E9%97%B4%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">9. java中操作字符串的类有哪些？他们之间有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-String%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%AE%BE%E8%AE%A1%E6%88%90%E4%B8%8D%E5%8F%AF%E5%8F%98%E7%9A%84%EF%BC%9F"><span class="nav-text">10. String为什么要设计成不可变的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-%E6%B7%B1%E5%85%8B%E9%9A%86%E4%B8%8E%E6%B5%85%E5%85%8B%E9%9A%86%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%88%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B5%85%E6%8B%B7%E8%B4%9D%EF%BC%89"><span class="nav-text">11. 深克隆与浅克隆的区别（深拷贝和浅拷贝）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-Java-%E6%98%AF%E7%BC%96%E8%AF%91%E6%89%A7%E8%A1%8C%E7%9A%84%E8%AF%AD%E8%A8%80%EF%BC%8C%E8%BF%98%E6%98%AF%E8%A7%A3%E9%87%8A%E6%89%A7%E8%A1%8C%E7%9A%84%E8%AF%AD%E8%A8%80"><span class="nav-text">12. Java 是编译执行的语言，还是解释执行的语言?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaSE%E8%BF%9B%E9%98%B6-%E9%9B%86%E5%90%88"><span class="nav-text">JavaSE进阶-集合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Array-%E5%92%8C-ArrayList-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-text">1. Array 和 ArrayList 有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%B8%B8%E8%A7%81%E7%9A%84%E9%9B%86%E5%90%88%E7%B1%BB%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">2. 常见的集合类有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ArrayList%E4%B8%8ELinkedList%E7%9A%84%E5%BC%82%E5%90%8C"><span class="nav-text">3. ArrayList与LinkedList的异同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-ArrayList%E7%9A%84%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6"><span class="nav-text">4. ArrayList的扩容机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-HashMap%E7%9A%84%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">5. HashMap的底层数据结构是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-HashMap%E7%9A%84%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6"><span class="nav-text">6. HashMap的扩容机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM"><span class="nav-text">JVM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%8F%8F%E8%BF%B0%E4%B8%80%E4%B8%8Bjvm%E5%8A%A0%E8%BD%BD-class%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%87%E7%A8%8B%E5%90%97%EF%BC%9F%EF%BC%88%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B%EF%BC%89"><span class="nav-text">1. 描述一下jvm加载.class文件的过程吗？（类加载过程）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8"><span class="nav-text">2. 什么是双亲委派模型，为什么要使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%AE%97%E6%B3%95"><span class="nav-text">3. 可达性算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BD%A0%E8%83%BD%E8%AF%B4%E4%B8%80%E4%B8%8B%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E5%90%97%EF%BC%9F"><span class="nav-text">4. 你能说一下垃圾回收机制吗？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B"><span class="nav-text">并发编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BD%A0%E8%83%BD%E8%AF%B4%E4%B8%80%E4%B8%8B%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%96%B9%E6%B3%95%E6%9C%89%E5%93%AA%E4%BA%9B%E5%90%97"><span class="nav-text">1. 你能说一下创建线程的方法有哪些吗</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Runnable%E6%8E%A5%E5%8F%A3%E5%92%8CCallable%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. Runnable接口和Callable接口的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-sleep%E6%96%B9%E6%B3%95%E5%92%8Cyield%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">3. sleep方法和yield方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%BA%BF%E7%A8%8B%E4%B8%ADsleep%E5%92%8Cwait%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">4. 线程中sleep和wait方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BA%BF%E7%A8%8B%E7%9A%84run%E6%96%B9%E6%B3%95%E5%92%8Cstart%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">5. 线程的run方法和start方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BA%BF%E7%A8%8B%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E7%8A%B6%E6%80%81%EF%BC%9F%EF%BC%88%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%EF%BC%89"><span class="nav-text">6. 线程有哪几种状态？（线程的生命周期）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%BA%BF%E7%A8%8B%E7%9B%B8%E5%85%B3%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95%E9%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">7. 线程相关的基本方法都有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-wait-%E5%92%8Csleep-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">8. wait() 和sleep()的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-Java%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">9. Java中常用的线程池有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8F%82%E6%95%B0%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%88%E5%88%9B%E5%BB%BA%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%89"><span class="nav-text">10. Java线程池的核心参数有哪些（创建的时候）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">11. 线程池的执行流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%BD%91%E7%BB%9C%E7%9A%847%E5%B1%82%E6%9E%B6%E6%9E%84"><span class="nav-text">1. 网络的7层架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-TCP%E4%B8%8EUDP%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. TCP与UDP的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-TCP%E4%B8%8EUDP%E7%9A%84%E8%BF%90%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">3. TCP与UDP的运用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-TCP%E7%9A%84%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-text">4. TCP的三次握手和四次挥手</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-text">算法</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaSE%E5%9F%BA%E7%A1%80"><span class="nav-text">JavaSE基础</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-JDK%E3%80%81JRE%E3%80%81JVM%E5%88%86%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%8C%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">1. JDK、JRE、JVM分别是什么，有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%87%8D%E8%BD%BD%E5%92%8C%E9%87%8D%E5%86%99%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. 重载和重写的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-x3D-x3D-%E5%92%8Cequals%E7%9A%84%E5%8C%BA%E5%88%AB%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">3. &#x3D;&#x3D;和equals的区别是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BB%80%E4%B9%88%E6%98%AFhashCode"><span class="nav-text">4. 什么是hashCode()</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-hashCode%E4%B8%8Eequals%E6%9C%89%E4%BB%80%E4%B9%88%E5%85%B3%E7%B3%BB"><span class="nav-text">5. hashCode与equals有什么关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%87%8D%E5%86%99equals%E6%96%B9%E6%B3%95%E5%BF%85%E9%A1%BB%E9%87%8D%E5%86%99hashCode%E6%96%B9%E6%B3%95%E5%91%A2"><span class="nav-text">6. 为什么重写equals方法必须重写hashCode方法呢</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%89%B9%E5%BE%81"><span class="nav-text">7. 面向对象的特征</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-%E6%8E%A5%E5%8F%A3%E5%92%8C%E6%8A%BD%E8%B1%A1%E7%B1%BB%E7%9A%84%E5%85%B1%E5%90%8C%E7%82%B9%E5%92%8C%E5%8C%BA%E5%88%AB"><span class="nav-text">8. 接口和抽象类的共同点和区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-java%E4%B8%AD%E6%93%8D%E4%BD%9C%E5%AD%97%E7%AC%A6%E4%B8%B2%E7%9A%84%E7%B1%BB%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%9F%E4%BB%96%E4%BB%AC%E4%B9%8B%E9%97%B4%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">9. java中操作字符串的类有哪些？他们之间有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-String%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%AE%BE%E8%AE%A1%E6%88%90%E4%B8%8D%E5%8F%AF%E5%8F%98%E7%9A%84%EF%BC%9F"><span class="nav-text">10. String为什么要设计成不可变的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-%E6%B7%B1%E5%85%8B%E9%9A%86%E4%B8%8E%E6%B5%85%E5%85%8B%E9%9A%86%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%88%E6%B7%B1%E6%8B%B7%E8%B4%9D%E5%92%8C%E6%B5%85%E6%8B%B7%E8%B4%9D%EF%BC%89"><span class="nav-text">11. 深克隆与浅克隆的区别（深拷贝和浅拷贝）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12-Java-%E6%98%AF%E7%BC%96%E8%AF%91%E6%89%A7%E8%A1%8C%E7%9A%84%E8%AF%AD%E8%A8%80%EF%BC%8C%E8%BF%98%E6%98%AF%E8%A7%A3%E9%87%8A%E6%89%A7%E8%A1%8C%E7%9A%84%E8%AF%AD%E8%A8%80"><span class="nav-text">12. Java 是编译执行的语言，还是解释执行的语言?</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaSE%E8%BF%9B%E9%98%B6-%E9%9B%86%E5%90%88"><span class="nav-text">JavaSE进阶-集合</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Array-%E5%92%8C-ArrayList-%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-text">1. Array 和 ArrayList 有什么区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%B8%B8%E8%A7%81%E7%9A%84%E9%9B%86%E5%90%88%E7%B1%BB%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">2. 常见的集合类有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ArrayList%E4%B8%8ELinkedList%E7%9A%84%E5%BC%82%E5%90%8C"><span class="nav-text">3. ArrayList与LinkedList的异同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-ArrayList%E7%9A%84%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6"><span class="nav-text">4. ArrayList的扩容机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-HashMap%E7%9A%84%E5%BA%95%E5%B1%82%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-text">5. HashMap的底层数据结构是什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-HashMap%E7%9A%84%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6"><span class="nav-text">6. HashMap的扩容机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JVM"><span class="nav-text">JVM</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%8F%8F%E8%BF%B0%E4%B8%80%E4%B8%8Bjvm%E5%8A%A0%E8%BD%BD-class%E6%96%87%E4%BB%B6%E7%9A%84%E8%BF%87%E7%A8%8B%E5%90%97%EF%BC%9F%EF%BC%88%E7%B1%BB%E5%8A%A0%E8%BD%BD%E8%BF%87%E7%A8%8B%EF%BC%89"><span class="nav-text">1. 描述一下jvm加载.class文件的过程吗？（类加载过程）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%80%E4%B9%88%E6%98%AF%E5%8F%8C%E4%BA%B2%E5%A7%94%E6%B4%BE%E6%A8%A1%E5%9E%8B%EF%BC%8C%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8"><span class="nav-text">2. 什么是双亲委派模型，为什么要使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%8F%AF%E8%BE%BE%E6%80%A7%E7%AE%97%E6%B3%95"><span class="nav-text">3. 可达性算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BD%A0%E8%83%BD%E8%AF%B4%E4%B8%80%E4%B8%8B%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6%E5%90%97%EF%BC%9F"><span class="nav-text">4. 你能说一下垃圾回收机制吗？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E7%BC%96%E7%A8%8B"><span class="nav-text">并发编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BD%A0%E8%83%BD%E8%AF%B4%E4%B8%80%E4%B8%8B%E5%88%9B%E5%BB%BA%E7%BA%BF%E7%A8%8B%E7%9A%84%E6%96%B9%E6%B3%95%E6%9C%89%E5%93%AA%E4%BA%9B%E5%90%97"><span class="nav-text">1. 你能说一下创建线程的方法有哪些吗</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-Runnable%E6%8E%A5%E5%8F%A3%E5%92%8CCallable%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. Runnable接口和Callable接口的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-sleep%E6%96%B9%E6%B3%95%E5%92%8Cyield%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">3. sleep方法和yield方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%BA%BF%E7%A8%8B%E4%B8%ADsleep%E5%92%8Cwait%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">4. 线程中sleep和wait方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E7%BA%BF%E7%A8%8B%E7%9A%84run%E6%96%B9%E6%B3%95%E5%92%8Cstart%E6%96%B9%E6%B3%95%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">5. 线程的run方法和start方法有什么区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E7%BA%BF%E7%A8%8B%E6%9C%89%E5%93%AA%E5%87%A0%E7%A7%8D%E7%8A%B6%E6%80%81%EF%BC%9F%EF%BC%88%E7%BA%BF%E7%A8%8B%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%EF%BC%89"><span class="nav-text">6. 线程有哪几种状态？（线程的生命周期）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E7%BA%BF%E7%A8%8B%E7%9B%B8%E5%85%B3%E7%9A%84%E5%9F%BA%E6%9C%AC%E6%96%B9%E6%B3%95%E9%83%BD%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">7. 线程相关的基本方法都有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-wait-%E5%92%8Csleep-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">8. wait() 和sleep()的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-Java%E4%B8%AD%E5%B8%B8%E7%94%A8%E7%9A%84%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%9C%89%E5%93%AA%E4%BA%9B"><span class="nav-text">9. Java中常用的线程池有哪些</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#10-Java%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8F%82%E6%95%B0%E6%9C%89%E5%93%AA%E4%BA%9B%EF%BC%88%E5%88%9B%E5%BB%BA%E7%9A%84%E6%97%B6%E5%80%99%EF%BC%89"><span class="nav-text">10. Java线程池的核心参数有哪些（创建的时候）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#11-%E7%BA%BF%E7%A8%8B%E6%B1%A0%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">11. 线程池的执行流程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B"><span class="nav-text">网络编程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%BD%91%E7%BB%9C%E7%9A%847%E5%B1%82%E6%9E%B6%E6%9E%84"><span class="nav-text">1. 网络的7层架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-TCP%E4%B8%8EUDP%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">2. TCP与UDP的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-TCP%E4%B8%8EUDP%E7%9A%84%E8%BF%90%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">3. TCP与UDP的运用场景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-TCP%E7%9A%84%E4%B8%89%E6%AC%A1%E6%8F%A1%E6%89%8B%E5%92%8C%E5%9B%9B%E6%AC%A1%E6%8C%A5%E6%89%8B"><span class="nav-text">4. TCP的三次握手和四次挥手</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-text">算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaWeb"><span class="nav-text">JavaWeb</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Get%E5%92%8CPost%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-text">1. Get和Post的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-HTTP%E4%B8%AD%E9%87%8D%E5%AE%9A%E5%90%91%E5%92%8C%E8%AF%B7%E6%B1%82%E8%BD%AC%E5%8F%91%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-text">2. HTTP中重定向和请求转发的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-Jsp%E5%92%8CServlet%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">3. Jsp和Servlet的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-cookie%E5%92%8Csession%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F"><span class="nav-text">4. cookie和session的区别？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E4%BB%80%E4%B9%88%E6%98%AFAjax%EF%BC%8CAjax%E6%9C%89%E4%BB%80%E4%B9%88%E4%BC%98%E7%82%B9"><span class="nav-text">5. 什么是Ajax，Ajax有什么优点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-JavaWeb%E7%9A%84%E4%B8%89%E5%A4%A7%E7%BB%84%E4%BB%B6"><span class="nav-text">5. JavaWeb的三大组件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spring"><span class="nav-text">Spring</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-IOC%E3%80%81DI%E3%80%81AOP"><span class="nav-text">1. IOC、DI、AOP</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL"><span class="nav-text">MySQL</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#MyISAM%E5%92%8CInnoDB%E6%9C%89%E4%BB%80%E4%B9%88%E5%8C%BA%E5%88%AB"><span class="nav-text">MyISAM和InnoDB有什么区别?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BD%A0%E7%9F%A5%E9%81%93ACID%E5%90%97%EF%BC%88%E4%BA%8B%E5%8A%A1%E7%9A%84%E7%89%B9%E6%80%A7%EF%BC%89"><span class="nav-text">你知道ACID吗（事务的特性）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-text">隔离级别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%8F%E8%AF%BB%E3%80%81%E5%B9%BB%E8%AF%BB%E3%80%81%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB"><span class="nav-text">脏读、幻读、不可重复读</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -254,7 +254,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-06-05 07:56:40" itemprop="dateModified" datetime="2023-06-05T07:56:40+08:00">2023-06-05</time>
+      <time title="Modified: 2023-06-09 12:08:11" itemprop="dateModified" datetime="2023-06-09T12:08:11+08:00">2023-06-09</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -293,7 +293,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">Word count in article: </span>
-      <span>14k</span>
+      <span>20k</span>
     </span>
 </div>
 
@@ -618,11 +618,11 @@
 </ol>
 <h3 id="9-Java中常用的线程池有哪些"><a href="#9-Java中常用的线程池有哪些" class="headerlink" title="9. Java中常用的线程池有哪些"></a>9. Java中常用的线程池有哪些</h3><p>常用的线程池主要有6种，分别是：</p>
 <ol>
-<li>newFixedThreadPool：创建一个定长线程池（核心线程数与最大线程数都为指定参数的线程池），可以控制线程最大并发数，超出的线程会在队列中等待。</li>
-<li>newCacheThreadPool：创建一个可缓存线程池（核心线程数为0，最大线程数为Integer.MAX_VALUE的线程池），如果线程池的长度超过处理需要，可以灵活的回收空闲线程，若无可回收，则创建新线程。这种方式可能会创建大量的线程，造成OOM。</li>
-<li>newScheduledThreadPool：创建一个定长的线程池（核心线程数与最大线程数都为指定参数的线程池），支持定时及周期性任务执行。</li>
-<li>newSingleThreadExecutor：创建一个单线程化的线程池（核心线程数与最大线程数都为1的线程池），它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序（FIFO，LIFO，优先级）执行</li>
-<li>newSingleScheduledThreadPool：创建一个单线程化的线程池（核心线程数为1、最大线程数为Integer.MAX_VALUE的线程池），它可安排在给定延迟后运行命令或者定期执行</li>
+<li><strong>newFixedThreadPool：</strong>创建一个定长线程池（核心线程数与最大线程数都为指定参数的线程池），可以控制线程最大并发数，超出的线程会在队列中等待。</li>
+<li><strong>newCacheThreadPool：</strong>创建一个可缓存线程池（核心线程数为0，最大线程数为Integer.MAX_VALUE的线程池），如果线程池的长度超过处理需要，可以灵活的回收空闲线程，若无可回收，则创建新线程。这种方式可能会创建大量的线程，造成OOM。</li>
+<li><strong>newScheduledThreadPool：</strong>创建一个定长的线程池（核心线程数与最大线程数都为指定参数的线程池），支持定时及周期性任务执行。</li>
+<li><strong>newSingleThreadExecutor：</strong>创建一个单线程化的线程池（核心线程数与最大线程数都为1的线程池），它只会用唯一的工作线程来执行任务，保证所有任务按照指定顺序（FIFO，LIFO，优先级）执行</li>
+<li><strong>newSingleScheduledThreadPool：</strong>创建一个单线程化的线程池（核心线程数为1、最大线程数为Integer.MAX_VALUE的线程池），它可安排在给定延迟后运行命令或者定期执行</li>
 <li><strong>newWorkStealingPool</strong>：创建一个带并<strong>行级别的线程池</strong>，并行级别决定了同<strong>一时刻</strong>最多有<strong>多</strong>少个；线程在执行<strong>，如不传并行级别参数，将默认为当前系统的</strong>CPU<strong>核心数</strong>*<strong>2</strong>。该线程池是在JDK1.8才出现的，底层是基于一个工作窃取算法实现的，该算法的核心思想就是让空闲的线程从其他线程的任务队列中“窃取”任务来执行。</li>
 </ol>
 <h3 id="10-Java线程池的核心参数有哪些（创建的时候）"><a href="#10-Java线程池的核心参数有哪些（创建的时候）" class="headerlink" title="10. Java线程池的核心参数有哪些（创建的时候）"></a>10. Java线程池的核心参数有哪些（创建的时候）</h3><blockquote>
@@ -714,6 +714,177 @@
 <li><a target="_blank" rel="noopener" href="https://snailclimb.gitee.io/javaguide/#/./docs/cs-basics/algorithms/10-classical-sorting-algorithms">十大经典排序算法</a></li>
 </ul>
 </blockquote>
+<h2 id="JavaWeb"><a href="#JavaWeb" class="headerlink" title="JavaWeb"></a>JavaWeb</h2><h3 id="1-Get和Post的区别？"><a href="#1-Get和Post的区别？" class="headerlink" title="1. Get和Post的区别？"></a>1. Get和Post的区别？</h3><p>Get和Post都是前后端交互的请求方式，它们之前的区别有以下四点</p>
+<ol>
+<li>Get是不安全的，因为在传输过程，数据被放在请求的URL中；而Post的请求数据是放在请求体中的，也就是对用户来说都是不可见的，所以Post是安全的</li>
+<li>Get传送的数据量较小，一般传输数据大小在1k-18k之间（根据浏览器不同，限制不一样，但相差不大，主要是因为受URL长度限制）而Post传输的数据量较大，一般被默认为不受限制</li>
+<li>Get限制Form表单的数据集的值必须为ASCII字符；而Post支持整个ISO10646字符集</li>
+<li>Get请求效率比Post方法好。Get是form表单提交的默认方法。</li>
+</ol>
+<h3 id="2-HTTP中重定向和请求转发的区别？"><a href="#2-HTTP中重定向和请求转发的区别？" class="headerlink" title="2. HTTP中重定向和请求转发的区别？"></a>2. HTTP中重定向和请求转发的区别？</h3><p>它们之间的区别主要有以下四点：</p>
+<ol>
+<li>重定向会发送两次请求，请求转发发送一次请求</li>
+<li>重定向地址栏会变，请求转发地址栏不变</li>
+<li>重定向是浏览器跳转的，请求转发是服务器跳转</li>
+<li>重定向可以跳转到任意网址，请求转发只能跳转当前项目的</li>
+</ol>
+<blockquote>
+<p>两者的实现也不同</p>
+<ul>
+<li><p>请求转发：用request的getRequestDispatcher()方法得到RequestDispatcher对象，在调用他的forward()方法实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request.getRequestDispatcher(<span class="string">&quot;other.jsp&quot;</span>).forword(request,response);</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>重定向：调用response的sendRedirect()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">response.sendRedirect(<span class="string">&quot;other.jsp&quot;</span>)</span><br></pre></td></tr></table></figure></li>
+</ul>
+</blockquote>
+<h3 id="3-Jsp和Servlet的区别"><a href="#3-Jsp和Servlet的区别" class="headerlink" title="3. Jsp和Servlet的区别"></a>3. Jsp和Servlet的区别</h3><p><strong>相同点</strong></p>
+<ul>
+<li>jsp经编译后就变成了servlet，jsp本质就是servlet，jvm只能识别java的类，不能识别jsp代码，web容器将jsp的代码编译成jvm能够识别的java类。</li>
+<li>其实就是当你通过 http 请求一个 JSP 页面时，首先 Tomcat 会将JSP翻译并编译成为 Servlet，然后执行 Servlet的生命周期方法处理请求与响应。</li>
+</ul>
+<p><strong>不同点</strong></p>
+<ul>
+<li><p>JSP侧重视图展现数据，Sevlet主要用于控制逻辑获取数据。</p>
+</li>
+<li><p>Servlet中没有内置对象 。</p>
+</li>
+<li><p>JSP中的内置对象都是必须通过HttpServletRequest对象，HttpServletResponse对象以及HttpServlet对象得到。</p>
+</li>
+</ul>
+<h3 id="4-cookie和session的区别？"><a href="#4-cookie和session的区别？" class="headerlink" title="4. cookie和session的区别？"></a>4. cookie和session的区别？</h3><ol>
+<li><p>存储位置不同</p>
+<p>cookie的数据信息存放在客户端浏览器上。</p>
+<p>session的数据信息存放在服务器上。</p>
+</li>
+<li><p>存储容量不同</p>
+<p>单个cookie保存的数据&lt;&#x3D;4KB，一个站点一般保存20~50个Cookie（不同浏览器不一样，Sarafi和Chrome对每个域的Cookie数目没有严格限制）</p>
+<p>对于session来说并没有数据上限，但出于对服务器端性能考虑，session内不要存放过多的东西，并且设置session删除机制（或者采用缓存技术代替session）</p>
+</li>
+<li><p>存储方式不同</p>
+<p>cookie只能保存ASCII字符串，并需要通过编码方式存储为Unicode字符或者二进制数据。</p>
+<p>session中能够存储任何类型的数据，包括且不限于string，integer，list，map等。</p>
+</li>
+<li><p>隐私策略不同</p>
+<p>cookie对客户端是可见的，容易被分析本地cookie并且进行cookie欺骗，所以不安全。</p>
+<p>session存储在服务器上，不存在敏感信息泄露的风险。</p>
+</li>
+<li><p>有效期上不同</p>
+<p>开发者可以通过设置cookie的属性，达到是cookie长期有效的效果。</p>
+<p>session依赖于名为<code>JSESSIONID</code>的cookie，而且设置了过期时间默认为-1，只需要关闭窗口该session就会失效，因而session不能达到长期有效的效果</p>
+</li>
+<li><p>服务器压力不同</p>
+<p>cookie存储在客户端，不占用服务器资源。对于并发用户十分多的网站，cookie是很好的选择。</p>
+<p>session是保管在服务端的，每个用户都会产生一个session。加入并发访问的用户十分多，会产生十分多的session，耗费大量的内存。</p>
+</li>
+</ol>
+<h3 id="5-什么是Ajax，Ajax有什么优点"><a href="#5-什么是Ajax，Ajax有什么优点" class="headerlink" title="5. 什么是Ajax，Ajax有什么优点"></a>5. 什么是Ajax，Ajax有什么优点</h3><p>Ajax全程为”Asynchronous JavaScript And XML”（异步 JavaScript 和 XML），是指一种创建交互方式、快速动态网页应用的网页开发技术，无需重新加载整个网页的情况下，能够更快更新部分网页的技术。</p>
+<p>优点：</p>
+<ul>
+<li>通过异步模式，可以提升用户的体验</li>
+<li>优化了浏览器和服务器之前的传输，减少了不必要的数据往返，减少了带宽占用。</li>
+</ul>
+<h3 id="5-JavaWeb的三大组件"><a href="#5-JavaWeb的三大组件" class="headerlink" title="5. JavaWeb的三大组件"></a>5. JavaWeb的三大组件</h3><ul>
+<li>Servlet：用于处理请求与响应</li>
+<li>Filter：用于拦截请求与响应</li>
+<li>Lisenter：用于监听三大域对象request、session、servletContext的创建与销毁，和域中数据发生变化的时候会调用监听器实现逻辑控制。</li>
+</ul>
+<h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><h3 id="1-IOC、DI、AOP"><a href="#1-IOC、DI、AOP" class="headerlink" title="1. IOC、DI、AOP"></a>1. IOC、DI、AOP</h3><p>IOC和AOP是Spring的两大核心。</p>
+<ul>
+<li><p><strong>IOC(Inversion of Control)：</strong>IOC其实是一种设计思想，是指我们在创建对象的时候，将对象的控制权交给Spring容器来管理。在这之前，我们创建对象的主动权和时机都是由自己去决定的，而现在这种全力转移到Spring容器中，并由容器根据配置文件或者注解去创建实例和管理各个实例之间的依赖关系了，这样做可以在一定程度上降低对象与对象之间的耦合性，同时也提高了功能的复用。</p>
+<blockquote>
+<p>比如：在没有IOC之前，我们业务层bookService要调用dao层的实现方法bookDaoImplA时，我们只需要new一个bookDaoImplA的实例对象即可。但是在某一天我们收到一个需求，要将bookDaoImpA的实现换成bookDaoImplB了，我们就要去修改bookService中的对应的实现，牵一发而动全身，每次修改都有可能要修改大量的代码，这样的设计耦合性太高了，所以才有IOC的出现。</p>
+</blockquote>
+</li>
+<li><p><strong>DI：</strong>DI其实就是IOC的一种实现方式，即应用程序在运行时依赖IOC容器来动态的注入外部资源</p>
+</li>
+<li><p><strong>AOP(Aspect Oriented Programming)：</strong>AOP指的是面向切面编程，在开发中，会有一些与业务无关但每个业务的需要的逻辑方法，例如日志记录、事务控制、异常处理等。在AOP中，我们可以将这个逻辑代码分别抽取并封装成不同的模块，这些模块在AOP中也被称为“切面”。这样做可以减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。</p>
+<p>Spring 的AOP是基于动态代理和cglib代理模式的，如果要代理的对象是一个接口，我们就可以通过JDK动态代理来给该对象创建一个代理对象。而如果我们要代理的对象是一个类，我们就要使用cglib代理来创建代理对象了。</p>
+</li>
+</ul>
+<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><h3 id="MyISAM和InnoDB有什么区别"><a href="#MyISAM和InnoDB有什么区别" class="headerlink" title="MyISAM和InnoDB有什么区别?"></a>MyISAM和InnoDB有什么区别?</h3><p>在MySQL5.5之前，MyISAM是MySQl的默认存储引擎。虽然MyISAM的性能还行，各种特性也还不错(比如全文所以、压缩、空间函数等)。但是，由于MyISAM不支持事务以及行级锁，并且最大的缺陷就是崩溃后无法安全恢复。InnoDB正好解决了这些问题。</p>
+<p>所以MySQL5.5之后，InnoDB是MySQL的默认存储引擎</p>
+<p>两者的区别主要有七点</p>
+<ol>
+<li><p>是否支持行级锁</p>
+<p>MyISAM只支持表级锁，而InnoDB支持表级锁以及行级锁，默认是行级锁。</p>
+<p>也就说，MyISAM一锁就会锁住了整张表，而InnoDB可以根据具体的场景选择锁整张表还是锁住一行，这也是InnoDB在并发写时厉害之处。</p>
+</li>
+<li><p>是否支持事务</p>
+<p>MyISAM不提供事务支持。</p>
+<p>InnoDB提供事务支持，实现了SQL标准定义的四个隔离级别，具有提交(commit)和回滚(rollback)事务的能力。InnoDB默认使用的是<code>REPEATABLE-READ</code>（可重复读）的隔离级别，而InnoDB基于MVCC(多版本并发控制)控制和Next-Key Lock解决了幻读问题</p>
+<blockquote>
+<p>Next-Key Lock</p>
+<p>Next-Key Lock是行级锁的基本单位，它是记录锁(Record Lock)和间隙锁(Gap Lock)的结合体。</p>
+</blockquote>
+</li>
+<li><p>是否支持外键</p>
+<p>MyISAM不支持外键，而InnoDB支持外键</p>
+<p>虽然外键对于维护数据的一致性非常有帮助，但是对性能有一定的损耗的。</p>
+<p>一般我们也是不建议在数据库层面使用外键的，应用层面可以解决。不过，这样会对数据的一致性造成威胁。具体要不要使用外键还是要根据你的项目来决定。</p>
+</li>
+<li><p>是否支持数据库异常崩溃后的安全恢复</p>
+<p>MyISAM不支持，而InnoDB支持。</p>
+<p>使用InnoDB的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态。而这个恢复的过程是依赖于<code>redo log</code>。</p>
+</li>
+<li><p>是否支持MVCC</p>
+<p>MyISAM不支持，而InnoDB支持。</p>
+<p>MVCC 可以看作是行级锁的一个升级，可以有效减少加锁操作，提高性能。</p>
+</li>
+<li><p>索引的实现不一样</p>
+<p>虽然MyISAM引擎和InnoDB引擎都是使用B+Tree作为索引结构，但是两者的实现方式不太一样。</p>
+<p>InnoDB引擎中，其数据文件本身就是索引文件。相比MyISAM，索引文件和数据文件是分离的。</p>
+</li>
+<li><p>性能有差别。</p>
+<p>InnoDB的性能比MyISAM更强大，不管是在读写混合模式下还是只读模式下，随着CPU核数的增加，InnoDB的读写能力呈线性增长。MyISAM因为读写不能并发，它的处理能力跟核数没有关系。</p>
+</li>
+</ol>
+<p><strong>总结：</strong></p>
+<ul>
+<li>InnoDB 支持行级别的锁粒度，MyISAM 不支持，只支持表级别的锁粒度。</li>
+<li>MyISAM 不提供事务支持。InnoDB 提供事务支持，实现了 SQL 标准定义了四个隔离级别。</li>
+<li>MyISAM 不支持外键，而 InnoDB 支持。</li>
+<li>MyISAM 不支持 MVCC，而 InnoDB 支持。</li>
+<li>虽然 MyISAM 引擎和 InnoDB 引擎都是使用 B+Tree 作为索引结构，但是两者的实现方式不太一样。</li>
+<li>MyISAM 不支持数据库异常崩溃后的安全恢复，而 InnoDB 支持。</li>
+<li>InnoDB 的性能比 MyISAM 更强大。</li>
+</ul>
+<h3 id="你知道ACID吗（事务的特性）"><a href="#你知道ACID吗（事务的特性）" class="headerlink" title="你知道ACID吗（事务的特性）"></a>你知道ACID吗（事务的特性）</h3><p>ACID是事务的四个特性，分别是：原子性、一致性、隔离性、持久性。</p>
+<ul>
+<li>**原子性(Atomicity)**：事务值最小的执行单位，不允许分割。事务的原子性确保动作要么全部被执行，要么全部不起作用。</li>
+<li><strong>一致性(Consistency)：</strong>事务实行前后，数据要保持一致。比如说在转账业务中，无论事务成功与否，转账者和收款人的总额是不变的。</li>
+<li>**隔离性 (Isolation)**：在并发访问数据库时，会产生多个事务，在这个过程中，一个用户的事务不被其他事务所干扰，各并发事务之间的数据库时独立的。</li>
+<li><strong>持久性(Durability)：</strong>一个事务被提交之后，它对数据库中数据的改变是持久的，即使数据库产生故障也不应该对其有任何影响</li>
+</ul>
+<blockquote>
+<p><strong>只有保证了事务的持久性、原子性、隔离性之后，一致性才能得到保障。也就是说 A、I、D 是手段，C 是目的！</strong></p>
+</blockquote>
+<h3 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h3><ol>
+<li><strong>读未提交（read Uncommited）：</strong>最低的隔离界别，允许读取尚未提交的数据变更，可能会导致脏读、幻读、或不可重复度</li>
+<li><strong>读已提交（READ-COMMITTED）：</strong>大多数数据库的默认隔离级别，该隔离级别允许读取并发事务已经提交的数据，可以阻止脏读，但是幻读或不可重复度仍有可能发生。</li>
+<li><strong>可重复读（REPEATABLE-READ）：</strong>指的是对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复度，但幻读仍有可能发生，因为幻读是发生在DQL中的。这个隔离级别是MySQL默认的隔离级别，而MySQL在使用InnoDB数据库引擎后利用了MVCC（多版本并发控制机制）以及Next-Key lock 锁解决了幻读的问题。</li>
+<li><strong>可串行化（SERIALIZABLE）：</strong>最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰。虽然该隔离级别可以防止脏读、不可重复读以及幻读，但是需要付出的代价太高了，因为他是在每个读的数据行上加锁的，可能会导致大量的超时现象和锁竞争，一般为了提升程序的吞吐量不会采用这个；</li>
+</ol>
+<h3 id="脏读、幻读、不可重复读"><a href="#脏读、幻读、不可重复读" class="headerlink" title="脏读、幻读、不可重复读"></a>脏读、幻读、不可重复读</h3><ul>
+<li><p><strong>脏读（Dirty read）</strong></p>
+<p>当一个事务读取数据并且对数据进行了修改时，这个修改对其他事务来说是可见的，即使当前事务还没有提交。这时，如果另外一个事务读取了这个还未提交的数据，并且第一个事务突然回滚，导致数据并没有被提交到数据库，那么第二个事务读取到的就是一个脏数据了，这也是脏读的由来</p>
+<blockquote>
+<p>例如：事务1读取某表中的数据A &#x3D; 20， 然后事务1修改A &#x3D;A-1，也就是19。在这个时候，事务2也读取这张表的数据A ，并且读取到的数据是A &#x3D; 19，如果此时事务1突然回滚了，也就是A修改的数据没有被提交到数据库，即A &#x3D; 20，但是事务2读取到的还是19，这就是脏读。</p>
+</blockquote>
+</li>
+<li><p><strong>不可重复读（Unrepeatable read）</strong></p>
+<p>在一个事务内读取同一个数据时，如果在这个事务还没结束的时候，有另外一个事务也访问了这个数据，那么在第一个事务的两次读取这个数据之间，由于第二个事务对数据的修改，会导致第一个事务两次读取到的数据可能不太一样。这就发生了一个事务内连续读取到的数据不一样的情况，因此称为不可重复读。</p>
+<blockquote>
+<p>例如：事务1读取了某表的数据A &#x3D; 20，在事务1还没结束的时候，事务2也读取了这个数据A &#x3D; 20，同时对A进行了修改 A &#x3D; 19，并且提交了事务2。而这时如果事务1再次读取数据A，读取到的数据会为A &#x3D; 19，也就是说两次读取的数据都是不一样的。</p>
+</blockquote>
+</li>
+<li><p><strong>幻读（Phantom read）</strong></p>
+<p>幻读其实可以看作不可重复读的一种。它发生在一个事务读取了几行数据，接着另外一个并发事务插入了一些数据时。在随后的查询中，第一个失误就会发现多了一些原本不存在的记录，就好像发生了幻觉一样，所以称之为幻读。</p>
+<blockquote>
+<p>例如：事务2想要统计某张表的一个数据，就比如说一开始的count(*) &#x3D; 20嘛，然后这个时候事务1在这张表中插入了新的数据，那么这个时候事务2再次统计的count(*)&#x3D;21了，也就是说他啥也不知道，就读到多一行数据了</p>
+</blockquote>
+</li>
+</ul>
 
     </div>
 
@@ -806,7 +977,7 @@
       <i class="fa fa-chart-line"></i>
     </span>
       <span>Word count total: </span>
-    <span title="Word count total">24k</span>
+    <span title="Word count total">29k</span>
   </span>
 </div>
 <div class="busuanzi-count">
