@@ -166,6 +166,83 @@
 <li>可以说它是编译型的。因为所有的Java代码都是要编译的，Java不经过编译就什么用都没有。同时围绕JVM的效率问题，会涉及一些如JIT、AOT等优化技术，例如JIT技术，会将热点代码编异成机器码。而AOT技术，是在运行前，通过工具直接将字节码转换为机器码</li>
 <li>可以说它是解释型的。因为Java代码编译后不能直接运行，它是解释运行在JVM上的，所以它是解释运行的。</li>
 </ul>
+<h3 id="13-jdk1-8的新特性"><a href="#13-jdk1-8的新特性" class="headerlink" title="13. jdk1.8的新特性"></a>13. jdk1.8的新特性</h3><ol>
+<li><p>Lambda表达式</p>
+<p>Lambda 允许把函数作为一个方法的参数</p>
+</li>
+<li><p>方法引用</p>
+<p>方法引用允许直接引用已有Java类或对象的方法或构造方法</p>
+</li>
+<li><p>函数式接口</p>
+<p>只有一个抽象方法的接口就叫函数式接口，函数式接口可以被隐式转换为Lambda表达式。通常函数式接口上回添加一个<code>@FunctionalInterface</code>注解</p>
+</li>
+<li><p>接口允许定义默认方法和静态方法</p>
+<p>从JDK8开始，允许接口存在一个或多个默认非抽象方法和静态方法</p>
+</li>
+<li><p>Stream API（Stream流）</p>
+<p>Stream API把真正的函数式编程风格引入到Java中。</p>
+<p>这种风格将要处理的元素集合看作一种流，流在管道中传输，并且可以在管道的节点上进行处理，比如筛选、排序、聚合等</p>
+</li>
+<li><p>日期&#x2F;时间类改进</p>
+<p>在JDK8之前，我们JDK提供的日期处理类非常不方便，我们在处理的时候通常是使用第三方工具包，比如<code>commons-lang</code> 包等。</p>
+<p>在JDK8之后，因为LocalDateTime的出现，日期时间的创建、比较、调整、格式化、时间间隔等操作都比以往简单很多。</p>
+</li>
+<li><p>Optional 类</p>
+<p>Optional 类是一个可以为null的容器对象。如果值存在则 <code>isPresent()</code> 方法会返回true，调用 <code>get()</code> 方法会返回该对象</p>
+</li>
+<li><p>Java8 Base64实现</p>
+<p>Java8内置了 Base64 编码的编码器和解码器</p>
+</li>
+</ol>
+<h3 id="14-Final有什么作用"><a href="#14-Final有什么作用" class="headerlink" title="14. Final有什么作用"></a>14. Final有什么作用</h3><p>Final是一个关键字修饰符，被Final修饰的类或成员变量有以下特点</p>
+<ul>
+<li><p>被final修饰的类不可以被继承</p>
+</li>
+<li><p>被final修饰的方法不可以被重写</p>
+</li>
+<li><p>被final修饰的变量不可以被改变</p>
+<blockquote>
+<p><strong>被final修饰的变量不可变的是变量的引用，而不是引用指向的内容，引用指向的内容时可以改变的</strong></p>
+</blockquote>
+</li>
+</ul>
+<h3 id="15-什么是反射机制"><a href="#15-什么是反射机制" class="headerlink" title="15. 什么是反射机制"></a>15. 什么是反射机制</h3><p>Java反射机制是在运行状态中，对于任意一个类，都能够获取到这个类的所有属性和方法的信息；对于任意一个对象，都能够调用它的任意一个方法和属性；</p>
+<p>在Java中，这种动态获取类的信息以及动态调用对象的方法的功能被称为反射机制</p>
+<h3 id="16-反射机制的优缺点"><a href="#16-反射机制的优缺点" class="headerlink" title="16. 反射机制的优缺点"></a>16. 反射机制的优缺点</h3><p>优点：运行期类型的判断，动态加载类，提高代码灵活度</p>
+<p>缺点：性能瓶颈：反射相当于一系列解释操作，通知JVM要做的事情，性能比直接的Java代码要慢很多</p>
+<h2 id="JavaSE进阶-IO"><a href="#JavaSE进阶-IO" class="headerlink" title="JavaSE进阶-IO"></a>JavaSE进阶-IO</h2><h3 id="1-BIO-NIO-AIO有什么区别？"><a href="#1-BIO-NIO-AIO有什么区别？" class="headerlink" title="1. BIO NIO AIO有什么区别？"></a>1. BIO NIO AIO有什么区别？</h3><ul>
+<li><p>BIO：Block IO 同步阻塞式IO，就是我们平常使用的传统ID，它的特点是模式简单使用方便。但是并发处理能力低。</p>
+</li>
+<li><p>NIO：New IO 同步非阻塞IO，是传统IO的升级，客户端和服务端通过Channel（通道）通讯，实现了多路复用</p>
+<blockquote>
+<p>IO多路复用模型</p>
+<p>该模型是有一个多路复用器，也就是一个选择器(Selector)，通过这个选择器，我们只需要一个线程便可以管理多个客户端连接。当用户数据到了之后才会为其服务</p>
+</blockquote>
+</li>
+<li><p>AIO：Asynchronous IO 是NIO的升级，也叫NIO2，实现了一部非阻塞IO，一部IO的操作基于事件和回调机制</p>
+</li>
+</ul>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/BIO_NIO_AIO.png" alt="BIO_NIO_AIO"></p>
+<h2 id="JavaSE进阶-异常"><a href="#JavaSE进阶-异常" class="headerlink" title="JavaSE进阶-异常"></a>JavaSE进阶-异常</h2><p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230611074554345.png" alt="image-20230611074554345"></p>
+<p><strong>Throwable是所有Java程序中错误处理的父类，他有两种子类：Error和Exception</strong></p>
+<h3 id="1-Error-和-Exception-区别是什么"><a href="#1-Error-和-Exception-区别是什么" class="headerlink" title="1. Error 和 Exception 区别是什么"></a>1. Error 和 Exception 区别是什么</h3><ul>
+<li><p><strong>Error</strong> </p>
+<p>表示由JVM所侦测到的无法预期的错误，由于这是属于JVM层次的严重错误，导致JVM无法继续执行，因此，这是不可捕捉到的，无法采取任何恢复的操作，最多只是显示错误信息</p>
+</li>
+<li><p><strong>Exception：</strong> 程序本身可以处理的异常，可以通过 <code>catch</code> 来进行捕获，通常遇到这种错误，应对其进行处理，使应用程序可以继续正常运行。<code>Exception</code> 又可以分为运行时异常(RuntimeException, 又叫非受检查异常)和一般异常(又叫受检查异常) 。</p>
+</li>
+</ul>
+<h3 id="运行时异常（非受检查异常）和一般异常（受检查异常）的区别"><a href="#运行时异常（非受检查异常）和一般异常（受检查异常）的区别" class="headerlink" title="运行时异常（非受检查异常）和一般异常（受检查异常）的区别"></a>运行时异常（非受检查异常）和一般异常（受检查异常）的区别</h3><p><strong>运行时异常：</strong>包括 <code>RunTimeException</code> 类及其子类，表示JVM在运行期间可能出现的异常。Java编译器不会检查运行时异常。</p>
+<blockquote>
+<p>常见的运行时异常有：</p>
+<p><code>NullPointException(空指针)</code>、<code>NumberFormatException（字符串转换为数字）</code>、<code>IndexOutOfBoundsException(数组越界)</code>、<code>ClassCastException(类转换异常)</code>、<code>ArrayStoreException(数据存储异常，操作数组时类型不一致)</code>等</p>
+</blockquote>
+<p><strong>一般异常(受检查异常)：</strong>是Exception中除 <code>RuntiemException</code> 及其子类紫外的异常。 Java编译器会检查一般异常（受检查异常）。</p>
+<blockquote>
+<p>常见的一般异常有：</p>
+<p>IO相关的异常、<code>ClassNotFoundException</code> 、 <code>SQLException</code>等</p>
+</blockquote>
+<p><strong>两者之间的区别：</strong> 它们之间的区别就是是否在编译阶段就能检查到。</p>
 <h2 id="JavaSE进阶-集合"><a href="#JavaSE进阶-集合" class="headerlink" title="JavaSE进阶-集合"></a>JavaSE进阶-集合</h2><h3 id="1-Array-和-ArrayList-有什么区别？"><a href="#1-Array-和-ArrayList-有什么区别？" class="headerlink" title="1. Array 和 ArrayList 有什么区别？"></a>1. Array 和 ArrayList 有什么区别？</h3><ul>
 <li><p>Array 可以包含基本类型和对象类型，ArrayList 只能包含对象类型。</p>
 </li>
@@ -208,7 +285,7 @@
 <li>因为在触发树化机制的时候，HashMap的底层会进行判断，如果当前数组的长度没有达到64，会优先对数组进行扩容，而不是进行树化，这样可以节省查询时间。</li>
 </ul>
 <blockquote>
-<p>面试官也许还会问：</p>
+<p><strong>面试官也许还会问：</strong></p>
 <p>如你上面所说，为什么HashMap在JDK8之后不直接采取数组+红黑树的结构，而是使用数组+链表+红黑树的数据结构呢？</p>
 <p>首先因为红黑树会在每次添加元素时进行一个左旋、右旋、变色等操作来保持平衡，链表则不会，因此链表插入数据的效率会比红黑树快。</p>
 <p>所以在数据量很少的时候，链表的效率会比红黑树高；</p>
@@ -244,7 +321,7 @@
 <p>类加载是由类加载器完成的，类加载器分别有：启动类加载器、扩展类加载器、系统类加载器、自定义加载器等</p>
 </blockquote>
 <h3 id="2-什么是双亲委派模型，为什么要使用"><a href="#2-什么是双亲委派模型，为什么要使用" class="headerlink" title="2. 什么是双亲委派模型，为什么要使用"></a>2. 什么是双亲委派模型，为什么要使用</h3><p>双亲委派原则指的是类加载器在接收到类加载的一个请求时，不会立刻加载，会先委派该类的父类加载器去加载，只有当父类加载器在他的搜索范围内没有搜索到该类时，子类的加载器才会对该类进行加载。</p>
-<p>这样做可以防止内存中出现多个相同的字节码；因为如果没有双亲委派模型的话，那么用户自己再定义了一个java.lang.String的类，就无法保证类的唯一性了。</p>
+<p>这样做可以防止内存中出现多个相同的字节码文件；因为如果没有双亲委派模型的话，那么用户自己再定义了一个java.lang.String的类，就无法保证类的唯一性了。</p>
 <h3 id="3-可达性算法"><a href="#3-可达性算法" class="headerlink" title="3. 可达性算法"></a>3. 可达性算法</h3><p>可达性算法的逻辑就是，在以一个GC Root为根节点的对象作为起点开始搜索，能遍历到的对象，也就是说该对象的引用还存在，就是可达的对象。而不能遍历到的对象，说明对象的引用已经不存在了，所以是不可达对象，也就是被GC回收的对象。</p>
 <p>可以作为GC Roots的对象有哪些呢？</p>
 <blockquote>
@@ -384,6 +461,31 @@
 <li>如果向任务队列投放任务失败（任务队列已经满了），但是当前运行的线程数是小于最大线程数的，就新建一个线程来执行任务。</li>
 <li>如果当前运行的线程数已经等同于最大线程数了，新建线程将会使当前运行的线程超出最大线程数，那么当前任务会被拒绝，饱和策略会调用<code>RejectedExecutionHandler.rejectedExecution()</code>方法。</li>
 </ol>
+<h3 id="12-Synchronized底层实现原理"><a href="#12-Synchronized底层实现原理" class="headerlink" title="12. Synchronized底层实现原理"></a>12. Synchronized底层实现原理</h3><p>我们可以结合JVM和字节码来分析一下Synchronized底层实现原理</p>
+<h3 id="13-Synchronized与Volatile的区别"><a href="#13-Synchronized与Volatile的区别" class="headerlink" title="13. Synchronized与Volatile的区别"></a>13. Synchronized与Volatile的区别</h3><p><code>Volatile</code>关键字可以保证变量的可见性。使用Volatile关键修饰的标量其实就是相当于指示 JVM，这个变量是共享且不稳定的，每次使用它都到主存中进行读取。</p>
+<p><code>Synchronized</code>关键字其实就是我们的同步锁，主要用于解决多个线程之间资源访问的同步性，被它修饰的方法或者代码块在任意时刻只能有一个线程执行。如果使用Synchronized修饰变量的话，就是将变量锁定了，当前线程可以访问该变量，其他线程被阻塞。 </p>
+<p>它们之间的区别主要有以下四点：</p>
+<ul>
+<li><code>Volatile</code>关键字是线程同步的轻量级实现，所以<code>Volatile</code> 性能肯定要比<code>Synchronized</code> 关键字要好。但是<code>Volatile</code> 只能作用于变量，而<code>Synchronized</code> 可以作用在变量、方法、类中</li>
+<li><code>Volatile</code> 关键字可以保证数据的可见性，但不能保证数据的原子性。<code>Synchronized</code> 关键字两者都能保证</li>
+<li><code>Volatile</code> 关键字主要用于解决变量在多个线程之间的可见性，而<code>Synchronized</code> 关键字解决的是多个线程之间访问资源的同步性。</li>
+</ul>
+<blockquote>
+<p><strong>Volatile除了可以保证标量的可见性之外，还有一个重要的作用就是防止 JVM 的指令重排序。</strong></p>
+<p>如果我们将变量声明为 <strong><code>volatile</code></strong> ，在对这个变量进行读写操作的时候，会通过插入特定的 <strong>内存屏障</strong> 的方式来禁止指令重排序。</p>
+<p>面试官可能会问：“了解单例模式吗？请你用懒汉双检锁的方式给我写一个单例模式，并且解释一下”</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Singleton</span>&#123;</span><br><span class="line">    <span class="comment">// 声明一个单例变量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> <span class="keyword">static</span> Singleton uniqueInstance;</span><br><span class="line">    <span class="comment">// 构造器私有化，保证单例</span></span><br><span class="line">  	<span class="keyword">private</span> <span class="title function_">Singleton</span><span class="params">()</span>&#123;&#125;</span><br><span class="line">    <span class="comment">// 提供一个公开的方法，供外界获取单例实例</span></span><br><span class="line">    <span class="keyword">public</span> Singleton <span class="title function_">getUniqueInstance</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="comment">// 第一次检查，避免单例已经被创建的时候，其他线程都去竞争锁，从而导致阻塞</span></span><br><span class="line">       	<span class="keyword">if</span>(uniqueInstance == <span class="literal">null</span>)&#123; </span><br><span class="line">            <span class="comment">// 加同步锁锁住类，防止高并发场景下创建多个实例</span></span><br><span class="line">            <span class="keyword">synchronized</span> (Singleton.class)&#123;</span><br><span class="line">				<span class="comment">// 第二次检查，确保实例是没有被创建的</span></span><br><span class="line">                <span class="keyword">if</span>(uniqueInstance == <span class="literal">null</span> )&#123;</span><br><span class="line">                    <span class="comment">// 创建实例</span></span><br><span class="line">                    uniqueInstance = <span class="keyword">new</span> <span class="title class_">Singleton</span>();</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> uniqueInstance;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在上面的代码中，<code>uniqueInstance</code> 变量使用了<code>volatile</code> 修饰符声明，是为了防止JVM的指令重排序。比方说我们创建<code>Singleton</code> 实例的那一行代码<code>uniqueInstance = new Singleton();</code>  ，其实在JVM中是分三步完成的</p>
+<ol>
+<li>为<code>Singleton</code> 类的实例对象分配内存空间。</li>
+<li>初始化<code>Singleton</code> 类的实例对象</li>
+<li>将<code>uniqueInstance</code> 变量指向<code>Singleton</code> 类的实例对象所在的内存地址。</li>
+</ol>
+<p>正常来说我们上面的代码执行顺序就是<code>1-&gt;2-&gt;3</code> ，<strong>但是在JVM指令重排序的影响下，执行顺序可能会是<code>1-&gt;3-&gt;2</code></strong> ，这样做可以提高程序的性能，因为<strong>在执行步骤3之前，对象已经被创建，可以被其他线程访问</strong>，而步骤2中的初始化操作不影响对象的可见性和安全性。</p>
+<p>在单线程环境下，这样做并不会产生什么问题，因为最终得到的都是一个初始化过后的实例对象嘛。</p>
+<p>但是在并发环境下，如果线程A的执行顺序是<code>1-&gt;3-&gt;2</code> ，而在3这一步的时候，线程B进来了发现<code>uniqueInstance</code>不为null，这个时候他就会直接返回<code>uniqueInstance</code>，而这个时候线程B得到的<code>uniqueInstance</code>是一个<strong>还未初始化的实例对象</strong></p>
 <h2 id="网络编程"><a href="#网络编程" class="headerlink" title="网络编程"></a>网络编程</h2><h3 id="1-网络的7层架构"><a href="#1-网络的7层架构" class="headerlink" title="1. 网络的7层架构"></a>1. 网络的7层架构</h3><blockquote>
 <p>OSI七层模型是什么？每一层的作用是什么？</p>
 </blockquote>
@@ -521,7 +623,7 @@
 <p>session是保管在服务端的，每个用户都会产生一个session。加入并发访问的用户十分多，会产生十分多的session，耗费大量的内存。</p>
 </li>
 </ol>
-<h3 id="5-什么是Ajax，Ajax有什么优点"><a href="#5-什么是Ajax，Ajax有什么优点" class="headerlink" title="5. 什么是Ajax，Ajax有什么优点"></a>5. 什么是Ajax，Ajax有什么优点</h3><p>Ajax全程为”Asynchronous JavaScript And XML”（异步 JavaScript 和 XML），是指一种创建交互方式、快速动态网页应用的网页开发技术，无需重新加载整个网页的情况下，能够更快更新部分网页的技术。</p>
+<h3 id="5-什么是Ajax，Ajax有什么优点"><a href="#5-什么是Ajax，Ajax有什么优点" class="headerlink" title="5. 什么是Ajax，Ajax有什么优点"></a>5. 什么是Ajax，Ajax有什么优点</h3><p>Ajax全称为”Asynchronous JavaScript And XML”（异步 JavaScript 和 XML），是指一种创建交互方式、快速动态网页应用的网页开发技术，无需重新加载整个网页的情况下，能够更快更新部分网页的技术。</p>
 <p>优点：</p>
 <ul>
 <li>通过异步模式，可以提升用户的体验</li>
@@ -545,7 +647,7 @@
 <p>Spring 的AOP是基于动态代理和cglib代理模式的，如果要代理的对象是一个接口，我们就可以通过JDK动态代理来给该对象创建一个代理对象。而如果我们要代理的对象是一个类，我们就要使用cglib代理来创建代理对象了。</p>
 </li>
 </ul>
-<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><h3 id="MyISAM和InnoDB有什么区别"><a href="#MyISAM和InnoDB有什么区别" class="headerlink" title="MyISAM和InnoDB有什么区别?"></a>MyISAM和InnoDB有什么区别?</h3><p>在MySQL5.5之前，MyISAM是MySQl的默认存储引擎。虽然MyISAM的性能还行，各种特性也还不错(比如全文所以、压缩、空间函数等)。但是，由于MyISAM不支持事务以及行级锁，并且最大的缺陷就是崩溃后无法安全恢复。InnoDB正好解决了这些问题。</p>
+<h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><h3 id="1-MyISAM和InnoDB有什么区别"><a href="#1-MyISAM和InnoDB有什么区别" class="headerlink" title="1. MyISAM和InnoDB有什么区别?"></a>1. MyISAM和InnoDB有什么区别?</h3><p>在MySQL5.5之前，MyISAM是MySQl的默认存储引擎。虽然MyISAM的性能还行，各种特性也还不错(比如全文所以、压缩、空间函数等)。但是，由于MyISAM不支持事务以及行级锁，并且最大的缺陷就是崩溃后无法安全恢复。InnoDB正好解决了这些问题。</p>
 <p>所以MySQL5.5之后，InnoDB是MySQL的默认存储引擎</p>
 <p>两者的区别主要有七点</p>
 <ol>
@@ -592,11 +694,11 @@
 <li>MyISAM 不支持数据库异常崩溃后的安全恢复，而 InnoDB 支持。</li>
 <li>InnoDB 的性能比 MyISAM 更强大。</li>
 </ul>
-<h3 id="你知道ACID吗（事务的特性）"><a href="#你知道ACID吗（事务的特性）" class="headerlink" title="你知道ACID吗（事务的特性）"></a>你知道ACID吗（事务的特性）</h3><p>ACID是事务的四个特性，分别是：原子性、一致性、隔离性、持久性。</p>
+<h3 id="2-你知道ACID吗（事务的特性）"><a href="#2-你知道ACID吗（事务的特性）" class="headerlink" title="2. 你知道ACID吗（事务的特性）"></a>2. 你知道ACID吗（事务的特性）</h3><p>ACID是事务的四个特性，分别是：原子性、一致性、隔离性、持久性。</p>
 <ul>
-<li>**原子性(Atomicity)**：事务值最小的执行单位，不允许分割。事务的原子性确保动作要么全部被执行，要么全部不起作用。</li>
+<li><strong>原子性(Atomicity)：</strong>事务值最小的执行单位，不允许分割。事务的原子性确保动作要么全部被执行，要么全部不起作用。</li>
 <li><strong>一致性(Consistency)：</strong>事务实行前后，数据要保持一致。比如说在转账业务中，无论事务成功与否，转账者和收款人的总额是不变的。</li>
-<li>**隔离性 (Isolation)**：在并发访问数据库时，会产生多个事务，在这个过程中，一个用户的事务不被其他事务所干扰，各并发事务之间的数据库时独立的。</li>
+<li><strong>隔离性 (Isolation)：</strong>在并发访问数据库时，会产生多个事务，在这个过程中，一个用户的事务不被其他事务所干扰，各并发事务之间的数据库时独立的。</li>
 <li><strong>持久性(Durability)：</strong>一个事务被提交之后，它对数据库中数据的改变是持久的，即使数据库产生故障也不应该对其有任何影响</li>
 </ul>
 <blockquote>
@@ -605,10 +707,10 @@
 <h3 id="隔离级别"><a href="#隔离级别" class="headerlink" title="隔离级别"></a>隔离级别</h3><ol>
 <li><strong>读未提交（read Uncommited）：</strong>最低的隔离界别，允许读取尚未提交的数据变更，可能会导致脏读、幻读、或不可重复度</li>
 <li><strong>读已提交（READ-COMMITTED）：</strong>大多数数据库的默认隔离级别，该隔离级别允许读取并发事务已经提交的数据，可以阻止脏读，但是幻读或不可重复度仍有可能发生。</li>
-<li><strong>可重复读（REPEATABLE-READ）：</strong>指的是对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复度，但幻读仍有可能发生，因为幻读是发生在DQL中的。这个隔离级别是MySQL默认的隔离级别，而MySQL在使用InnoDB数据库引擎后利用了MVCC（多版本并发控制机制）以及Next-Key lock 锁解决了幻读的问题。</li>
+<li><strong>可重复读（REPEATABLE-READ）：</strong>指的是对同一字段的多次读取结果都是一致的，除非数据是被本身事务自己所修改，可以阻止脏读和不可重复度，但幻读仍有可能发生，因为幻读是发生在DQL中的。这个隔离级别是MySQL默认的隔离级别，<strong>而MySQL在使用InnoDB数据库引擎后利用了MVCC（多版本并发控制机制）以及Next-Key lock 锁解决了幻读的问题。</strong></li>
 <li><strong>可串行化（SERIALIZABLE）：</strong>最高的隔离级别，完全服从ACID的隔离级别。所有的事务依次逐个执行，这样事务之间就完全不可能产生干扰。虽然该隔离级别可以防止脏读、不可重复读以及幻读，但是需要付出的代价太高了，因为他是在每个读的数据行上加锁的，可能会导致大量的超时现象和锁竞争，一般为了提升程序的吞吐量不会采用这个；</li>
 </ol>
-<h3 id="脏读、幻读、不可重复读"><a href="#脏读、幻读、不可重复读" class="headerlink" title="脏读、幻读、不可重复读"></a>脏读、幻读、不可重复读</h3><ul>
+<h3 id="3-脏读、幻读、不可重复读"><a href="#3-脏读、幻读、不可重复读" class="headerlink" title="3. 脏读、幻读、不可重复读"></a>3. 脏读、幻读、不可重复读</h3><ul>
 <li><p><strong>脏读（Dirty read）</strong></p>
 <p>当一个事务读取数据并且对数据进行了修改时，这个修改对其他事务来说是可见的，即使当前事务还没有提交。这时，如果另外一个事务读取了这个还未提交的数据，并且第一个事务突然回滚，导致数据并没有被提交到数据库，那么第二个事务读取到的就是一个脏数据了，这也是脏读的由来</p>
 <blockquote>
@@ -628,6 +730,27 @@
 </blockquote>
 </li>
 </ul>
+<h3 id="4-连接查询"><a href="#4-连接查询" class="headerlink" title="4. 连接查询"></a>4. 连接查询</h3><p>在MySQL中，连接查询可以分为内连接和外连接。</p>
+<p>内连接：内连接有隐式内连接和显示内连接两种</p>
+<ul>
+<li>隐式内连接：隐式内连接其实就是指我们连接查询时在from后面用逗号分隔两张变的连接查询</li>
+<li>显示内连接：显示内连接指的就是我们是用inner join…on进行表连接的一个操作</li>
+</ul>
+<p>外连接：有左外连接和右外连接两种</p>
+<ul>
+<li>左外连接指的就是我们在连接查询时，以左表为基准去连接我们的另外一张表，然后他们的连接后的结果集就是左表的全部内容加上左表与右表的一个交集。连接的关键字为<code>left join...on</code></li>
+<li>右外连接指的就是我们在连接查询时，以右表为基准去连接我们的另外一张表，然后他们的连接后的结果集就是右表的全部内容加上左表与右表的一个交集。连接的关键字为<code>right join...on</code></li>
+</ul>
+<h3 id="5-聚合函数"><a href="#5-聚合函数" class="headerlink" title="5. 聚合函数"></a>5. 聚合函数</h3><p>SQL中提供聚合函数有五种：</p>
+<ol>
+<li>COUNT：统计行数量</li>
+<li>SUM：获取某个列的合计值</li>
+<li>AVG：计算某个列的平均值</li>
+<li>MAX：计算列的最大值</li>
+<li>MIN：计算列的最小值</li>
+</ol>
+<h3 id="6-SQL关键字以及执行顺序"><a href="#6-SQL关键字以及执行顺序" class="headerlink" title="6. SQL关键字以及执行顺序"></a>6. SQL关键字以及执行顺序</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> </span><br><span class="line">	... </span><br><span class="line"><span class="keyword">join</span></span><br><span class="line">	...</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">	...</span><br><span class="line"><span class="keyword">where</span></span><br><span class="line">	...</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span></span><br><span class="line">	...<span class="built_in">avg</span>()<span class="operator">/</span><span class="built_in">sum</span>()</span><br><span class="line"><span class="keyword">having</span></span><br><span class="line">	...</span><br><span class="line">SELETE</span><br><span class="line">	...</span><br><span class="line"><span class="keyword">distinct</span></span><br><span class="line">	...</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span></span><br><span class="line">	...</span><br><span class="line">limit</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>Java面试题</category>
