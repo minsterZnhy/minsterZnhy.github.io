@@ -303,6 +303,30 @@
 <blockquote>
 <p>HashSet的底层就是HashMap，唯一区别是HashSet的value值为一个常量，所以当同一hash值中的key相同时，会添加失败；而HashMap会替换掉key对应的value。</p>
 </blockquote>
+<h3 id="7-ConcurrentHashMap的实现原理是什么"><a href="#7-ConcurrentHashMap的实现原理是什么" class="headerlink" title="7. ConcurrentHashMap的实现原理是什么?"></a>7. ConcurrentHashMap的实现原理是什么?</h3><blockquote>
+<p>ConcurrentHashMap的底层数据结构</p>
+</blockquote>
+<p>ConcurrentHashMap 在JDK1.7和JDK1.8的实现方式是不同的。</p>
+<p><strong>JDK1.7</strong></p>
+<p>ConcurrentHashMap在JDK1.7是由<code>segment</code> 和 <code>HashEntry</code> 组成的。**<code>ConcurrentHashMap</code>会把哈希桶切分成小数组（segment）**，每一个<code>segment</code> 都包含了n个<code>HashEntry</code> , 也就是我们<code>HashMap</code>的一个结构。</p>
+<p><code>ConcurrentHashMap</code>能实现线程安全其实就是在每一个<code>segment</code> 中加了一个可重入锁（也就是说每一段数据都会有锁），当一个线程占用锁访问其中一段数据时，其他段的数据也能被其他线程访问，实现了真正的并发访问。</p>
+<p>底层结构图如下图所示</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/JDK_7_ConcurrentHashMap.png" alt="JDK_7_ConcurrentHashMap"></p>
+<blockquote>
+<p>补充：</p>
+<p><code>segment</code>是<code>ConcurrentHashMap</code>的一个内部类，<strong>它继承了<code>ReentrantLock</code>可重入锁</strong>，扮演锁的角色（构成了分段锁）。所以<code>segment</code>锁也是可重入的。</p>
+</blockquote>
+<p><strong>JDK1.8</strong></p>
+<p>在数据结构上，JDK1.8中<code>ConcurrentHashMap</code>选择了与HashMap相似的Node数组+链表+红黑树的数据结构，这样可以使<code>ConcurrentHashMap</code>的数据结构不再像JDK1.7那么的臃肿，使用起来更为方便；在锁的实现上，抛弃了原有的 <code>Segment</code> 分段锁，<strong>采用了<code>CAS+Synchronized</code>实现更加细粒度的锁</strong>。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230621195606507.png" alt="image-20230621195606507"></p>
+<p>在JDK8中，<code>ConcurrentHashMap</code> 将锁的级别控制在了更细粒度的哈希桶数组元素级别，也就是说<strong>我们只需要在链表的头结点或者红黑树的根节点上加锁</strong>，就不会影响其他哈希桶数组元素的读写，从而实现了并发。</p>
+<blockquote>
+<p><strong>也许面试官还会问：为什么JDK8使用了<code>Synchronized</code>锁替换可重入锁<code>ReentrantLock</code>呢？</strong></p>
+<ul>
+<li>在 JDK1.6 中，对 synchronized 锁的实现引入了大量的优化，并且 synchronized 有多种锁状态，会从无锁 -&gt; 偏向锁 -&gt; 轻量级锁 -&gt; 重量级锁一步步转换。</li>
+<li>减少内存开销 。假设使用可重入锁来获得同步支持，那么每个节点都需要通过继承 AQS 来获得同步支持。但并不是每个节点都需要获得同步支持的，只有链表的头节点（红黑树的根节点）需要同步，这无疑带来了巨大内存浪费。</li>
+</ul>
+</blockquote>
 <h2 id="JVM"><a href="#JVM" class="headerlink" title="JVM"></a>JVM</h2><h3 id="1-描述一下jvm加载-class文件的过程吗？（类加载过程）"><a href="#1-描述一下jvm加载-class文件的过程吗？（类加载过程）" class="headerlink" title="1. 描述一下jvm加载.class文件的过程吗？（类加载过程）"></a>1. 描述一下jvm加载.class文件的过程吗？（类加载过程）</h3><p>因为Class文件需要加载到虚拟机中才能运行和使用，所以就有了类加载的过程</p>
 <p>类在JVM中的生命周期主要有：<strong>加载、连接、初始化、使用、卸载五部分组成。</strong></p>
 <p>系统加载 Class 类型的文件主要三步：<strong>加载-&gt;连接-&gt;初始化</strong></p>
@@ -486,6 +510,34 @@
 <p>正常来说我们上面的代码执行顺序就是<code>1-&gt;2-&gt;3</code> ，<strong>但是在JVM指令重排序的影响下，执行顺序可能会是<code>1-&gt;3-&gt;2</code></strong> ，这样做可以提高程序的性能，因为<strong>在执行步骤3之前，对象已经被创建，可以被其他线程访问</strong>，而步骤2中的初始化操作不影响对象的可见性和安全性。</p>
 <p>在单线程环境下，这样做并不会产生什么问题，因为最终得到的都是一个初始化过后的实例对象嘛。</p>
 <p>但是在并发环境下，如果线程A的执行顺序是<code>1-&gt;3-&gt;2</code> ，而在3这一步的时候，线程B进来了发现<code>uniqueInstance</code>不为null，这个时候他就会直接返回<code>uniqueInstance</code>，而这个时候线程B得到的<code>uniqueInstance</code>是一个<strong>还未初始化的实例对象</strong></p>
+<h3 id="14-ThreadLocal是什么？"><a href="#14-ThreadLocal是什么？" class="headerlink" title="14. ThreadLocal是什么？"></a>14. ThreadLocal是什么？</h3><p><code>ThreadLocal</code>其实就是线程的一个局部变量。通常情况下，我们创建的变量，在多线程环境下都是共享的。如果我们想要给每个线程都创建一个属于自己的本地变量的话，我们就需要使用JDK中自带的<code>ThreadLocal</code>类了。**<code>ThreadLocal</code>类会为每一个线程创建一个独自的变量副本，这个变量副本在同一个线程内是可以传递的，在不同的线程中是隔离开的。每个线程可以通过ThreadLocal提供的get()、set()方法来获取到副本中的值**</p>
+<p>其实我们可以这样理解ThreadLocal：比方说有两个人去宝屋收集宝物，如果两个人都共用一个袋子的话，他们是不是有可能会发生争执，那么如果给他们各自分配一个袋子的话，是不是就避免了这个问题。<strong>我们把这两个人比作线程的话，就是他们有可能发生并发问题吧，那么ThreadLocal其实就是上面分发袋子的一个机制，用来避免（不是解决，是避免！）他们发生并发问题的。</strong></p>
+<blockquote>
+<p>ThreadLocal的底层实现原理：</p>
+<p>在Thread类中，有两个<code>ThreadLocal.ThradLocalMap</code> 类型的属性，而<code>ThreadLocalMap</code> 它是<code>ThreadLocal</code> 下的一个静态内部类，它的结构与<code>HashMap</code> 类似，我们可以理解成它是<code>ThradLocal</code> 定制的一个<code>HashMap</code> 。因为它的key其实就是我们的<code>ThreadLocal</code>的一个弱引用，然后<code>value</code>就是我们要存放到线程变量副本中的值，比如我们业务中要传递的登录数据就是这个<code>value</code>了。</p>
+<p>然后当我们需要获取这个<code>value</code>的时候，我们只需要通过调用<code>ThreadLocal</code>中的<code>get()，set()</code>方法即可，因为实际上调用这两个方法时，我们调用的是<code>ThradLocalMap</code>类对应的<code>get()、set()</code>方法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">set</span><span class="params">(T value)</span> &#123;</span><br><span class="line">    <span class="comment">//获取当前请求的线程</span></span><br><span class="line">    <span class="type">Thread</span> <span class="variable">t</span> <span class="operator">=</span> Thread.currentThread();</span><br><span class="line">    <span class="comment">//取出 Thread 类内部的 threadLocals 变量(哈希表结构)</span></span><br><span class="line">    <span class="type">ThreadLocalMap</span> <span class="variable">map</span> <span class="operator">=</span> getMap(t);</span><br><span class="line">    <span class="keyword">if</span> (map != <span class="literal">null</span>)</span><br><span class="line">        <span class="comment">// 将需要存储的值放入到这个哈希表中</span></span><br><span class="line">        map.set(<span class="built_in">this</span>, value);</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">        createMap(t, value);</span><br><span class="line">&#125;</span><br><span class="line">ThreadLocalMap <span class="title function_">getMap</span><span class="params">(Thread t)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> t.threadLocals;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>总的来说<code>ThreadLoca</code>的实现原理就是：</p>
+<p><strong>每个<code>Thread</code>中度具备一个<code>ThreadLocalMap</code>，而<code>ThreadLocalMap</code>可以存储以<code>ThreadLocal</code>为key，<code>object</code>为value的键值对，我们要获取或存储变量副本的值，只需要调用<code>ThreadLocal</code> 的<code>get()/set()</code> 方法即可</strong></p>
+</blockquote>
+<h3 id="15-ThreadLocal的内存泄漏是怎么导致的？怎么避免？"><a href="#15-ThreadLocal的内存泄漏是怎么导致的？怎么避免？" class="headerlink" title="15. ThreadLocal的内存泄漏是怎么导致的？怎么避免？"></a>15. ThreadLocal的内存泄漏是怎么导致的？怎么避免？</h3><p>首先，<code>ThradLocal</code>为每个线程提供变量副本是基于<code>ThreadLocalMap</code>  实现的，<code>ThreadLocalMap</code> 中的key是<code>ThradLocal</code> 的一个弱引用，如果<code>ThradLocal</code> 没有被外部强引用的话，那么就JVM发生GC的时候，key就会被清理掉，而value不会被清理掉。</p>
+<p>这样一来，<code>ThreadLocalMap</code> 中就会出现key为null的entry，如果不加以处理的话，value是不是就永远都不会被GC给清理掉，这个时候就会造成内存泄漏了。</p>
+<blockquote>
+<p><strong>如何避免</strong></p>
+<p><code>ThreadLocalMap</code> 的实现中已经考虑了内存泄漏的问题了，在调用它的<code>get()、set()、remove()</code> 方法的时候，会清理掉key为null的记录。当然，我们在使用完<code>ThreadLocal</code>之后最好还是调用一下<code>remove()</code>方法手动去释放一下比较好。</p>
+</blockquote>
+<h3 id="16-ThreadLocal的应用场景有哪些"><a href="#16-ThreadLocal的应用场景有哪些" class="headerlink" title="16. ThreadLocal的应用场景有哪些"></a>16. ThreadLocal的应用场景有哪些</h3><ul>
+<li><p>应用场景一：</p>
+<p>在我们的业务中，有一些业务是需要获取我们的当前用户的一些信息嘛。然后并发环境下，我们可以在做登录校验的时候，把一些用户相关的信息存放到我们的threadLocal中，那么当前线程的业务中，如果我们想要获取用户相关的信息，直接去threadLocal中取就行了。</p>
+</li>
+<li><p>应用场景二：</p>
+<p>Spring事务管理的实现就有用到<code>ThreadLocal</code> 。</p>
+<p>首先我们Java操作数据库的一个连接技术其实就是jdbc嘛，然后jdbc在操作数据库时，是需要获取数据库连接对象connection的，而我们对数据库的事务的开启、提交、回滚操作都是可以通过connection对象来完成的。</p>
+<p>在Spring中，假设我们使用声明式事务来做事务管理，也就是使用<code>@Transactional</code>注解，我们的业务层的一个方法使用了@Transaction注解开启事务嘛，然后这个业务层方法分别调用了mapper层的两个操作数据库的方法test01，test02。</p>
+<p>然后在我们的事务开启前，我们是需要从数据库连接池中获取一个connection对象的，并且把我们关闭掉事务自动提交。然后这个connection对象会存放到我们的ThreadLocal中。然后再开启事务，当我们执行test01的时候，spring会先从threadlocal中获取connection对象，然后再去执行我们的数据库操作。执行test02时也是同样的一个操作。当两个方法执行完之后，spring会从threadlocal中获取connection对象，并且判断是否发生异常，如果发生了异常就使用connection.rollback回滚，否则使用connection.commit提交事务。</p>
+</li>
+</ul>
 <h2 id="网络编程"><a href="#网络编程" class="headerlink" title="网络编程"></a>网络编程</h2><h3 id="1-网络的7层架构"><a href="#1-网络的7层架构" class="headerlink" title="1. 网络的7层架构"></a>1. 网络的7层架构</h3><blockquote>
 <p>OSI七层模型是什么？每一层的作用是什么？</p>
 </blockquote>
@@ -647,6 +699,20 @@
 <p>Spring 的AOP是基于动态代理和cglib代理模式的，如果要代理的对象是一个接口，我们就可以通过JDK动态代理来给该对象创建一个代理对象。而如果我们要代理的对象是一个类，我们就要使用cglib代理来创建代理对象了。</p>
 </li>
 </ul>
+<h3 id="2-Spring框架中用到了哪些设计模式？"><a href="#2-Spring框架中用到了哪些设计模式？" class="headerlink" title="2. Spring框架中用到了哪些设计模式？"></a>2. Spring框架中用到了哪些设计模式？</h3><p><strong>工厂设计模式：</strong>Spring使用工厂模式通过<code>BeanFactory</code>、<code>ApplicationContext</code> 创建Bean对象</p>
+<p><strong>代理设计模式：</strong>Spring Aop功能就是基于代理模式实现的，如果要代理的对象实现了某个接口，Spring 会使用JDK动态代理来创建代理对象；对于没有实现接口的对象，Spring会使用cglib代理生成一个被代理对象的子类；</p>
+<blockquote>
+<p><strong>因为JDK动态代理创建代理对象时，是基于实现<code>$Proxy</code>类来创建的</strong></p>
+</blockquote>
+<p><strong>单例设计模式：</strong>Spring中的Bean默认都是单列的。Spring在底层是通过<code>ConcurrentHashMap</code> 实现单例注册表的特殊方式来实现单例模式的。</p>
+<p><strong>模板方法设计模式：</strong> 所谓模板方法设计模式就是将一些通用的代码抽取抽来，作为一个模板，然后提供一些通用的方法给外界使用。就比如说<code>jdncTemplate</code> 、<code>RedisTemplate</code> 等以Template结尾的类，都是用到了模板方法设计模式的。</p>
+<p><strong>包装器设计模式：</strong> </p>
+<p><strong>观察者模式：</strong> Spring事件驱动模型就是观察者模式很经典的一个应用。</p>
+<p><strong>适配器模式：</strong>大家都知道SpringAOP是基于动态代理实现的，但是SpringAOP中的增强是使用到了适配器模式的；</p>
+<p>所谓适配器模式，指的是将一个类或接口转换成我们希望的的另外一个接口，适配器模式通俗点来说就是用来做兼容的，就好比如说我们生活中大家都有可能用到的一拖三充电线其实就是适配器模式的一种体现。</p>
+<p>而SpringAOP中，BeforeAdvice、AfterAdvice、ThrowAdvice三种类型的通知都是基于适配器模式实现的。</p>
+<blockquote>
+</blockquote>
 <h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><h3 id="1-MyISAM和InnoDB有什么区别"><a href="#1-MyISAM和InnoDB有什么区别" class="headerlink" title="1. MyISAM和InnoDB有什么区别?"></a>1. MyISAM和InnoDB有什么区别?</h3><p>在MySQL5.5之前，MyISAM是MySQl的默认存储引擎。虽然MyISAM的性能还行，各种特性也还不错(比如全文所以、压缩、空间函数等)。但是，由于MyISAM不支持事务以及行级锁，并且最大的缺陷就是崩溃后无法安全恢复。InnoDB正好解决了这些问题。</p>
 <p>所以MySQL5.5之后，InnoDB是MySQL的默认存储引擎</p>
 <p>两者的区别主要有七点</p>
