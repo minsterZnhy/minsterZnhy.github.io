@@ -510,7 +510,7 @@
 <p>正常来说我们上面的代码执行顺序就是<code>1-&gt;2-&gt;3</code> ，<strong>但是在JVM指令重排序的影响下，执行顺序可能会是<code>1-&gt;3-&gt;2</code></strong> ，这样做可以提高程序的性能，因为<strong>在执行步骤3之前，对象已经被创建，可以被其他线程访问</strong>，而步骤2中的初始化操作不影响对象的可见性和安全性。</p>
 <p>在单线程环境下，这样做并不会产生什么问题，因为最终得到的都是一个初始化过后的实例对象嘛。</p>
 <p>但是在并发环境下，如果线程A的执行顺序是<code>1-&gt;3-&gt;2</code> ，而在3这一步的时候，线程B进来了发现<code>uniqueInstance</code>不为null，这个时候他就会直接返回<code>uniqueInstance</code>，而这个时候线程B得到的<code>uniqueInstance</code>是一个<strong>还未初始化的实例对象</strong></p>
-<h3 id="14-ThreadLocal是什么？"><a href="#14-ThreadLocal是什么？" class="headerlink" title="14. ThreadLocal是什么？"></a>14. ThreadLocal是什么？</h3><p><code>ThreadLocal</code>其实就是线程的一个局部变量。通常情况下，我们创建的变量，在多线程环境下都是共享的。如果我们想要给每个线程都创建一个属于自己的本地变量的话，我们就需要使用JDK中自带的<code>ThreadLocal</code>类了。**<code>ThreadLocal</code>类会为每一个线程创建一个独自的变量副本，这个变量副本在同一个线程内是可以传递的，在不同的线程中是隔离开的。每个线程可以通过ThreadLocal提供的get()、set()方法来获取到副本中的值**</p>
+<h3 id="14-ThreadLocal是什么？"><a href="#14-ThreadLocal是什么？" class="headerlink" title="14. ThreadLocal是什么？"></a>14. ThreadLocal是什么？</h3><p><code>ThreadLocal</code>其实就是线程的一个局部变量。通常情况下，我们创建的变量，在多线程环境下都是共享的。如果我们想要给每个线程都创建一个属于自己的本地变量的话，我们就需要使用JDK中自带的<code>ThreadLocal</code>类了。**<code>ThreadLocal</code>类会为每一个线程创建一个独自的变量副本，这个变量副本在同一个线程内是可以传递的，在不同的线程中是隔离开的。每个线程可以通过ThreadLocal提供的get()、set()方法来获取到副本中的值。**</p>
 <p>其实我们可以这样理解ThreadLocal：比方说有两个人去宝屋收集宝物，如果两个人都共用一个袋子的话，他们是不是有可能会发生争执，那么如果给他们各自分配一个袋子的话，是不是就避免了这个问题。<strong>我们把这两个人比作线程的话，就是他们有可能发生并发问题吧，那么ThreadLocal其实就是上面分发袋子的一个机制，用来避免（不是解决，是避免！）他们发生并发问题的。</strong></p>
 <blockquote>
 <p>ThreadLocal的底层实现原理：</p>
@@ -521,8 +521,8 @@
 <p>总的来说<code>ThreadLoca</code>的实现原理就是：</p>
 <p><strong>每个<code>Thread</code>中度具备一个<code>ThreadLocalMap</code>，而<code>ThreadLocalMap</code>可以存储以<code>ThreadLocal</code>为key，<code>object</code>为value的键值对，我们要获取或存储变量副本的值，只需要调用<code>ThreadLocal</code> 的<code>get()/set()</code> 方法即可</strong></p>
 </blockquote>
-<h3 id="15-ThreadLocal的内存泄漏是怎么导致的？怎么避免？"><a href="#15-ThreadLocal的内存泄漏是怎么导致的？怎么避免？" class="headerlink" title="15. ThreadLocal的内存泄漏是怎么导致的？怎么避免？"></a>15. ThreadLocal的内存泄漏是怎么导致的？怎么避免？</h3><p>首先，<code>ThradLocal</code>为每个线程提供变量副本是基于<code>ThreadLocalMap</code>  实现的，<code>ThreadLocalMap</code> 中的key是<code>ThradLocal</code> 的一个弱引用，如果<code>ThradLocal</code> 没有被外部强引用的话，那么就JVM发生GC的时候，key就会被清理掉，而value不会被清理掉。</p>
-<p>这样一来，<code>ThreadLocalMap</code> 中就会出现key为null的entry，如果不加以处理的话，value是不是就永远都不会被GC给清理掉，这个时候就会造成内存泄漏了。</p>
+<h3 id="15-ThreadLocal的内存泄漏是怎么导致的？怎么避免？"><a href="#15-ThreadLocal的内存泄漏是怎么导致的？怎么避免？" class="headerlink" title="15. ThreadLocal的内存泄漏是怎么导致的？怎么避免？"></a>15. ThreadLocal的内存泄漏是怎么导致的？怎么避免？</h3><p>首先，<code>ThradLocal</code>为每个线程提供变量副本是基于<code>ThreadLocalMap</code>  实现的，**<code>ThreadLocalMap</code> 中的key是<code>ThradLocal</code> 的一个弱引用，如果<code>ThradLocal</code> 没有被外部强引用的话，那么就JVM发生GC的时候，key就会被清理掉，而value不会被清理掉。**</p>
+<p>这样一来，<code>ThreadLocalMap</code> 中就会出现key为null的entry，如果不加以处理的话，<strong>value是不是就永远都不会被GC给清理掉，这个时候就会造成内存泄漏了。</strong></p>
 <blockquote>
 <p><strong>如何避免</strong></p>
 <p><code>ThreadLocalMap</code> 的实现中已经考虑了内存泄漏的问题了，在调用它的<code>get()、set()、remove()</code> 方法的时候，会清理掉key为null的记录。当然，我们在使用完<code>ThreadLocal</code>之后最好还是调用一下<code>remove()</code>方法手动去释放一下比较好。</p>
@@ -536,6 +536,30 @@
 <p>首先我们Java操作数据库的一个连接技术其实就是jdbc嘛，然后jdbc在操作数据库时，是需要获取数据库连接对象connection的，而我们对数据库的事务的开启、提交、回滚操作都是可以通过connection对象来完成的。</p>
 <p>在Spring中，假设我们使用声明式事务来做事务管理，也就是使用<code>@Transactional</code>注解，我们的业务层的一个方法使用了@Transaction注解开启事务嘛，然后这个业务层方法分别调用了mapper层的两个操作数据库的方法test01，test02。</p>
 <p>然后在我们的事务开启前，我们是需要从数据库连接池中获取一个connection对象的，并且把我们关闭掉事务自动提交。然后这个connection对象会存放到我们的ThreadLocal中。然后再开启事务，当我们执行test01的时候，spring会先从threadlocal中获取connection对象，然后再去执行我们的数据库操作。执行test02时也是同样的一个操作。当两个方法执行完之后，spring会从threadlocal中获取connection对象，并且判断是否发生异常，如果发生了异常就使用connection.rollback回滚，否则使用connection.commit提交事务。</p>
+</li>
+</ul>
+<h3 id="17-Java加锁的方式有哪些"><a href="#17-Java加锁的方式有哪些" class="headerlink" title="17. Java加锁的方式有哪些"></a>17. Java加锁的方式有哪些</h3><p>首先在Java中是有两种类型的锁的，<strong>悲观锁和乐观锁。</strong></p>
+<p><strong>悲观锁</strong></p>
+<p>其中，悲观锁从字面上理解就是它是很悲观的，总是假设最坏的情况；指的就是在并发环境下，<strong>无论如何，对共享资源的访问都一定会发生并发安全问题</strong>，所以在每次获取资源操作的时候都会上锁，其他线程想拿到这个资源就必须去竞争锁。也就是说，<strong>共享资源每次只能让一个线程使用，其他线程都会进入到阻塞状态，直到获得了共享资源的线程释放掉资源，其他线程才会重新去竞争锁。</strong></p>
+<p><strong>悲观锁思想的常见实现有：</strong></p>
+<ul>
+<li>Synchronized关键字实现的同步锁</li>
+<li>Lock接口的实现子类：ReentrantLock可重入锁、ReentrantReadWriteLock可重入读写锁等。</li>
+</ul>
+<p><strong>乐观锁</strong></p>
+<p>乐观锁从字面上理解就是很乐观，总是假设最好的情况。<strong>它认为在并发环境下，每次对共享资源的访问都不会发生并发安全问题，线程可以不停的执行，无需加锁也无需等待。</strong>只有在提交修改的时候去验证对应的资源（数据）是否被其他线程修改了即可（可以通过版本号机制或CAS算法实现）。</p>
+<p>在Java中<code>atomic</code> 包下面有两个原子变量类（比如<code>AtmoicInteger</code>、<code>LongAdder</code>），就是使用了乐观锁中的一种实现方式CAS算法实现的。</p>
+<p><strong>乐观锁思想的常见实现有：</strong></p>
+<ul>
+<li><p>版本号机制</p>
+<blockquote>
+<p>版本号机制指的就是在数据库表中加一个version字段，表示被修改的次数。当我们要执行更新操作时，就要先读取数据嘛，在读取数据时我们把version字段的值也读取，然后在提交更新的时候，只有数据库的当前版本号跟我们读取到版本号的一致时，才会更新成功，否则重试更新操作，直至更新成功</p>
+</blockquote>
+</li>
+<li><p>CAS算法，CAS算法用的比较多</p>
+<blockquote>
+<p>CAS算法其实就是<code>Compare And Swap(比较与交换)</code>，</p>
+</blockquote>
 </li>
 </ul>
 <h2 id="网络编程"><a href="#网络编程" class="headerlink" title="网络编程"></a>网络编程</h2><h3 id="1-网络的7层架构"><a href="#1-网络的7层架构" class="headerlink" title="1. 网络的7层架构"></a>1. 网络的7层架构</h3><blockquote>
@@ -688,12 +712,12 @@
 </ul>
 <h2 id="Spring"><a href="#Spring" class="headerlink" title="Spring"></a>Spring</h2><h3 id="1-IOC、DI、AOP"><a href="#1-IOC、DI、AOP" class="headerlink" title="1. IOC、DI、AOP"></a>1. IOC、DI、AOP</h3><p>IOC和AOP是Spring的两大核心。</p>
 <ul>
-<li><p><strong>IOC(Inversion of Control)：</strong>IOC其实是一种设计思想，是指我们在创建对象的时候，将对象的控制权交给Spring容器来管理。在这之前，我们创建对象的主动权和时机都是由自己去决定的，而现在这种全力转移到Spring容器中，并由容器根据配置文件或者注解去创建实例和管理各个实例之间的依赖关系了，这样做可以在一定程度上降低对象与对象之间的耦合性，同时也提高了功能的复用。</p>
+<li><p><strong>IOC(Inversion of Control)：</strong>IOC其实是一种设计思想，是指我们在创建对象的时候，将对象的控制权交给Spring容器来管理。在这之前，我们创建对象的主动权和时机都是由自己去决定的，而现在这种全力转移到Spring容器中，并由容器根据配置文件或者注解去创建实例和管理各个实例之间的依赖关系了，这样做可以在一定程度上降低对象与对象之间的耦合性，同时也提高了功能的复用<strong>（创建对象的解耦）。</strong></p>
 <blockquote>
 <p>比如：在没有IOC之前，我们业务层bookService要调用dao层的实现方法bookDaoImplA时，我们只需要new一个bookDaoImplA的实例对象即可。但是在某一天我们收到一个需求，要将bookDaoImpA的实现换成bookDaoImplB了，我们就要去修改bookService中的对应的实现，牵一发而动全身，每次修改都有可能要修改大量的代码，这样的设计耦合性太高了，所以才有IOC的出现。</p>
 </blockquote>
 </li>
-<li><p><strong>DI：</strong>DI其实就是IOC的一种实现方式，即应用程序在运行时依赖IOC容器来动态的注入外部资源</p>
+<li><p><strong>DI：</strong>DI其实就是IOC的一种实现方式，即应用程序在运行时依赖IOC容器来动态的注入外部资源<strong>（赋值或使用对象的解耦）。</strong></p>
 </li>
 <li><p><strong>AOP(Aspect Oriented Programming)：</strong>AOP指的是面向切面编程，在开发中，会有一些与业务无关但每个业务的需要的逻辑方法，例如日志记录、事务控制、异常处理等。在AOP中，我们可以将这个逻辑代码分别抽取并封装成不同的模块，这些模块在AOP中也被称为“切面”。这样做可以减少系统的重复代码，降低模块间的耦合度，并有利于未来的可拓展性和可维护性。</p>
 <p>Spring 的AOP是基于动态代理和cglib代理模式的，如果要代理的对象是一个接口，我们就可以通过JDK动态代理来给该对象创建一个代理对象。而如果我们要代理的对象是一个类，我们就要使用cglib代理来创建代理对象了。</p>
@@ -712,6 +736,7 @@
 <p>所谓适配器模式，指的是将一个类或接口转换成我们希望的的另外一个接口，适配器模式通俗点来说就是用来做兼容的，就好比如说我们生活中大家都有可能用到的一拖三充电线其实就是适配器模式的一种体现。</p>
 <p>而SpringAOP中，BeforeAdvice、AfterAdvice、ThrowAdvice三种类型的通知都是基于适配器模式实现的。</p>
 <blockquote>
+<p>因为上述的几个类型的通知，</p>
 </blockquote>
 <h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><h3 id="1-MyISAM和InnoDB有什么区别"><a href="#1-MyISAM和InnoDB有什么区别" class="headerlink" title="1. MyISAM和InnoDB有什么区别?"></a>1. MyISAM和InnoDB有什么区别?</h3><p>在MySQL5.5之前，MyISAM是MySQl的默认存储引擎。虽然MyISAM的性能还行，各种特性也还不错(比如全文所以、压缩、空间函数等)。但是，由于MyISAM不支持事务以及行级锁，并且最大的缺陷就是崩溃后无法安全恢复。InnoDB正好解决了这些问题。</p>
 <p>所以MySQL5.5之后，InnoDB是MySQL的默认存储引擎</p>
@@ -817,6 +842,28 @@
 </ol>
 <h3 id="6-SQL关键字以及执行顺序"><a href="#6-SQL关键字以及执行顺序" class="headerlink" title="6. SQL关键字以及执行顺序"></a>6. SQL关键字以及执行顺序</h3><figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">FROM</span> </span><br><span class="line">	... </span><br><span class="line"><span class="keyword">join</span></span><br><span class="line">	...</span><br><span class="line"><span class="keyword">on</span></span><br><span class="line">	...</span><br><span class="line"><span class="keyword">where</span></span><br><span class="line">	...</span><br><span class="line"><span class="keyword">group</span> <span class="keyword">by</span></span><br><span class="line">	...<span class="built_in">avg</span>()<span class="operator">/</span><span class="built_in">sum</span>()</span><br><span class="line"><span class="keyword">having</span></span><br><span class="line">	...</span><br><span class="line">SELETE</span><br><span class="line">	...</span><br><span class="line"><span class="keyword">distinct</span></span><br><span class="line">	...</span><br><span class="line"><span class="keyword">order</span> <span class="keyword">by</span></span><br><span class="line">	...</span><br><span class="line">limit</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
 
+<h3 id="7-有了解过MySQL的所有嘛"><a href="#7-有了解过MySQL的所有嘛" class="headerlink" title="7. 有了解过MySQL的所有嘛?"></a>7. 有了解过MySQL的所有嘛?</h3><p>MySQL中的索引主要有单列索引、组合索引、空间索引三种。用的比较多的是单列索引和组合索引，空间索引我这边目前还没有用过</p>
+<p><strong>单列索引：</strong> 在MySQL表中的某一个列上创建的索引叫做单列索引。单列索引还分为：普通索引、唯一索引、主键索引、全文索引四种。</p>
+<ul>
+<li>普通索引：是MySQL基本索引类型，没有什么限制，允许在定义索引的列中插入重复值和空值，纯粹是为了提升查询效率。</li>
+<li>唯一索引：唯一索引的索引列必须的值必须是唯一的，但是允许有控制</li>
+<li>主键索引：主键索引其实就跟我们主键的特性类似嘛，需要确保索引列中的值时唯一的且不能为null</li>
+<li>全文索引：全文索引比较特殊，只有在MyISAM引擎、InnoDB上才能使用，并且只能在CHAR、VARCHAR、TEXT类型的字段上才能使用。</li>
+</ul>
+<p><strong>组合索引：</strong> 组合索引又叫联合索引，指的是将多个字段联合起来去创建索引。</p>
+<ul>
+<li><p>组合索引的使用，需要遵循左前缀原则</p>
+</li>
+<li><p>一般情况下，建议使用组合索引代替单列索引（主键索引除外）</p>
+<blockquote>
+<p>因为我们业务中的大部分查询都是涉及到多个字段的，组合索引比较于单列索引来说磁盘的IO操作和排序操作更少了，从而提高了查询效率</p>
+</blockquote>
+</li>
+</ul>
+<p>在设计数据库表时，如果经常需要在多个列上进行组合查询，那么使用组合索引可以显著提升查询效率。比如在订单表中，每次查询都要查询订单的状态和下单时间，那么我们就可以在这两个字段上添加一个组合索引，以提高查询效率。</p>
+<h3 id="8-什么是左前缀原则"><a href="#8-什么是左前缀原则" class="headerlink" title="8. 什么是左前缀原则"></a>8. 什么是左前缀原则</h3><p>在MySQL建议联合索引时会遵循左前缀原则，即最左优先，在检索数据时从联合索引的最左边开始匹配，组合索引的第一个字段必须出现在查询语句中，这个索引才会被用到；</p>
+<p>例如：<code>create index index_age_name_sex on tb_user(age, name, sex)</code> ;</p>
+<p>上述SQL语句中，对<code>age、name、sex</code> 建立了一个组合索引<code>index_age_name_sex</code> ，实际上这个联合索引相当于<code>(age)、(age，name)、(age, name, sex)</code> 三个索引。</p>
 ]]></content>
       <categories>
         <category>Java面试题</category>
@@ -956,6 +1003,162 @@
       </categories>
       <tags>
         <tag>LifeNode</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Eureka中的负载均衡</title>
+    <url>/2023/07/03/Eureka%E4%B8%AD%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/</url>
+    <content><![CDATA[<h2 id="Eureka中的负载均衡"><a href="#Eureka中的负载均衡" class="headerlink" title="Eureka中的负载均衡"></a>Eureka中的负载均衡</h2><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>Eureka是Netflix开发的一种用于构建分布式系统中的微服务架构的服务发现组件。</p>
+<p>Ribbon是一个基于HTTP和TCP协议的客户端负载均衡工具，它是Netflix开源的一个组件，旨在提供客户端侧负载均衡算法和服务实例的自动发现功能，以实现对服务调用的负载均衡。</p>
+<p>Spring官方提供了一个Spring Cloud LoadBalancer来替代Ribbon它是基于Netflix Ribbon的一个新的客户端负载均衡组件，提供更加灵活的扩展性和可配置性。</p>
+<p>而在我们的Eureka中实现服务的远程调用则是通过Spring Cloud LoadBalancer来完成。本文将结合源码分析一下Euraka拉取服务以及远程调用服务的过程。</p>
+<span id="more"></span>
+
+<h3 id="Eureka与Ribbon的关系"><a href="#Eureka与Ribbon的关系" class="headerlink" title="Eureka与Ribbon的关系"></a>Eureka与Ribbon的关系</h3><p>Eureka组件只提供服务的注册和发现功能，它本身并不具备负载均衡的功能。但我们使用Eureka组件时却能实现服务请求的处理和分配（负载均衡），正是因为Eureka中集成了Ribbon负载均衡组件。</p>
+<blockquote>
+<p>Ribbon是Netflix开源的一种用于构建分布式系统中的微服务架构的客户端负载均衡组件。Ribbon支持多种负载均衡算法，例如轮询、随机、加权轮询、加权随机等，并且支持自定义负载均衡算法。Ribbon可以与Eureka、Consul等服务发现组件集成，也可以与Spring Cloud LoadBalancer等负载均衡器集成，提供更加灵活和可扩展的负载均衡功能。</p>
+</blockquote>
+<h3 id="为什么要使用Eureka"><a href="#为什么要使用Eureka" class="headerlink" title="为什么要使用Eureka"></a>为什么要使用Eureka</h3><p>现在有一个案例：在分布式的架构中，有两个节点order-service以及user-service。</p>
+<p>在order-service中的根据id查询订单业务，要求在查询订单的同时，根据订单中包含的userId查询出用户信息，一起返回。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706170322077.png" alt="image-20230706170322077"></p>
+<p>如果上图所示，我们在order-service服务中需要想user-service中发起一个请求，才能取到对应的用户信息。</p>
+<p>要实现上述需求，我们可以这样做</p>
+<ol>
+<li><p>在order-service中注册RestTemplate</p>
+<blockquote>
+<p>RestTemplate是Spring框架提供的一个用于发送HTTP请求的客户端库，主要用于调用RESTful Web服务时发送请求并接收响应。它可以发送GET、POST、PUT、DELETE等HTTP请求，并接收相应的响应。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.itcast.order.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.client.loadbalancer.LoadBalanced;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.client.RestTemplate;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>: minster</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@PACKAGE</span>_NAME: cn.itcast.config</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@NAME</span>: RestConfiguration</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2023/7/4</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RestConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> RestTemplate <span class="title function_">restTemplate</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">RestTemplate</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改order-service中的order业务方法</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Resource</span></span><br><span class="line"><span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> Order <span class="title function_">queryOrderById</span><span class="params">(Long orderId)</span> &#123;</span><br><span class="line">    <span class="comment">// 1. 查询订单</span></span><br><span class="line">    <span class="type">Order</span> <span class="variable">order</span> <span class="operator">=</span> orderMapper.findById(orderId);</span><br><span class="line">    <span class="comment">// 2. 远程查询user信息</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;http://localhost:8081/user/&quot;</span> + order.getUserId();</span><br><span class="line">    <span class="comment">// 3. 通过restTemplate发起调用</span></span><br><span class="line">    <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> restTemplate.getForObject(url, User.class);</span><br><span class="line">    <span class="comment">// 4. 封装数据到order</span></span><br><span class="line">    order.setUser(user);</span><br><span class="line">    <span class="comment">// 5. 返回</span></span><br><span class="line">    <span class="keyword">return</span> order;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>测试：</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706171645353.png" alt="image-20230706171645353"></p>
+<p>如下图所示，我们的user-service提供了接口给外部使用，即服务提供者。而order-service使用了user-service，即服务消费者。</p>
+<blockquote>
+<p>服务提供者与服务消费者是相对的，一个服务既有可能是服务提供者，也有可能是服务消费者</p>
+</blockquote>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706141607328.png" alt="image-20230706141607328"></p>
+<p>虽然上述代码实现了需求，但是我们可以发现以下问题：</p>
+<ul>
+<li>order-service在发起远程调用的时候，该如何得知user-service实例的ip地址和端口？</li>
+<li>有多个user-service实例地址，order-service调用时该如何选择？</li>
+<li>order-service如何得知某个user-service实例是否依然健康，是不是已经宕机？</li>
+</ul>
+<p>上述问题都需要利用Spring Cloud中的注册中心来解决，其中Eureka便是一个注册中心。</p>
+<p>下面我们使用一个案例，来演示基于Eureka组件的服务注册与发现以及服务调用请求的分配，分析Eureka是怎么解决上述三个问题的。</p>
+<p>案例的架构如下：</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706102828818.png" alt="image-20230706102828818"></p>
+<p><strong>实现代码</strong></p>
+<p>新建项目eureka-server</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706173731285.png" alt="image-20230706173731285"></p>
+<p>导入服务端依赖</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>编写配置信息。</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 这里配置了eureka-server的端口号</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">10086</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">eureka-server</span> <span class="comment"># applicatio-name: 其实就是在注册中心的服务名字</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:10086/eureka</span></span><br></pre></td></tr></table></figure>
+
+<p>开启EurekaServer服务功能</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.itcast;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.netflix.discovery.EurekaNamespace;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>: minster</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@PACKAGE</span>_NAME: cn.itcast</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@NAME</span>: EurekaApplication</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2023/7/5</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="comment">// @EnableEurekaServer 可以开启EurekaServer服务</span></span><br><span class="line"><span class="meta">@EnableEurekaServer</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EurekaApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(EurekaApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>访问：<a href="http://localhost:10086/">Eureka</a></p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706174019102.png" alt="image-20230706174019102"></p>
+<p>我们可以发现eureka-server服务已经成功注册到我们的Eureka注册中心</p>
+<p>同时，我们将order-service、user-service服务也注册到我们的Eureka注册中心</p>
+<p>步骤如下：</p>
+<ol>
+<li><p>导入客户端依赖</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编写配置文件</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">userservice</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:10086/eureka</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>注册步骤一样，这里不再演示。</p>
+<p>同时，我们多启动一个user-service，构成一个user服务集群。</p>
+<p>当前服务启动情况如下图所示：</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706175121795.png" alt="image-20230706175121795"></p>
+<p>刷新一下<a href="http://localhost:10086/">Eureka</a>，可以发现，我们都客户端服务都注册到我们的Eureka中</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706175230190.png" alt="image-20230706175230190"></p>
+<p>下面我们修改order-service中的业务代码：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Resource</span></span><br><span class="line"><span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> Order <span class="title function_">queryOrderById</span><span class="params">(Long orderId)</span> &#123;</span><br><span class="line">    <span class="comment">// 1. 查询订单</span></span><br><span class="line">    <span class="type">Order</span> <span class="variable">order</span> <span class="operator">=</span> orderMapper.findById(orderId);</span><br><span class="line">    <span class="comment">// 2. 远程查询user信息</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;http://userservice/user/&quot;</span> + order.getUserId();</span><br><span class="line">    <span class="comment">// 3. 通过restTemplate发起调用</span></span><br><span class="line">    <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> restTemplate.getForObject(url, User.class);</span><br><span class="line">    <span class="comment">// 4. 封装数据到order</span></span><br><span class="line">    order.setUser(user);</span><br><span class="line">    <span class="comment">// 5. 返回</span></span><br><span class="line">    <span class="keyword">return</span> order;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后在order-service中的RestTemplate配置类中给Bean添加<code>@LoadBalanced</code>注解</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RestConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@LoadBalanced</span></span><br><span class="line">    <span class="keyword">public</span> RestTemplate <span class="title function_">restTemplate</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">RestTemplate</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后调用order服务接口，查看两个user-service中的控制台的日志</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706175757006.png" alt="image-20230706175757006"></p>
+<p>我们可以发现，两个user-service服务都被调用到了！</p>
+<p>Eureka是怎么做到的呢？我们可以通过下图分析</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706180452345.png" alt="image-20230706180452345"></p>
+<p>在我们上述案例中，我们通过配置客户端配置文件中的</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:10086/eureka</span></span><br></pre></td></tr></table></figure>
+
+<p>分别将我们的order-service、user-service注册到注册中心当中去。</p>
+<p>当我们需要调用的时候，我们的服务消费者只需要去注册中心拉取我们的服务信息，然后再进行远程调用即可，这也就解释我们上面的第一个问题：<strong>order-service在发起远程调用的时候，该如何得知user-service实例的ip地址和端口的</strong></p>
+<p>然后当我们的服务注册到Eureka注册中心之后，我们的注册中心会定期检查我们服务的一个健康状态的，通常是30s，这样也就能解决我们上述的第三个问题：<strong>order-service如何得知某个user-service实例是否依然健康，是不是已经宕机？</strong></p>
+<p>然后对于第二个问题：<strong>有多个user-service实例地址，order-service调用时该如何选择？</strong>在这里，我们可以看到在RestTemplate中加了一个注解<code>@LoadBalanced</code>，这个注解的作用其实就是做了一个负载均衡，具体的原理，如下图所示：</p>
+<p> <img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706195504888.png" alt="image-20230706195504888"></p>
+<h3 id="Ribbon负载均衡在SpringCloud中的实现（源码分析）"><a href="#Ribbon负载均衡在SpringCloud中的实现（源码分析）" class="headerlink" title="Ribbon负载均衡在SpringCloud中的实现（源码分析）"></a>Ribbon负载均衡在SpringCloud中的实现（源码分析）</h3><p>在上述案列中，我们只加了一个<code>@LoadBalanced</code>注解，就实现了负载均衡，这个注解到底做了什么呢？</p>
+<p>下面我们通过源码追踪，分析一下SpringCloud是如何实现Ribbon负载均衡的。</p>
+<p>我们先定位到<code>@LoadBalanced</code>注解所在的包，发现在同包下有一个<code>LoadBalancerInterceptor</code> 类。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706200720713.png" alt="image-20230706200720713"></p>
+<p>顾名思义，这是一个负载均衡的拦截器，我们以这个类为起点，进行调试，源码追踪</p>
+<p><strong>进入到我们的<code>LoadBalancerInterceptor</code> 类中，发现其中有一个<code>intercept</code> 方法，我们打个断点，调试</strong></p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706201039313.png" alt="image-20230706201039313"></p>
+<p>可以发现，<code>intercept</code>方法将我们order-service中发送到服务提供者user-service的请求拦截下来了，并且解析了我们的请求url，获取我们服务提供者的主机名。</p>
+<p>我们继续追踪，查看<code>loadBalancer.execute</code>方法到底做了什么，追踪到<code>LoadBalancerClient</code>的一个实现类<code>RibbonLoadBalancerClient</code> 中</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706201714764.png" alt="image-20230706201714764"></p>
+<p>我们可以发现，主机名：userservice作为参数传递到了<code>getLoadBalancer</code>方法中，我们追踪该方法，看一下里面到底做了什么。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706204336667.png" alt="image-20230706204336667"></p>
+<p><code>getLoadBalancer</code> 方法最终返回了一个Feign Client实例，通过这个Feign Client我们可以从Eureka中拉取对应我们的serviceId对应的服务，也就是userservice服务。</p>
+<blockquote>
+<p>在使用Feign Client进行服务调用时，Feign Client会通过负载均衡器来选择要调用的服务实例。</p>
+</blockquote>
+<p>我们继续往下调试</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706204944251.png" alt="image-20230706204944251"></p>
+<p>在通过<code>getLoadBalancer(serviceId)</code> 方法获取到的返回值loadBalancer中，可以看到我们的userservice对应的端口！也就是说我们的拉取服务是在这里完成的。</p>
+<p>我们继续追踪源码，看一个<code>execute</code> 方法中的<code>getServer()</code>到底做了什么。可以发现，后面<code>getServer()</code>会调用到<code>BaseLoadBalancer</code>类下的<code>chooseServer</code>方法中。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706210502196.png" alt="image-20230706210502196"></p>
+<p>我们将这个方法分成两部分来看，分别解析：</p>
+<p><strong>第一部分：</strong></p>
+<blockquote>
+<p>在这里，我们做了一个计数器的自增操作，因为我们在我们的负载均衡的轮询策略中，是按照一定的顺序来依次执行的。每次选择服务实例时，计数器会自增1，从而实现轮询的效果。</p>
+<p>例如，假设我们有三个服务A，B，C，我们的负载均衡采取了轮询的策略来进行服务的调用。</p>
+<p>当我们进行第一次进行服务选择时，负载均衡器会选择我们的第0个服务，也就是A；</p>
+<p>当我们进行第二次进行服务选择时，负载均衡器会选择我们的第1个服务，也就是B；</p>
+<p>当我们进行第三次进行服务选择时，负载均衡器会选择我们的第2个服务，也就是C；</p>
+<p>当我们进行第四次进行服务选择时，由于已经选择了所有的服务实例，负载均衡器会重新从第0个服务实例开始选择。</p>
+</blockquote>
+<p><strong>第二部分：</strong></p>
+<blockquote>
+<p>在这里，我们会根据指定的负载均衡策略对应的算法，对我们的服务进行一个选择操作，如果我们没有指定负载均衡策略，则会使用Ribbon默认的负载均衡策略——轮询。</p>
+</blockquote>
+<p>上述的负载均衡策略是通过rule获取的，我们可以看一下，rule的类型以及实现类</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706212556355.png" alt="image-20230706212556355"></p>
+<blockquote>
+<p>拓展：IRule的实现类及其代表的含义如下</p>
+<ol>
+<li><strong>RoundRobinRule（轮询规则）：</strong>按照顺序依次选择可用的服务器进行请求分发，实现简单的轮询负载均衡。</li>
+<li><strong>WeightedResponseTimeRule（加权响应时间规则）：</strong>根据每个服务器的平均响应时间和权重，选择一个性能较好的服务器进行请求分发。具有更低响应时间和较高权重的服务器将有更高的概率被选中。</li>
+<li><strong>RandomRule（随机规则）：</strong>随机选择一个可用的服务器进行请求分发。具有平均负载分布的特点，适用于无需特定负载均衡策略的场景。</li>
+<li><strong>RetryRule（重试规则）：</strong>在请求失败时，会尝试重新选择一个可用的服务器进行重试。该规则适用于具有容错需求的场景，可以增加系统的可靠性。</li>
+<li><strong>AvailabilityFilteringRule（可用性过滤规则）：</strong>根据服务器的可用性和运行状态，选择一个可用的服务器进行请求分发。它会排除掉那些因为故障或超负荷而不可用的服务器。</li>
+<li><strong>BestAvailableRule（最佳可用规则）：</strong>选择一个可用服务器中并发连接最低的服务器进行请求分发。这有助于减少请求被发送到负载较高的服务器上。</li>
+<li><strong>ZoneAvoidanceRule：</strong>以区域可用的服务器为基础进行服务器的选择。使用Zone对服务器进行分类，这个Zone可以理解为一个机房、一个机架等。而后再对Zone内的多个服务做轮询。</li>
+</ol>
+</blockquote>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在最后，我们可以发现，我们使用SpringCloud整合Eureka注册中心实现服务的注册发现与处理分配时，其实就是通过我们的<code>LoadBalancerInterceptor</code>将我们的要调用的服务拦截下来，并获取我们服务请求url中的主机名，然后通过<code>Feign Client</code>和负载均衡器到我们的Eureka注册中心拉取服务列表。</p>
+<p>拉取到服务列表之后，我们会调用<code>getServer()</code>方法去执行我们的负载均衡策略，通过我们设定的负载均衡策略（默认是轮询），执行对应的负载均衡算法，从而选择一个服务列表中选择一个适合的服务给我们的服务消费者使用 。</p>
+]]></content>
+      <categories>
+        <category>Spring Cloud</category>
+      </categories>
+      <tags>
+        <tag>Spring Cloud</tag>
+        <tag>Ribbon</tag>
+        <tag>Eureka</tag>
+        <tag>Spring Cloud LoadBalancer</tag>
       </tags>
   </entry>
 </search>

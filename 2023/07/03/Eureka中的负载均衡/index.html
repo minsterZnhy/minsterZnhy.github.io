@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"minster.top","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="Eureka中的负载均衡前言Eureka是Netflix开发的一种用于构建分布式系统中的微服务架构的服务发现组件。 Ribbon是一个基于HTTP和TCP协议的客户端负载均衡工具，它是Netflix开源的一个组件，旨在提供客户端侧负载均衡算法和服务实例的自动发现功能，以实现对服务调用的负载均衡。 Spring官方提供了一个Spring Cloud LoadBalancer来替代Ribbon它是基于">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Eureka中的负载均衡">
+<meta property="og:url" content="https://minster.top/2023/07/03/Eureka%E4%B8%AD%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/index.html">
+<meta property="og:site_name" content="minster&#39;s Blog">
+<meta property="og:description" content="Eureka中的负载均衡前言Eureka是Netflix开发的一种用于构建分布式系统中的微服务架构的服务发现组件。 Ribbon是一个基于HTTP和TCP协议的客户端负载均衡工具，它是Netflix开源的一个组件，旨在提供客户端侧负载均衡算法和服务实例的自动发现功能，以实现对服务调用的负载均衡。 Spring官方提供了一个Spring Cloud LoadBalancer来替代Ribbon它是基于">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706170322077.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706171645353.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706141607328.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706102828818.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706173731285.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706174019102.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706175121795.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706175230190.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706175757006.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706180452345.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706195504888.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706200720713.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706201039313.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706201714764.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706204336667.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706204944251.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706210502196.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706212556355.png">
+<meta property="article:published_time" content="2023-07-03T13:21:04.000Z">
+<meta property="article:modified_time" content="2023-07-06T13:58:55.570Z">
+<meta property="article:author" content="Minster">
+<meta property="article:tag" content="Spring Cloud">
+<meta property="article:tag" content="Ribbon">
+<meta property="article:tag" content="Eureka">
+<meta property="article:tag" content="Spring Cloud LoadBalancer">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706170322077.png">
+
+
+<link rel="canonical" href="https://minster.top/2023/07/03/Eureka%E4%B8%AD%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://minster.top/2023/07/03/Eureka%E4%B8%AD%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/","path":"2023/07/03/Eureka中的负载均衡/","title":"Eureka中的负载均衡"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Eureka中的负载均衡 | minster's Blog</title>
+  
+
+
+
+
+
+
+
+<link rel="dns-prefetch" href="my-blog-comments-nine.vercel.app">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="minster's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">minster's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录学习以及生活~</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">15</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">6</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">6</span></a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Eureka%E4%B8%AD%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="nav-text">Eureka中的负载均衡</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Eureka%E4%B8%8ERibbon%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-text">Eureka与Ribbon的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8Eureka"><span class="nav-text">为什么要使用Eureka</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Ribbon%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%9C%A8SpringCloud%E4%B8%AD%E7%9A%84%E5%AE%9E%E7%8E%B0%EF%BC%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%89"><span class="nav-text">Ribbon负载均衡在SpringCloud中的实现（源码分析）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Minster"
+      src="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/avatar.png">
+  <p class="site-author-name" itemprop="name">Minster</p>
+  <div class="site-description" itemprop="description">祝你好运</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/minsterZnhy" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;minsterZnhy" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:minster8And24@outlook,com" title="E-Mail → mailto:minster8And24@outlook,com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://minster.top/2023/07/03/Eureka%E4%B8%AD%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/avatar.png">
+      <meta itemprop="name" content="Minster">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="minster's Blog">
+      <meta itemprop="description" content="祝你好运">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Eureka中的负载均衡 | minster's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Eureka中的负载均衡
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-07-03 21:21:04" itemprop="dateCreated datePublished" datetime="2023-07-03T21:21:04+08:00">2023-07-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-07-06 21:58:55" itemprop="dateModified" datetime="2023-07-06T21:58:55+08:00">2023-07-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Spring-Cloud/" itemprop="url" rel="index"><span itemprop="name">Spring Cloud</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="far fa-comment"></i>
+    </span>
+    <span class="post-meta-item-text">Waline: </span>
+  
+    <a title="waline" href="/2023/07/03/Eureka%E4%B8%AD%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/#waline" itemprop="discussionUrl">
+      <span class="post-comments-count waline-comment-count" data-path="/2023/07/03/Eureka%E4%B8%AD%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>7.2k</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="Eureka中的负载均衡"><a href="#Eureka中的负载均衡" class="headerlink" title="Eureka中的负载均衡"></a>Eureka中的负载均衡</h2><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>Eureka是Netflix开发的一种用于构建分布式系统中的微服务架构的服务发现组件。</p>
+<p>Ribbon是一个基于HTTP和TCP协议的客户端负载均衡工具，它是Netflix开源的一个组件，旨在提供客户端侧负载均衡算法和服务实例的自动发现功能，以实现对服务调用的负载均衡。</p>
+<p>Spring官方提供了一个Spring Cloud LoadBalancer来替代Ribbon它是基于Netflix Ribbon的一个新的客户端负载均衡组件，提供更加灵活的扩展性和可配置性。</p>
+<p>而在我们的Eureka中实现服务的远程调用则是通过Spring Cloud LoadBalancer来完成。本文将结合源码分析一下Euraka拉取服务以及远程调用服务的过程。</p>
+<span id="more"></span>
+
+<h3 id="Eureka与Ribbon的关系"><a href="#Eureka与Ribbon的关系" class="headerlink" title="Eureka与Ribbon的关系"></a>Eureka与Ribbon的关系</h3><p>Eureka组件只提供服务的注册和发现功能，它本身并不具备负载均衡的功能。但我们使用Eureka组件时却能实现服务请求的处理和分配（负载均衡），正是因为Eureka中集成了Ribbon负载均衡组件。</p>
+<blockquote>
+<p>Ribbon是Netflix开源的一种用于构建分布式系统中的微服务架构的客户端负载均衡组件。Ribbon支持多种负载均衡算法，例如轮询、随机、加权轮询、加权随机等，并且支持自定义负载均衡算法。Ribbon可以与Eureka、Consul等服务发现组件集成，也可以与Spring Cloud LoadBalancer等负载均衡器集成，提供更加灵活和可扩展的负载均衡功能。</p>
+</blockquote>
+<h3 id="为什么要使用Eureka"><a href="#为什么要使用Eureka" class="headerlink" title="为什么要使用Eureka"></a>为什么要使用Eureka</h3><p>现在有一个案例：在分布式的架构中，有两个节点order-service以及user-service。</p>
+<p>在order-service中的根据id查询订单业务，要求在查询订单的同时，根据订单中包含的userId查询出用户信息，一起返回。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706170322077.png" alt="image-20230706170322077"></p>
+<p>如果上图所示，我们在order-service服务中需要想user-service中发起一个请求，才能取到对应的用户信息。</p>
+<p>要实现上述需求，我们可以这样做</p>
+<ol>
+<li><p>在order-service中注册RestTemplate</p>
+<blockquote>
+<p>RestTemplate是Spring框架提供的一个用于发送HTTP请求的客户端库，主要用于调用RESTful Web服务时发送请求并接收响应。它可以发送GET、POST、PUT、DELETE等HTTP请求，并接收相应的响应。</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.itcast.order.config;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.client.loadbalancer.LoadBalanced;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Configuration;</span><br><span class="line"><span class="keyword">import</span> org.springframework.web.client.RestTemplate;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>: minster</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@PACKAGE</span>_NAME: cn.itcast.config</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@NAME</span>: RestConfiguration</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2023/7/4</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RestConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> RestTemplate <span class="title function_">restTemplate</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">RestTemplate</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>修改order-service中的order业务方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Resource</span></span><br><span class="line"><span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> Order <span class="title function_">queryOrderById</span><span class="params">(Long orderId)</span> &#123;</span><br><span class="line">    <span class="comment">// 1. 查询订单</span></span><br><span class="line">    <span class="type">Order</span> <span class="variable">order</span> <span class="operator">=</span> orderMapper.findById(orderId);</span><br><span class="line">    <span class="comment">// 2. 远程查询user信息</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;http://localhost:8081/user/&quot;</span> + order.getUserId();</span><br><span class="line">    <span class="comment">// 3. 通过restTemplate发起调用</span></span><br><span class="line">    <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> restTemplate.getForObject(url, User.class);</span><br><span class="line">    <span class="comment">// 4. 封装数据到order</span></span><br><span class="line">    order.setUser(user);</span><br><span class="line">    <span class="comment">// 5. 返回</span></span><br><span class="line">    <span class="keyword">return</span> order;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>测试：</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706171645353.png" alt="image-20230706171645353"></p>
+<p>如下图所示，我们的user-service提供了接口给外部使用，即服务提供者。而order-service使用了user-service，即服务消费者。</p>
+<blockquote>
+<p>服务提供者与服务消费者是相对的，一个服务既有可能是服务提供者，也有可能是服务消费者</p>
+</blockquote>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706141607328.png" alt="image-20230706141607328"></p>
+<p>虽然上述代码实现了需求，但是我们可以发现以下问题：</p>
+<ul>
+<li>order-service在发起远程调用的时候，该如何得知user-service实例的ip地址和端口？</li>
+<li>有多个user-service实例地址，order-service调用时该如何选择？</li>
+<li>order-service如何得知某个user-service实例是否依然健康，是不是已经宕机？</li>
+</ul>
+<p>上述问题都需要利用Spring Cloud中的注册中心来解决，其中Eureka便是一个注册中心。</p>
+<p>下面我们使用一个案例，来演示基于Eureka组件的服务注册与发现以及服务调用请求的分配，分析Eureka是怎么解决上述三个问题的。</p>
+<p>案例的架构如下：</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706102828818.png" alt="image-20230706102828818"></p>
+<p><strong>实现代码</strong></p>
+<p>新建项目eureka-server</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706173731285.png" alt="image-20230706173731285"></p>
+<p>导入服务端依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependencies</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-server<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependencies</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>编写配置信息。</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这里配置了eureka-server的端口号</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">port:</span> <span class="number">10086</span></span><br><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">eureka-server</span> <span class="comment"># applicatio-name: 其实就是在注册中心的服务名字</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:10086/eureka</span></span><br></pre></td></tr></table></figure>
+
+<p>开启EurekaServer服务功能</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> cn.itcast;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> com.netflix.discovery.EurekaNamespace;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.SpringApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.boot.autoconfigure.SpringBootApplication;</span><br><span class="line"><span class="keyword">import</span> org.springframework.cloud.netflix.eureka.server.EnableEurekaServer;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>: minster</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@PACKAGE</span>_NAME: cn.itcast</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@NAME</span>: EurekaApplication</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2023/7/5</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="comment">// @EnableEurekaServer 可以开启EurekaServer服务</span></span><br><span class="line"><span class="meta">@EnableEurekaServer</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">EurekaApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        SpringApplication.run(EurekaApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>访问：<a target="_blank" rel="noopener" href="http://localhost:10086/">Eureka</a></p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706174019102.png" alt="image-20230706174019102"></p>
+<p>我们可以发现eureka-server服务已经成功注册到我们的Eureka注册中心</p>
+<p>同时，我们将order-service、user-service服务也注册到我们的Eureka注册中心</p>
+<p>步骤如下：</p>
+<ol>
+<li><p>导入客户端依赖</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.cloud<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-cloud-starter-netflix-eureka-client<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>编写配置文件</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">spring:</span></span><br><span class="line">  <span class="attr">application:</span></span><br><span class="line">    <span class="attr">name:</span> <span class="string">userservice</span></span><br><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:10086/eureka</span></span><br></pre></td></tr></table></figure></li>
+</ol>
+<p>注册步骤一样，这里不再演示。</p>
+<p>同时，我们多启动一个user-service，构成一个user服务集群。</p>
+<p>当前服务启动情况如下图所示：</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706175121795.png" alt="image-20230706175121795"></p>
+<p>刷新一下<a target="_blank" rel="noopener" href="http://localhost:10086/">Eureka</a>，可以发现，我们都客户端服务都注册到我们的Eureka中</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706175230190.png" alt="image-20230706175230190"></p>
+<p>下面我们修改order-service中的业务代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Resource</span></span><br><span class="line"><span class="keyword">private</span> RestTemplate restTemplate;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> Order <span class="title function_">queryOrderById</span><span class="params">(Long orderId)</span> &#123;</span><br><span class="line">    <span class="comment">// 1. 查询订单</span></span><br><span class="line">    <span class="type">Order</span> <span class="variable">order</span> <span class="operator">=</span> orderMapper.findById(orderId);</span><br><span class="line">    <span class="comment">// 2. 远程查询user信息</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> <span class="string">&quot;http://userservice/user/&quot;</span> + order.getUserId();</span><br><span class="line">    <span class="comment">// 3. 通过restTemplate发起调用</span></span><br><span class="line">    <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> restTemplate.getForObject(url, User.class);</span><br><span class="line">    <span class="comment">// 4. 封装数据到order</span></span><br><span class="line">    order.setUser(user);</span><br><span class="line">    <span class="comment">// 5. 返回</span></span><br><span class="line">    <span class="keyword">return</span> order;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后在order-service中的RestTemplate配置类中给Bean添加<code>@LoadBalanced</code>注解</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RestConfiguration</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="meta">@LoadBalanced</span></span><br><span class="line">    <span class="keyword">public</span> RestTemplate <span class="title function_">restTemplate</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">RestTemplate</span>();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后调用order服务接口，查看两个user-service中的控制台的日志</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706175757006.png" alt="image-20230706175757006"></p>
+<p>我们可以发现，两个user-service服务都被调用到了！</p>
+<p>Eureka是怎么做到的呢？我们可以通过下图分析</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706180452345.png" alt="image-20230706180452345"></p>
+<p>在我们上述案例中，我们通过配置客户端配置文件中的</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">eureka:</span></span><br><span class="line">  <span class="attr">client:</span></span><br><span class="line">    <span class="attr">service-url:</span></span><br><span class="line">      <span class="attr">defaultZone:</span> <span class="string">http://127.0.0.1:10086/eureka</span></span><br></pre></td></tr></table></figure>
+
+<p>分别将我们的order-service、user-service注册到注册中心当中去。</p>
+<p>当我们需要调用的时候，我们的服务消费者只需要去注册中心拉取我们的服务信息，然后再进行远程调用即可，这也就解释我们上面的第一个问题：<strong>order-service在发起远程调用的时候，该如何得知user-service实例的ip地址和端口的</strong></p>
+<p>然后当我们的服务注册到Eureka注册中心之后，我们的注册中心会定期检查我们服务的一个健康状态的，通常是30s，这样也就能解决我们上述的第三个问题：<strong>order-service如何得知某个user-service实例是否依然健康，是不是已经宕机？</strong></p>
+<p>然后对于第二个问题：<strong>有多个user-service实例地址，order-service调用时该如何选择？</strong>在这里，我们可以看到在RestTemplate中加了一个注解<code>@LoadBalanced</code>，这个注解的作用其实就是做了一个负载均衡，具体的原理，如下图所示：</p>
+<p> <img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706195504888.png" alt="image-20230706195504888"></p>
+<h3 id="Ribbon负载均衡在SpringCloud中的实现（源码分析）"><a href="#Ribbon负载均衡在SpringCloud中的实现（源码分析）" class="headerlink" title="Ribbon负载均衡在SpringCloud中的实现（源码分析）"></a>Ribbon负载均衡在SpringCloud中的实现（源码分析）</h3><p>在上述案列中，我们只加了一个<code>@LoadBalanced</code>注解，就实现了负载均衡，这个注解到底做了什么呢？</p>
+<p>下面我们通过源码追踪，分析一下SpringCloud是如何实现Ribbon负载均衡的。</p>
+<p>我们先定位到<code>@LoadBalanced</code>注解所在的包，发现在同包下有一个<code>LoadBalancerInterceptor</code> 类。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706200720713.png" alt="image-20230706200720713"></p>
+<p>顾名思义，这是一个负载均衡的拦截器，我们以这个类为起点，进行调试，源码追踪</p>
+<p><strong>进入到我们的<code>LoadBalancerInterceptor</code> 类中，发现其中有一个<code>intercept</code> 方法，我们打个断点，调试</strong></p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706201039313.png" alt="image-20230706201039313"></p>
+<p>可以发现，<code>intercept</code>方法将我们order-service中发送到服务提供者user-service的请求拦截下来了，并且解析了我们的请求url，获取我们服务提供者的主机名。</p>
+<p>我们继续追踪，查看<code>loadBalancer.execute</code>方法到底做了什么，追踪到<code>LoadBalancerClient</code>的一个实现类<code>RibbonLoadBalancerClient</code> 中</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706201714764.png" alt="image-20230706201714764"></p>
+<p>我们可以发现，主机名：userservice作为参数传递到了<code>getLoadBalancer</code>方法中，我们追踪该方法，看一下里面到底做了什么。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706204336667.png" alt="image-20230706204336667"></p>
+<p><code>getLoadBalancer</code> 方法最终返回了一个Feign Client实例，通过这个Feign Client我们可以从Eureka中拉取对应我们的serviceId对应的服务，也就是userservice服务。</p>
+<blockquote>
+<p>在使用Feign Client进行服务调用时，Feign Client会通过负载均衡器来选择要调用的服务实例。</p>
+</blockquote>
+<p>我们继续往下调试</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706204944251.png" alt="image-20230706204944251"></p>
+<p>在通过<code>getLoadBalancer(serviceId)</code> 方法获取到的返回值loadBalancer中，可以看到我们的userservice对应的端口！也就是说我们的拉取服务是在这里完成的。</p>
+<p>我们继续追踪源码，看一个<code>execute</code> 方法中的<code>getServer()</code>到底做了什么。可以发现，后面<code>getServer()</code>会调用到<code>BaseLoadBalancer</code>类下的<code>chooseServer</code>方法中。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706210502196.png" alt="image-20230706210502196"></p>
+<p>我们将这个方法分成两部分来看，分别解析：</p>
+<p><strong>第一部分：</strong></p>
+<blockquote>
+<p>在这里，我们做了一个计数器的自增操作，因为我们在我们的负载均衡的轮询策略中，是按照一定的顺序来依次执行的。每次选择服务实例时，计数器会自增1，从而实现轮询的效果。</p>
+<p>例如，假设我们有三个服务A，B，C，我们的负载均衡采取了轮询的策略来进行服务的调用。</p>
+<p>当我们进行第一次进行服务选择时，负载均衡器会选择我们的第0个服务，也就是A；</p>
+<p>当我们进行第二次进行服务选择时，负载均衡器会选择我们的第1个服务，也就是B；</p>
+<p>当我们进行第三次进行服务选择时，负载均衡器会选择我们的第2个服务，也就是C；</p>
+<p>当我们进行第四次进行服务选择时，由于已经选择了所有的服务实例，负载均衡器会重新从第0个服务实例开始选择。</p>
+</blockquote>
+<p><strong>第二部分：</strong></p>
+<blockquote>
+<p>在这里，我们会根据指定的负载均衡策略对应的算法，对我们的服务进行一个选择操作，如果我们没有指定负载均衡策略，则会使用Ribbon默认的负载均衡策略——轮询。</p>
+</blockquote>
+<p>上述的负载均衡策略是通过rule获取的，我们可以看一下，rule的类型以及实现类</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230706212556355.png" alt="image-20230706212556355"></p>
+<blockquote>
+<p>拓展：IRule的实现类及其代表的含义如下</p>
+<ol>
+<li><strong>RoundRobinRule（轮询规则）：</strong>按照顺序依次选择可用的服务器进行请求分发，实现简单的轮询负载均衡。</li>
+<li><strong>WeightedResponseTimeRule（加权响应时间规则）：</strong>根据每个服务器的平均响应时间和权重，选择一个性能较好的服务器进行请求分发。具有更低响应时间和较高权重的服务器将有更高的概率被选中。</li>
+<li><strong>RandomRule（随机规则）：</strong>随机选择一个可用的服务器进行请求分发。具有平均负载分布的特点，适用于无需特定负载均衡策略的场景。</li>
+<li><strong>RetryRule（重试规则）：</strong>在请求失败时，会尝试重新选择一个可用的服务器进行重试。该规则适用于具有容错需求的场景，可以增加系统的可靠性。</li>
+<li><strong>AvailabilityFilteringRule（可用性过滤规则）：</strong>根据服务器的可用性和运行状态，选择一个可用的服务器进行请求分发。它会排除掉那些因为故障或超负荷而不可用的服务器。</li>
+<li><strong>BestAvailableRule（最佳可用规则）：</strong>选择一个可用服务器中并发连接最低的服务器进行请求分发。这有助于减少请求被发送到负载较高的服务器上。</li>
+<li><strong>ZoneAvoidanceRule：</strong>以区域可用的服务器为基础进行服务器的选择。使用Zone对服务器进行分类，这个Zone可以理解为一个机房、一个机架等。而后再对Zone内的多个服务做轮询。</li>
+</ol>
+</blockquote>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>在最后，我们可以发现，我们使用SpringCloud整合Eureka注册中心实现服务的注册发现与处理分配时，其实就是通过我们的<code>LoadBalancerInterceptor</code>将我们的要调用的服务拦截下来，并获取我们服务请求url中的主机名，然后通过<code>Feign Client</code>和负载均衡器到我们的Eureka注册中心拉取服务列表。</p>
+<p>拉取到服务列表之后，我们会调用<code>getServer()</code>方法去执行我们的负载均衡策略，通过我们设定的负载均衡策略（默认是轮询），执行对应的负载均衡算法，从而选择一个服务列表中选择一个适合的服务给我们的服务消费者使用 。</p>
+
+    </div>
+
+    
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Minster WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Minster Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="followme">
+  <span>Welcome to my other publishing channels</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Spring-Cloud/" rel="tag"># Spring Cloud</a>
+              <a href="/tags/Ribbon/" rel="tag"># Ribbon</a>
+              <a href="/tags/Eureka/" rel="tag"># Eureka</a>
+              <a href="/tags/Spring-Cloud-LoadBalancer/" rel="tag"># Spring Cloud LoadBalancer</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/06/03/Java%E9%9D%A2%E8%AF%95%E9%A2%98%E6%B1%87%E6%80%BB%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%EF%BC%81%EF%BC%89/" rel="prev" title="Java面试题汇总（持续更新！）">
+                  <i class="fa fa-chevron-left"></i> Java面试题汇总（持续更新！）
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="waline"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Minster</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Word count total: </span>
+    <span title="Word count total">46k</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"my-blog-comments-nine.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":true,"pageview":false,"placeholder":"疑义相与析，畅所欲言，不登录也没关系~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"visitor":true,"comment_count":true,"requiredFields":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2023/07/03/Eureka%E4%B8%AD%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/"}</script>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
+<script>
+document.addEventListener('page:loaded', () => {
+  NexT.utils.loadComments(CONFIG.waline.el).then(() =>
+    NexT.utils.getScript(CONFIG.waline.libUrl, { condition: window.Waline })
+  ).then(() => 
+    Waline.init(Object.assign({}, CONFIG.waline,{ el: document.querySelector(CONFIG.waline.el) }))
+  );
+});
+</script>
+
+  <script type="text/javascript" src="lib/clipboard/src/clipboard.js"></script>
+<script type="text/javascript" src="js/src/custom.js"></script>
+</body>
+</html>
