@@ -238,7 +238,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">Edited on</span>
-      <time title="Modified: 2023-07-08 08:17:06" itemprop="dateModified" datetime="2023-07-08T08:17:06+08:00">2023-07-08</time>
+      <time title="Modified: 2023-07-08 10:32:38" itemprop="dateModified" datetime="2023-07-08T10:32:38+08:00">2023-07-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -281,7 +281,7 @@
     
     
     <div class="post-body" itemprop="articleBody">
-          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>看过HashMap源码人应该都知道HashMap是如何根据hash值来计算哈希桶数组下标的，<strong>就是通过(n - 1) &amp; hash来计算的，为什么用的是位运算(&amp;)而不是取模运算(hash % n)呢？</strong></p>
+          <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>看过HashMap源码的应该都知道HashMap是如何根据hash值来计算哈希桶数组下标的，<strong>就是通过(n - 1) &amp; hash来计算的，为什么用的是位运算(&amp;)而不是取模运算(hash % n)呢？</strong></p>
 <p>获取hash桶数组下标源码</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="literal">null</span>)&#123;</span><br><span class="line">    tab[i] = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
