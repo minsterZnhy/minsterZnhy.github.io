@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"minster.top","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言本文将以查询商铺信息业务为主线，使用Redis做缓存逐步提升查询商铺的效率。 同时提供使用Redis缓存过程中遇到的数据一致性、缓存击穿、缓存穿透、缓存雪崩等问题的解决思路。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis实现缓存及解决缓存产生的问题">
+<meta property="og:url" content="https://minster.top/2023/07/22/Redis%E5%AE%9E%E7%8E%B0%E7%BC%93%E5%AD%98%E4%BB%A5%E5%8F%8A%E4%BC%98%E5%8C%96%E6%80%9D%E8%B7%AF/index.html">
+<meta property="og:site_name" content="minster&#39;s Blog">
+<meta property="og:description" content="前言本文将以查询商铺信息业务为主线，使用Redis做缓存逐步提升查询商铺的效率。 同时提供使用Redis缓存过程中遇到的数据一致性、缓存击穿、缓存穿透、缓存雪崩等问题的解决思路。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230620215005159.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230620215911050.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230620222156022.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230620222915204.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230621205555248.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230622075634008.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/Cache_penetration_1.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230625174538016.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230709203010616.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230723215156830.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230723215700402.png">
+<meta property="article:published_time" content="2023-07-22T09:08:15.000Z">
+<meta property="article:modified_time" content="2023-07-23T14:17:14.687Z">
+<meta property="article:author" content="Minster">
+<meta property="article:tag" content="Redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230620215005159.png">
+
+
+<link rel="canonical" href="https://minster.top/2023/07/22/Redis%E5%AE%9E%E7%8E%B0%E7%BC%93%E5%AD%98%E4%BB%A5%E5%8F%8A%E4%BC%98%E5%8C%96%E6%80%9D%E8%B7%AF/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://minster.top/2023/07/22/Redis%E5%AE%9E%E7%8E%B0%E7%BC%93%E5%AD%98%E4%BB%A5%E5%8F%8A%E4%BC%98%E5%8C%96%E6%80%9D%E8%B7%AF/","path":"2023/07/22/Redis实现缓存以及优化思路/","title":"Redis实现缓存及解决缓存产生的问题"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Redis实现缓存及解决缓存产生的问题 | minster's Blog</title>
+  
+
+
+
+
+
+
+
+<link rel="dns-prefetch" href="my-blog-comments-nine.vercel.app">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="minster's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">minster's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录学习以及生活~</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">17</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">8</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">8</span></a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%BB%E5%8A%A0%E5%95%86%E6%88%B7%E7%BC%93%E5%AD%98"><span class="nav-text">添加商户缓存</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%9B%B4%E6%96%B0%E7%AD%96%E7%95%A5"><span class="nav-text">缓存更新策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%87%BB%E7%A9%BF"><span class="nav-text">缓存击穿</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Minster"
+      src="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/avatar.png">
+  <p class="site-author-name" itemprop="name">Minster</p>
+  <div class="site-description" itemprop="description">祝你好运</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">17</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/minsterZnhy" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;minsterZnhy" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:minster8And24@outlook,com" title="E-Mail → mailto:minster8And24@outlook,com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://minster.top/2023/07/22/Redis%E5%AE%9E%E7%8E%B0%E7%BC%93%E5%AD%98%E4%BB%A5%E5%8F%8A%E4%BC%98%E5%8C%96%E6%80%9D%E8%B7%AF/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/avatar.png">
+      <meta itemprop="name" content="Minster">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="minster's Blog">
+      <meta itemprop="description" content="祝你好运">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Redis实现缓存及解决缓存产生的问题 | minster's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Redis实现缓存及解决缓存产生的问题
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-07-22 17:08:15" itemprop="dateCreated datePublished" datetime="2023-07-22T17:08:15+08:00">2023-07-22</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-07-23 22:17:14" itemprop="dateModified" datetime="2023-07-23T22:17:14+08:00">2023-07-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Redis-%E7%BC%93%E5%AD%98%E9%97%AE%E9%A2%98/" itemprop="url" rel="index"><span itemprop="name">Redis 缓存问题</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="far fa-comment"></i>
+    </span>
+    <span class="post-meta-item-text">Waline: </span>
+  
+    <a title="waline" href="/2023/07/22/Redis%E5%AE%9E%E7%8E%B0%E7%BC%93%E5%AD%98%E4%BB%A5%E5%8F%8A%E4%BC%98%E5%8C%96%E6%80%9D%E8%B7%AF/#waline" itemprop="discussionUrl">
+      <span class="post-comments-count waline-comment-count" data-path="/2023/07/22/Redis%E5%AE%9E%E7%8E%B0%E7%BC%93%E5%AD%98%E4%BB%A5%E5%8F%8A%E4%BC%98%E5%8C%96%E6%80%9D%E8%B7%AF/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>11k</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文将以查询商铺信息业务为主线，使用Redis做缓存逐步提升查询商铺的效率。</p>
+<p>同时提供使用Redis缓存过程中遇到的数据一致性、缓存击穿、缓存穿透、缓存雪崩等问题的解决思路。</p>
+<span id="more"></span>
+<h2 id="添加商户缓存"><a href="#添加商户缓存" class="headerlink" title="添加商户缓存"></a>添加商户缓存</h2><p>在查询商户业务中，如果不使用缓存，而是直接像以下代码那样去查询数据库，效率是非常慢的！因为查询数据库操作的是磁盘，而操作磁盘需要大量的IO操作，从而导致查询效率非常慢！</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@GetMapping(&quot;/&#123;id&#125;&quot;)</span></span><br><span class="line"><span class="keyword">public</span> Result <span class="title function_">queryShopById</span><span class="params">(<span class="meta">@PathVariable(&quot;id&quot;)</span> Long id)</span> &#123;</span><br><span class="line">    <span class="comment">//这里是直接查询数据库</span></span><br><span class="line">    <span class="keyword">return</span> shopService.queryById(id);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们使用Postman测试一下效率</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230620215005159.png" alt="image-20230620215005159"></p>
+<p>可以发现，在数据量比较少的情况下，还是需要280ms</p>
+<p>下面我们使用redis做缓存优化一下</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 使用redis数据类型做缓存</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> StringRedisTemplate stringRedisTemplate;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> Result <span class="title function_">queryById</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">     <span class="comment">// 查看redis中是否存在对应数据</span></span><br><span class="line">     <span class="type">String</span> <span class="variable">shopJson</span> <span class="operator">=</span> stringRedisTemplate.opsForValue().get(CACHE_SHOP_KEY + id);</span><br><span class="line"></span><br><span class="line">     <span class="type">Shop</span> <span class="variable">shop</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Shop</span>();</span><br><span class="line">    <span class="comment">// 判断缓存中有没有店铺信息</span></span><br><span class="line">     <span class="keyword">if</span> (StrUtil.isNotBlank(shopJson))&#123;</span><br><span class="line">         <span class="comment">// 存在 返回</span></span><br><span class="line">         shop = JSONUtil.toBean(shopJson, Shop.class)</span><br><span class="line">         <span class="keyword">return</span> Result.ok(shop);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="comment">// 不存在 从数据库中查找</span></span><br><span class="line">     shop =  getById(id);</span><br><span class="line">     <span class="keyword">if</span> (shop == <span class="literal">null</span>)&#123;</span><br><span class="line">         <span class="comment">// 查不到对应的数据 返回</span></span><br><span class="line">         <span class="keyword">return</span> Result.fail(<span class="string">&quot;店铺不存在！&quot;</span>);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="comment">// 将对应的数据添加到redis中</span></span><br><span class="line">     redisTemplate.opsForValue().set(CACHE_SHOP_KEY + id,JSONUtil.toJsonStr(shop));</span><br><span class="line">     <span class="comment">// 查到对应的数据 返回</span></span><br><span class="line">     <span class="keyword">return</span> Result.ok(shop);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用Postman测试一下效率</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230620215911050.png" alt="image-20230620215911050"></p>
+<p>可以发现，查询用时为16ms，效率提升了十几倍！</p>
+<p>下面是使用Redis做缓存的具体流程</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230620222156022.png" alt="Cache_Model"></p>
+<p>以下是Redis实现添加商户缓存的业务逻辑图</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230620222915204.png" alt="add_shop_cache"></p>
+<p><strong>小结：</strong></p>
+<blockquote>
+<p>使用Redis做商铺缓存可以提升我们的查询效率，但随之也产生了一些问题：我们缓存的数据是存放在内存中的，而内存并不像JVM那样，有垃圾回收机制，如果不加以措施，我们内存很容易爆掉！同时，因为我们的数据库数据是会发生改变的，而缓存的数据来自于数据库，我们该怎么样保证数据的一致性呢？</p>
+</blockquote>
+<h2 id="缓存更新策略"><a href="#缓存更新策略" class="headerlink" title="缓存更新策略"></a>缓存更新策略</h2><p>其实，在Redis中，提供了一个缓存更新策略（其实就是缓存淘汰机制）；使用这个机制，可以很好的解决我们上一小节的问题。</p>
+<p>下面是三种缓存更新策略</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230621205555248.png" alt="image-20230621205555248"></p>
+<p>业务场景：</p>
+<ul>
+<li>低一致性要求：使用内存淘汰机制。例如店铺类型的查询缓存</li>
+<li>高一致性要求：主动更新，并以超时剔除作为兜底方案。例如店铺详情查询的缓存</li>
+</ul>
+<p>现在回到我们的业务，查询商铺信息，也就是高一致性要求的场景下，我们可以使用主动更新，并以超时剔除作为兜底方案解决上面的问题。</p>
+<p>而主动更新的话是有两种方案的：</p>
+<ul>
+<li>先删除缓存、再更新数据库</li>
+<li>先更新数据库、再删除缓存</li>
+</ul>
+<p>上述两种方案看起来没什么区别，但是高并发场景下差别可是很大的，我们一般选择后者。原因如下：</p>
+<blockquote>
+<p><strong>场景：缓存和数据库中的字段A&#x3D;10，现在线程1要将A修改成20，同时，线程2想查询这个字段</strong></p>
+</blockquote>
+<p>如果你选择第一种方案，在两个线程并发来访问时，线程1先来，他要更新的是<code>A=20</code>，他先把缓存中的字段A删了，此时线程2过来，他查询缓存时发现字段A并不存在，他就只能去数据库查了，同时他将数据库查询的数据<code>A=10</code>写入缓存，当他写入缓存后，线程1再执行更新动作时，实际上写入数据库的数据A&#x3D;20，与缓存中的不一致，导致后面其他线程再来查询A的时候，值都是缓存中的10；</p>
+<p><strong>通过上述分析，下面我们修改代码实现我们的查询商铺信息业务中数据在数据库和缓存的双写一致</strong></p>
+<ul>
+<li><p>第一个要修改的地方，每次修改店铺时，我们需要<strong>先更新数据库，再删除缓存</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> Result <span class="title function_">updateShopById</span><span class="params">(Shop shop)</span> &#123;</span><br><span class="line">    <span class="comment">// 根据id修改店铺</span></span><br><span class="line">    <span class="keyword">if</span> (shop.getId() == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> Result.fail(<span class="string">&quot;店铺id为空, 修改失败&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 先更新数据库</span></span><br><span class="line">    updateById(shop);</span><br><span class="line">    <span class="comment">// 修改完成后删除缓存</span></span><br><span class="line">    stringRedisTemplate.delete(CACHE_SHOP_KEY + shop.getId());</span><br><span class="line">    <span class="keyword">return</span> Result.ok();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>第二个要修改的地方，我们在添加redis缓存时，应该给我们<strong>缓存数据设置有效期</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 使用redis数据类型做缓存</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">private</span> StringRedisTemplate stringRedisTemplate;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> Result <span class="title function_">queryById</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">     <span class="comment">// 查看redis中是否存在对应数据</span></span><br><span class="line">     <span class="type">String</span> <span class="variable">shopJson</span> <span class="operator">=</span> stringRedisTemplate.opsForValue().get(CACHE_SHOP_KEY + id);</span><br><span class="line"></span><br><span class="line">     <span class="type">Shop</span> <span class="variable">shop</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Shop</span>();</span><br><span class="line">    <span class="comment">// 判断缓存中有没有店铺信息</span></span><br><span class="line">     <span class="keyword">if</span> (StrUtil.isNotBlank(shopJson))&#123;</span><br><span class="line">         <span class="comment">// 存在 返回</span></span><br><span class="line">         shop = JSONUtil.toBean(shopJson, Shop.class)</span><br><span class="line">         <span class="keyword">return</span> Result.ok(shop);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="comment">// 不存在 从数据库中查找</span></span><br><span class="line">     shop =  getById(id);</span><br><span class="line">     <span class="keyword">if</span> (shop == <span class="literal">null</span>)&#123;</span><br><span class="line">         <span class="comment">// 查不到对应的数据 返回</span></span><br><span class="line">         <span class="keyword">return</span> Result.fail(<span class="string">&quot;店铺不存在！&quot;</span>);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="comment">// 将对应的数据添加到redis中 并且设置缓存过期时间</span></span><br><span class="line">     redisTemplate.opsForValue().set(CACHE_SHOP_KEY + id,JSONUtil.toJsonStr(shop), <span class="number">30L</span>, TimeUnit.MINUTES);</span><br><span class="line">     <span class="comment">// 查到对应的数据 返回</span></span><br><span class="line">     <span class="keyword">return</span> Result.ok(shop);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<p><strong>小结：</strong></p>
+<blockquote>
+<p>目前，我们通过缓存更新策略，暂且解决了我们的缓存导致内存爆满以及数据一致性的要求。</p>
+<p>但是，由于我们的缓存数据是有一定的有效期的，同时也会产生以下三个redis缓存中常见的问题：</p>
+<ul>
+<li><strong>缓存穿透：</strong>缓存穿透是指客户端请求的数据在缓存中和数据库中都不存在，这样缓存永远不会生效，这些请求都会打到数据库。</li>
+<li><strong>缓存雪崩：</strong>缓存雪崩是指在同一时段大量的缓存key同时失效或者Redis服务宕机，导致大量请求到达数据库，带来巨大压力。</li>
+<li><strong>缓存击穿：</strong>缓存击穿问题也叫热点Key问题，就是一个被高并发访问并且缓存重建业务较复杂的key突然失效了，无数的请求访问会在瞬间给数据库带来巨大的冲击。</li>
+</ul>
+<p>下面三个小节将逐步分析这几个问题以及解决思路</p>
+</blockquote>
+<h2 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h2><blockquote>
+<p>在我们当前查询商户信息业务下可能会发生缓存穿透的场景：</p>
+<p>比方说现在有一个用户想要查询id&#x3D;10的商户，按照我们上面的逻辑，会先去redis缓存中查询是否存在，如果redis不存在，则去数据库中查询，但是由于用户查询的是不存在的店铺，我们并不会把后面从数据库中查询到的不存在店铺的信息保存到redis中，而是直接返回店铺不存在信息给用户。</p>
+<p>如果这个时候，这个用户不安好心，疯狂的往我们的系统中查询这个店铺的信息，那么这些请求会全部打到我们的数据库中，从而给我们数据库造成巨大的压力。</p>
+</blockquote>
+<p>上述场景中，大量的请求穿过了我们的redis缓存，到达数据库，这样是非常危险的，这也就是所谓的缓存穿透了。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230622075634008.png" alt="image-20230622075634008"></p>
+<p>缓存穿透的解决方案有两种：</p>
+<ul>
+<li>当查询到数据不存在时，我们将null数据存储到缓存当中去，从而避免大量的请求到达数据库</li>
+<li>使用布隆过滤器</li>
+</ul>
+<p><strong>方案一设置null值解决思路：</strong></p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/Cache_penetration_1.png" alt="Cache_penetration_1"></p>
+<p>如上图所示，我们只需要在查询到null数据的时候，往我们的缓存中设置null值，即可解决缓存穿透问题。</p>
+<p>示例代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Shop <span class="title function_">queryWithPassThrough</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">    <span class="comment">// 查看redis中是否存在对应数据 shopJson的可能取值 1.shop 2.null 3.&#123;&#125;</span></span><br><span class="line">    log.info(<span class="string">&quot;缓存穿透解决方案~ &quot;</span>);</span><br><span class="line">    <span class="type">String</span> <span class="variable">shopJson</span> <span class="operator">=</span> stringRedisTemplate.opsForValue().get(CACHE_SHOP_KEY + id);</span><br><span class="line">    log.info(<span class="string">&quot;shopJson =  &#123;&#125;&quot;</span>, shopJson);</span><br><span class="line">    <span class="keyword">if</span> (StrUtil.isNotBlank(shopJson)) &#123;</span><br><span class="line">        <span class="comment">// 存在 返回</span></span><br><span class="line">        <span class="type">Shop</span> <span class="variable">shop</span> <span class="operator">=</span> JSONUtil.toBean(shopJson, Shop.class);</span><br><span class="line">        <span class="keyword">return</span> shop;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果redis中查到的json无效 并且不为null 说明店铺不存在</span></span><br><span class="line">    <span class="keyword">if</span> (shopJson != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 不存在 从数据库中查找</span></span><br><span class="line">    <span class="type">Shop</span> <span class="variable">shop</span> <span class="operator">=</span> getById(id);</span><br><span class="line">    <span class="keyword">if</span> (shop == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 在redis中添加一个有效期为2min的空数据 避免缓存穿透</span></span><br><span class="line">        stringRedisTemplate.opsForValue().set(CACHE_SHOP_KEY + id, <span class="string">&quot;&quot;</span>, CACHE_NULL_TTL, TimeUnit.MINUTES);</span><br><span class="line">        <span class="comment">// 查不到对应的数据 返回</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将对应的数据添加到redis中 并且设置超时时间 做缓存剔除</span></span><br><span class="line">    stringRedisTemplate.opsForValue().set(CACHE_SHOP_KEY + id, JSONUtil.toJsonStr(shop), CACHE_SHOP_TTL, TimeUnit.MINUTES);</span><br><span class="line">    <span class="comment">// 查到对应的数据 返回</span></span><br><span class="line">    <span class="keyword">return</span> shop;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>虽然我们使实现起来非常简单，但是如果用户多次查询到不同id的null值，那我们缓存中也会造成额外的内存消耗！</p>
+<p><strong>方案二布隆过滤器解决思路：</strong></p>
+<p>布隆过滤器其实本质就是一个二进制的数组，然后我们像布隆过滤器中存值时，会通过指定的hash算法来分别算出这个值在我们的二进制数组当中对应的下标位置，然后把这个下标位置对应的值改为1（数组初始化默认为0）；当我们要查询这个值是否存在时，我们只需要判断我们这个值对应的数组下标位置的值是否为全为1即可。</p>
+<p>也就是说，布隆过滤器判定某个值不存在，则必定不存在；判定某个值存在，则大概率存在；</p>
+<p>布隆过滤器解决缓存穿透的实现思路其实就是在我们的用户与redis之间增加一层过滤器，然后我们存放商铺数据的时候，需要把我们的商铺id信息存储到布隆过滤器中；当客户要查询商铺时，我们可以先通过布隆过滤器检查这个id是否存在，如果不存在直接返回null，这样就很好的解决了方案一中浪费内存的问题。但是布隆过滤器可能会存在误判的问题，以及要删除布隆过滤器中的数据也是非常困难的。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230625174538016.png" alt="image-20230625174538016"></p>
+<p>实现代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 缓存穿透 - 布隆过滤器解决</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> Shop <span class="title function_">queryWithPassThrough</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">    <span class="comment">// 查看redis中是否存在对应数据 shopJson的可能取值 1.shop 2.null 3.&#123;&#125;</span></span><br><span class="line">    log.info(<span class="string">&quot;缓存穿透解决方案~ &quot;</span>);</span><br><span class="line">    <span class="comment">// 创建Redisson提供的布隆过滤器</span></span><br><span class="line">    RBloomFilter&lt;Object&gt; bloomFilter = redissonConfig.redissonClient().getBloomFilter(<span class="string">&quot;shopCacheBloomFilter&quot;</span>);</span><br><span class="line">    <span class="comment">// 初始化布隆过滤器</span></span><br><span class="line">    bloomFilter.tryInit(<span class="number">10000</span>,<span class="number">0.01</span>);</span><br><span class="line">    <span class="comment">// 模拟向布隆过滤器添加商铺id数据 这一步通常在添加商铺时完成</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">Long</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0L</span>; i &lt; <span class="number">10</span>; i++) &#123;</span><br><span class="line">        bloomFilter.add(i);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 检测布隆过滤器, 如果id不存在过滤器中, 直接返回null</span></span><br><span class="line">    <span class="keyword">if</span> (!bloomFilter.contains(id)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">String</span> <span class="variable">shopJson</span> <span class="operator">=</span> stringRedisTemplate.opsForValue().get(CACHE_SHOP_KEY + id);</span><br><span class="line">    log.info(<span class="string">&quot;shopJson =  &#123;&#125;&quot;</span>, shopJson);</span><br><span class="line">    <span class="keyword">if</span> (StrUtil.isNotBlank(shopJson)) &#123;</span><br><span class="line">        <span class="comment">// 存在 返回</span></span><br><span class="line">        <span class="type">Shop</span> <span class="variable">shop</span> <span class="operator">=</span> JSONUtil.toBean(shopJson, Shop.class);</span><br><span class="line">        <span class="keyword">return</span> shop;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 不存在 从数据库中查找</span></span><br><span class="line">    <span class="type">Shop</span> <span class="variable">shop</span> <span class="operator">=</span> getById(id);</span><br><span class="line">    <span class="keyword">if</span> (shop == <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 在redis中添加一个有效期为2min的空数据 避免缓存穿透</span></span><br><span class="line">        stringRedisTemplate.opsForValue().set(CACHE_SHOP_KEY + id, <span class="string">&quot;&quot;</span>, CACHE_NULL_TTL, TimeUnit.MINUTES);</span><br><span class="line">        <span class="comment">// 查不到对应的数据 返回</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将对应的数据添加到redis中 并且设置超时时间 做缓存剔除</span></span><br><span class="line">    stringRedisTemplate.opsForValue().set(CACHE_SHOP_KEY + id, JSONUtil.toJsonStr(shop), CACHE_SHOP_TTL, TimeUnit.MINUTES);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 查到对应的数据 返回</span></span><br><span class="line">    <span class="keyword">return</span> shop;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="缓存击穿"><a href="#缓存击穿" class="headerlink" title="缓存击穿"></a>缓存击穿</h2><p>缓存击穿也叫热点key问题，就是一个被高并发访问key突然失效了，我们就需要去重建这个缓存，如果这个key的缓存重建业务比较复杂，那么就会造成大量的请求打到数据库上，给数据库造成巨大的压力。<strong>这也就是我们经常所说的热点key问题。</strong></p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230709203010616.png" alt="image-20230709203010616"></p>
+<p>如上图所示，<strong>其实就是因为我们需要给key设定有效时间</strong>，而<strong>我们重构这个key的缓存的业务需要花费很长的时间，导致大量的请求都打到了我们的数据库中，</strong>给数据库造成了巨大的压力，这就是缓存击穿。</p>
+<p>那么，针对上述产生缓存击穿的原因，目前主流的解决方案有两种：</p>
+<ul>
+<li>将key的有效期设置成逻辑有效期</li>
+<li>在重建缓存的时候，使用互斥锁，保证只有一个线程参与缓存的重建</li>
+</ul>
+<hr>
+<p><strong>两种方案的实现思路</strong></p>
+<ul>
+<li><p>互斥锁方案</p>
+<p>在互斥锁解决缓存击穿的方案中，当我们需要进行重建缓存之前，我们需要先去获取互斥锁，只有拿到互斥锁的线程，才有资格去重建缓存。</p>
+<p>而没有抢到互斥锁的资源，则需要休眠一段时间，之后再自旋去尝试获取互斥锁。当然，每一次自旋都需要判断需要的获取的缓存是否已经重建了，如果重建了则返回即可。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230723215156830.png" alt="Mutex"></p>
+</li>
+<li><p>逻辑过期</p>
+<p>在逻辑过期方案中，我们可以在value中多设置一个字段，这个字段存放的使我们当前key的过期时间，当我们命中缓存的时候，需要先去判断我们命中的缓存是否还是有效的，如果有效就返回缓存的数据；</p>
+<p>如果当前时间在我们设置的逻辑过期时间之后，我们就需要去重建缓存，而重建缓存的之前，需要去竞争互斥锁资源，只有竞争到互斥锁资源的线程，才能去重建缓存，同时，我们可以使用并发编程中的异步方式去重建缓存，即异步开启一条线程去重建缓存。</p>
+<p>没有竞争到互斥锁的线程则返回过期的数据（脏数据）。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230723215700402.png" alt="image-20230723215700402"></p>
+</li>
+</ul>
+<p><strong>两种方案的对比：</strong></p>
+<ul>
+<li><strong>互斥锁方案：</strong>由于保证了互斥性，所以数据的一致性不会有问题，同时我们实现起来也很简单，只需要加锁即可。但是由于重建的过程中其他线程会处于阻塞，导致性能变差，并且可能会发生死锁。</li>
+<li><strong>逻辑过期方案：</strong>通过逻辑过期，保证了线程在读取缓存的过程中，不需要阻塞了。同时，重建缓存的过程只需要一个线程去异步进行，其他线程可以正常读取数据。但是重建缓存完成之前返回的数据都是脏数据，会有数据不一致的问题产生，并且实现起来比较难</li>
+</ul>
+<hr>
+<p><strong>两种方案的代码实现：</strong></p>
+<p>首先我们可以通过Redis的<code>SETNX</code>命令来实现互斥锁</p>
+<blockquote>
+<p>这里也可以直接使用Redisson的互斥锁</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取互斥锁</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> key* <span class="doctag">@return</span> boolean</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="type">boolean</span> <span class="title function_">tryLock</span><span class="params">(String key)</span> &#123;</span><br><span class="line">    <span class="comment">// 生成互斥锁 有效期大约为具体业务的十倍</span></span><br><span class="line">    <span class="type">boolean</span> <span class="variable">lock</span> <span class="operator">=</span> stringRedisTemplate.opsForValue().setIfAbsent(key, <span class="string">&quot;1&quot;</span>, <span class="number">10L</span>, TimeUnit.SECONDS);</span><br><span class="line">    <span class="comment">//  log.info(&quot;获取了互斥锁 &#123;&#125;&quot;, key);</span></span><br><span class="line">    <span class="keyword">return</span> BooleanUtil.isTrue(lock);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 释放互斥锁</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> key</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> void</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">unlock</span><span class="params">(String key)</span> &#123;</span><br><span class="line">    log.info(<span class="string">&quot;释放了互斥锁 &#123;&#125;&quot;</span>, key);</span><br><span class="line">    stringRedisTemplate.delete(key);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>互斥锁解决缓存击穿的代码实现</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 缓存击穿 互斥锁解决方法</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> com.heng.entity.Shop</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> Shop <span class="title function_">queryWithMutex</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">    <span class="comment">// 查看redis中是否存在对应数据 shopJson的可能取值 1.shop 2.null 3.&#123;&#125;</span></span><br><span class="line">    <span class="comment">//log.info(&quot;缓存击穿 互斥锁解决方案~ &quot;);</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">key</span> <span class="operator">=</span> CACHE_SHOP_KEY + id;</span><br><span class="line">    <span class="type">String</span> <span class="variable">shopJson</span> <span class="operator">=</span> stringRedisTemplate.opsForValue().get(key);</span><br><span class="line">    <span class="comment">//log.info(&quot;shopJson =  &#123;&#125;&quot;, shopJson);</span></span><br><span class="line">    <span class="keyword">if</span> (StrUtil.isNotBlank(shopJson)) &#123;</span><br><span class="line">        <span class="comment">// 存在 返回</span></span><br><span class="line">        <span class="type">Shop</span> <span class="variable">shop</span> <span class="operator">=</span> JSONUtil.toBean(shopJson, Shop.class);</span><br><span class="line">        <span class="keyword">return</span> shop;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果redis中查到的json无效 并且不为null 说明店铺不存在</span></span><br><span class="line">    <span class="keyword">if</span> (shopJson != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 不存在 竞争互斥锁</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">lockKey</span> <span class="operator">=</span> LOCK_SHOP_KEY + id;</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">isLock</span> <span class="operator">=</span> tryLock(lockKey);</span><br><span class="line">    <span class="type">Shop</span> <span class="variable">shop</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!isLock) &#123;</span><br><span class="line">            <span class="comment">// 竞争不到互斥锁 休眠</span></span><br><span class="line">            Thread.sleep(<span class="number">10</span>);</span><br><span class="line">            <span class="keyword">return</span> queryWithMutex(id);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 竞争到锁资源 判断redis是否已经重建了 避免高并发下 反复重构</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">jsonShop</span> <span class="operator">=</span> stringRedisTemplate.opsForValue().get(key);</span><br><span class="line">        <span class="comment">// DoubleCheck</span></span><br><span class="line">        <span class="keyword">if</span> (StrUtil.isNotBlank(jsonShop)) &#123;</span><br><span class="line">            <span class="type">Shop</span> <span class="variable">cacheShop</span> <span class="operator">=</span> JSONUtil.toBean(jsonShop, Shop.class);</span><br><span class="line">            <span class="keyword">return</span> cacheShop;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 1. 从数据库中查询</span></span><br><span class="line">        shop = getById(id);</span><br><span class="line">        Thread.sleep(<span class="number">200</span>);</span><br><span class="line">        <span class="keyword">if</span> (shop == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 2. 找不到对应的数据 防止缓存穿透 在redis中构建一个空的缓存</span></span><br><span class="line">            stringRedisTemplate.opsForValue().set(key, <span class="string">&quot;&quot;</span>, CACHE_NULL_TTL, TimeUnit.MINUTES);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 3. 重构redis缓存</span></span><br><span class="line">        stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStr(shop), CACHE_SHOP_TTL, TimeUnit.MINUTES);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (InterruptedException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="comment">// 释放互斥锁</span></span><br><span class="line">        unlock(lockKey);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> shop;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>逻辑过期解决缓存击穿的代码实现</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 定义线程池</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">ExecutorService</span> <span class="variable">CACHE_REBUILD_EXECUTOR</span> <span class="operator">=</span> Executors.newFixedThreadPool(<span class="number">10</span>);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 缓存击穿 逻辑过期解决方案</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> id</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> com.hmdp.entity.Shop</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> Shop <span class="title function_">queryWithLogicalExpire</span><span class="params">(Long id)</span> &#123;</span><br><span class="line">    <span class="comment">// 从redis缓存中去热点数据</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">shopJson</span> <span class="operator">=</span> stringRedisTemplate.opsForValue().get(CACHE_SHOP_KEY + id);</span><br><span class="line">    <span class="comment">// 如果没命中 返回null (不命中说明没有设置成热点数据 所以直接返回null)</span></span><br><span class="line">    <span class="keyword">if</span> (StrUtil.isBlank(shopJson)) &#123;</span><br><span class="line">        <span class="comment">// 存在 返回</span></span><br><span class="line">        <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果命中 判断逻辑有效时间是否过期</span></span><br><span class="line">    <span class="type">RedisData</span> <span class="variable">redisData</span> <span class="operator">=</span> JSONUtil.toBean(shopJson, RedisData.class);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 因为RedisData类中的data可以是其他需要缓存的热点数据 所以是使用Object去接的 我们可以将它强转成JSONObject类型 以便于获取数据的实际实体类</span></span><br><span class="line">    <span class="type">JSONObject</span> <span class="variable">jsonObject</span> <span class="operator">=</span> (JSONObject) redisData.getData();</span><br><span class="line">    <span class="type">Shop</span> <span class="variable">shop</span> <span class="operator">=</span> JSONUtil.toBean(jsonObject, Shop.class);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 如果逻辑有效时间过期, 重键缓存</span></span><br><span class="line">    <span class="type">LocalDateTime</span> <span class="variable">expireTime</span> <span class="operator">=</span> redisData.getExpireTime();</span><br><span class="line">    <span class="keyword">if</span> (expireTime.isAfter(LocalDateTime.now())) &#123;</span><br><span class="line">        <span class="keyword">return</span> shop;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 过期 重建缓存</span></span><br><span class="line">    <span class="comment">// 1. 获取互斥锁</span></span><br><span class="line">    <span class="type">boolean</span> <span class="variable">isLock</span> <span class="operator">=</span> tryLock(LOCK_SHOP_KEY + id);</span><br><span class="line">    <span class="keyword">if</span> (isLock) &#123;</span><br><span class="line">        <span class="comment">// 2. 先判断缓存是否已经被重建了</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">shopJson1</span> <span class="operator">=</span> stringRedisTemplate.opsForValue().get(CACHE_SHOP_KEY + id);</span><br><span class="line">        <span class="type">RedisData</span> <span class="variable">redisData1</span> <span class="operator">=</span> JSONUtil.toBean(shopJson1, RedisData.class);</span><br><span class="line">        <span class="keyword">if</span> (redisData1.getExpireTime().isAfter(LocalDateTime.now())) &#123;</span><br><span class="line">            <span class="type">JSONObject</span> <span class="variable">jsonObject1</span> <span class="operator">=</span> (JSONObject) redisData1.getData();</span><br><span class="line">            shop = JSONUtil.toBean(jsonObject1, Shop.class);</span><br><span class="line">            <span class="comment">// 返回重建后的商铺缓存信息</span></span><br><span class="line">            <span class="keyword">return</span> shop;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 3. 开启另外一条线程进行缓存重建</span></span><br><span class="line">        CACHE_REBUILD_EXECUTOR.submit(() -&gt; &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 重建缓存</span></span><br><span class="line">                <span class="built_in">this</span>.saveRedisData(id, <span class="number">10L</span>);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(e);</span><br><span class="line">            &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">                <span class="comment">// 释放互斥锁</span></span><br><span class="line">                unlock(LOCK_SHOP_KEY + id);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 4. 返回过期的商铺信息</span></span><br><span class="line">    <span class="keyword">return</span> shop;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Minster WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Minster Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="followme">
+  <span>Welcome to my other publishing channels</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Redis/" rel="tag"># Redis</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/07/07/HashMap%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%9A%E8%BF%87(n%20-%201)%20&%20hash%20%E8%8E%B7%E5%8F%96%E5%93%88%E5%B8%8C%E6%A1%B6%E6%95%B0%E7%BB%84%E4%B8%8B%E6%A0%87%EF%BC%9F/" rel="prev" title="HashMap为什么通过(n - 1) & hash 获取哈希桶数组下标？">
+                  <i class="fa fa-chevron-left"></i> HashMap为什么通过(n - 1) & hash 获取哈希桶数组下标？
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="waline"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Minster</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Word count total: </span>
+    <span title="Word count total">61k</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"my-blog-comments-nine.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":true,"pageview":false,"placeholder":"疑义相与析，畅所欲言，不登录也没关系~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"visitor":true,"comment_count":true,"requiredFields":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2023/07/22/Redis%E5%AE%9E%E7%8E%B0%E7%BC%93%E5%AD%98%E4%BB%A5%E5%8F%8A%E4%BC%98%E5%8C%96%E6%80%9D%E8%B7%AF/"}</script>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
+<script>
+document.addEventListener('page:loaded', () => {
+  NexT.utils.loadComments(CONFIG.waline.el).then(() =>
+    NexT.utils.getScript(CONFIG.waline.libUrl, { condition: window.Waline })
+  ).then(() => 
+    Waline.init(Object.assign({}, CONFIG.waline,{ el: document.querySelector(CONFIG.waline.el) }))
+  );
+});
+</script>
+
+  <script type="text/javascript" src="lib/clipboard/src/clipboard.js"></script>
+<script type="text/javascript" src="js/src/custom.js"></script>
+</body>
+</html>
