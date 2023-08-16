@@ -2,7 +2,7 @@
 <search>
   <entry>
     <title>Java 多线程编程中的等待和休眠：wait() 和 sleep() 方法解析</title>
-    <url>/2023/05/27/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E4%BC%91%E7%9C%A0%EF%BC%9Await-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/</url>
+    <url>/2022/05/27/Java-%E5%A4%9A%E7%BA%BF%E7%A8%8B%E7%BC%96%E7%A8%8B%E4%B8%AD%E7%9A%84%E7%AD%89%E5%BE%85%E5%92%8C%E4%BC%91%E7%9C%A0%EF%BC%9Await-%E5%92%8C-sleep-%E6%96%B9%E6%B3%95%E8%A7%A3%E6%9E%90/</url>
     <content><![CDATA[<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/640.png" alt="640"></p>
 <h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在Java多线程中，线程的状态如上图所示（图来自<a href="https://javaguide.cn/">JavaGuide</a>），可以发现，当前线程调用<code>wait(long time)</code>方法或者执行<code>Thread.sleep(long time)</code>方法都会进入到一个<code>TIMED_WAITING</code>的状态。那么，这个状态下的线程的锁资源是怎么样的呢？</p>
 <span id="more"></span>
@@ -45,7 +45,7 @@
   </entry>
   <entry>
     <title>Java面试题汇总（持续更新！）</title>
-    <url>/2023/06/03/Java%E9%9D%A2%E8%AF%95%E9%A2%98%E6%B1%87%E6%80%BB%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%EF%BC%81%EF%BC%89/</url>
+    <url>/2022/06/03/Java%E9%9D%A2%E8%AF%95%E9%A2%98%E6%B1%87%E6%80%BB%EF%BC%88%E6%8C%81%E7%BB%AD%E6%9B%B4%E6%96%B0%EF%BC%81%EF%BC%89/</url>
     <content><![CDATA[<p><img src="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/moon-4919501_1920.jpg" alt="moon"></p>
 <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>以下是我对Java高频面试题的一个总结，后面我会持续更新，希望对你有所帮助。<br>当然，如果有哪道题目我理解错误了，或者是你有更好的见解，非常欢迎你在评论区中留下宝贵的意见！</p>
 <span id="more"></span>
@@ -554,23 +554,14 @@
 <li><p>版本号机制</p>
 <blockquote>
 <p>版本号机制指的就是在数据库表中加一个version字段，表示被修改的次数。当我们要执行更新操作时，就要先读取数据嘛，在读取数据时我们把version字段的值也读取，然后在提交更新的时候，只有数据库的当前版本号跟我们读取到版本号的一致时，才会更新成功，否则重试更新操作，直至更新成功</p>
-<p>MyBatis-Plus是通过在实体类中添加一个 version 属性并且添加 <code>@Version注解</code> ，同时在需要创建一个MyBatisPlus的配置类，注入一个 <code>OptimisticLockerInterceptor</code> 乐观锁插件</p>
 </blockquote>
 </li>
-<li><p>CAS算法</p>
+<li><p>CAS算法，CAS算法用的比较多</p>
 <blockquote>
 <p>CAS算法其实就是<code>Compare And Swap(比较与交换)</code>，</p>
 </blockquote>
 </li>
 </ul>
-<h3 id="18-你对JMM的理解"><a href="#18-你对JMM的理解" class="headerlink" title="18. 你对JMM的理解"></a>18. 你对JMM的理解</h3><p>我理解的JMM（Java Memory Model）其实就是Java提供的<strong>一套屏蔽操作系统差异的内存模型</strong>以及<strong>Java定义的并发编程相关的一组规范。</strong></p>
-<p>它除了抽象了线程和主内存之间的关系之外，其还规定了从 Java 源代码到 CPU 可执行指令的这个转化过程要遵守哪些和并发相关的原则和规范，其主要目的是为了简化多线程编程，增强程序可移植性的。</p>
-<h3 id="19-为什么需要JMM"><a href="#19-为什么需要JMM" class="headerlink" title="19. 为什么需要JMM"></a>19. 为什么需要JMM</h3><p>首先，在我们的CPU中，为了CPU解决处理速度和内存处理速度不对等的问题，是设置了CPU缓存的，也就是CPU Cache嘛。</p>
-<p>但是因为CPU Cache的工作方式是先复制一份数据到CPU Cache中，当CPU需要用到的时候就可以直接从CPU Cache中读取数据，当运算完后，再将运算得到的数据写会Main Memory中。但是，这样存在<strong>内存缓存不一致性的问题！</strong></p>
-<p>因为操作系统是对我们的的硬件资源虚拟化给我们操作的，所以对于每一种操作系统来说，他们同样需要解决内存缓存不一致性问题。操作系统通过<strong>内存模型（Memory Model）</strong>定义一系列规范来解决这个问题。也就是说无论 Windows 系统，还是 Linux 系统，它们都有特定的内存模型。</p>
-<p>一般来说，编程语言也可以直接复用操作系统层面的内存模型。不过，不同的操作系统的内存模型是不一样的，这就会导致同一套代码换了一个操作系统就无法正常运行。<strong>而我们的Java又是跨平台的，它其实就是通过自己提供的一套通用的内存模型（JMM）来屏蔽不同系统之间的差异。</strong></p>
-<p>除此之外，因为我们的JVM是会进行指令重排序的，那这种情况下我们就需要JMM来设置一定的内存屏障，避免并发情况下指令重排序带来的并发安全问题。</p>
-<p>说白了，JMM就是可以简化我们我们对多线程程序的开发，我们不需要理解底层原理，直接使用并发相关的一些关键字和类（比如 <code>volatite</code> 、<code>synchroized</code> 、<code>Lock</code>）即可以开发出并发安全的程序。</p>
 <h2 id="网络编程"><a href="#网络编程" class="headerlink" title="网络编程"></a>网络编程</h2><h3 id="1-网络的7层架构"><a href="#1-网络的7层架构" class="headerlink" title="1. 网络的7层架构"></a>1. 网络的7层架构</h3><blockquote>
 <p>OSI七层模型是什么？每一层的作用是什么？</p>
 </blockquote>
@@ -747,57 +738,6 @@
 <blockquote>
 <p>因为上述的几个类型的通知，</p>
 </blockquote>
-<h3 id="3-Spring中Bean支持的作用域有哪些"><a href="#3-Spring中Bean支持的作用域有哪些" class="headerlink" title="3. Spring中Bean支持的作用域有哪些"></a>3. Spring中Bean支持的作用域有哪些</h3><p>在Spring中，Bean支持的作用域默认有5种，我们可以通过Scope注解来指定Bean的作用域。</p>
-<ol>
-<li>Singleton：bean的默认作用域，就是使用了单例模式，获取单例Bean。每个容器中只有一个bean的实例，在项目启动的时候就会去创建。</li>
-<li>Prototype：可以为每一个请求或注入创建一个bean实例，只有在使用的时候才会去创建。</li>
-<li>request：为每一个request请求创建一个bean实例，在请求完成以后，bean会失效并被垃圾回收器回收。</li>
-<li>session：与request范围类似，同一个session会话共享一个bean实例，不同会话使用不同的实例。</li>
-<li>global-session：全局作用域，所有会话共享一个bean实例。</li>
-</ol>
-<h3 id="4-Spring的事务是怎么实现的"><a href="#4-Spring的事务是怎么实现的" class="headerlink" title="4. Spring的事务是怎么实现的"></a>4. Spring的事务是怎么实现的</h3><p>Spring中支持的事务管理主要有两种：编程式事务、声明式事务。</p>
-<p><strong>编程式事务</strong></p>
-<blockquote>
-<p>编程式事务可以通过<code>TransactionManager</code> 、<code>TransactionTemplate</code> 来手动管理事务。</p>
-</blockquote>
-<p><strong>声明式事务</strong></p>
-<p>我们可以通过 <code>@Transactional</code> 注解做用在方法或类上，来开启事务管理。</p>
-<blockquote>
-<p><strong>衍生面试题：@Transactional 注解的原理。</strong></p>
-</blockquote>
-<p><code>@Transactional</code> 创建事务其实是通过Aop来实现的，<code>@Transactional</code>  可以作用在方法（<strong>作用在私有方法上事务不会生效</strong>）、类、接口上。</p>
-<ol>
-<li><p>当我们第一次调用使用了<code>@Transactional</code> 标注的类或方法时，AOP会为我们这个类或这个方法对应的类创建一个代理对象。</p>
-<blockquote>
-<p> 需要注意的是，如果 <code>@Transactional</code> 是作用在类上时，那么等同于这个类中的所有非私有方法都开启了事务。</p>
-</blockquote>
-</li>
-<li><p>后续我们调用这个类的某一个方法时，会先判断该方法上是否添加了 <code>@Transactional</code> 注解。</p>
-</li>
-<li><p>如果添加了 <code>@Transacitonal</code> 注解，那么则会利用Spring的事务管理器来创建一个数据库连接。</p>
-</li>
-<li><p>同时将 <code>autocimmit</code> 设置为false，禁止自动提交事务。</p>
-</li>
-<li><p>然后再去执行当前方法，方法中会执行SQL。执行方法过程中出现了异常则回滚事务，如果没有发生异常则提交事务。</p>
-</li>
-</ol>
-<h3 id="5-Transactional的常用配置参数有哪些"><a href="#5-Transactional的常用配置参数有哪些" class="headerlink" title="5. @Transactional的常用配置参数有哪些"></a>5. @Transactional的常用配置参数有哪些</h3><p>@Transactional注解的常用配置参数有以下五种：</p>
-<ul>
-<li>propagation：用来指定事务的传播行为，默认为REQUIRED。</li>
-<li>isolation：用来指定事务的隔离级别，默认值时DEFAULT（指数据库的默认隔离级别：MySQL的 <code>REPEATABLE_READ</code> ， Oracle 默认采用的 <code>READ_COMMITTED</code>）。</li>
-<li>timeout：指定事务的超时时间，默认值为-1（永久，不会超时）。如果超过该时间限制事务还没有完成，则自动回滚事务。</li>
-<li>readOnly：指定事务是否为只读事务，默认值是false。</li>
-<li>rollbackFor：用于指定能触发事务回滚的异常类型，并且可以指定多个异常类型。</li>
-</ul>
-<h2 id="Spring-MVC"><a href="#Spring-MVC" class="headerlink" title="Spring MVC"></a>Spring MVC</h2><h3 id="1-Spring-MVC的执行流程以及各个组件的作用"><a href="#1-Spring-MVC的执行流程以及各个组件的作用" class="headerlink" title="1. Spring MVC的执行流程以及各个组件的作用"></a>1. Spring MVC的执行流程以及各个组件的作用</h3><p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230709080446492.png" alt="image-20230709080446492"></p>
-<ol>
-<li>前端发送请求过来，会到我们的<code>dispatchServlet（前端控制器）</code>，然后我们的<code>DispatchServlet</code>会分别调用MVC的三个组件，完成请求对应的一系列的任务分配处理。</li>
-<li>DispatchServlet首先会调用<code>Handlermapping（处理器映射器）</code>，去找到我们请求对应的一个Handler，然后将这个Handler返回给我们的<code>DispatchServlet</code>。</li>
-<li>然后<code>DispatchServlet</code>会调用另外一个组件<code>HandlerAdapter（处理器适配器）</code>，同时将我们的获取到的Handler对象传过去，然后我们的<code>HandlerAdapter</code>会根据这个Handler对象找到对应的Controller，然后就是我们的业务处理。</li>
-<li>业务处理完之后，我们的<code>HandlerAdapter</code>会判断我们请求是同步的请求还是异步的请求，如果是异步的请求就是直接返回json格式的数据到我们的<code>DispatchServlet</code>，然后<code>DispatchServlet</code>再返回给前端。</li>
-<li>如果是同步的请求就会返回一个<code>ModelAndView</code>对象。<code>DispatchServlet</code>会根据调用视图解析器，将我们的<code>ModelAndView</code>对象解析，最后返回一个View对象给<code>DispatchServlet</code>。</li>
-<li>最后<code>DispatchServlet</code>会将视图渲染。</li>
-</ol>
 <h2 id="MySQL"><a href="#MySQL" class="headerlink" title="MySQL"></a>MySQL</h2><h3 id="1-MyISAM和InnoDB有什么区别"><a href="#1-MyISAM和InnoDB有什么区别" class="headerlink" title="1. MyISAM和InnoDB有什么区别?"></a>1. MyISAM和InnoDB有什么区别?</h3><p>在MySQL5.5之前，MyISAM是MySQl的默认存储引擎。虽然MyISAM的性能还行，各种特性也还不错(比如全文所以、压缩、空间函数等)。但是，由于MyISAM不支持事务以及行级锁，并且最大的缺陷就是崩溃后无法安全恢复。InnoDB正好解决了这些问题。</p>
 <p>所以MySQL5.5之后，InnoDB是MySQL的默认存储引擎</p>
 <p>两者的区别主要有七点</p>
@@ -936,7 +876,7 @@
   </entry>
   <entry>
     <title>Spring Boot如何实现基于注解配置</title>
-    <url>/2023/05/26/Spring-Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/</url>
+    <url>/2022/05/26/Spring-Boot%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E5%9F%BA%E4%BA%8E%E6%B3%A8%E8%A7%A3%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我们在使用Spring注册Bean时，有很多方式，其中两种常用的配置方式如下</p>
 <p><strong>基于注解的配置</strong>：使用注解来定义 bean，如  <code>@Component</code> 、 <code>@Autowired</code> 、 <code>@Configuration</code>  等。这种方式相比于基于 XML 的配置更加简洁、易于阅读和维护，也是目前比较流行的一种方式。</p>
 <p><strong>基于 Java 配置类的配置</strong>：使用 Java 类来定义 bean 和它们之间的依赖关系，如  <code>@Bean</code> 、 <code>@Configuration</code> 、 <code>@Import</code>  等。这种方式也是基于注解的配置方式的一种扩展形式，它允许我们使用 Java 代码来定义 bean，从而更加灵活地控制应用程序的配置。 </p>
@@ -1021,7 +961,7 @@
   </entry>
   <entry>
     <title>懒汉式单例模式下的双检锁机制的理解</title>
-    <url>/2023/05/26/%E6%87%92%E6%B1%89%E5%BC%8F%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E4%B8%8B%E7%9A%84%E5%8F%8C%E6%A3%80%E9%94%81%E6%9C%BA%E5%88%B6%E7%9A%84%E7%90%86%E8%A7%A3/</url>
+    <url>/2022/05/26/%E6%87%92%E6%B1%89%E5%BC%8F%E5%8D%95%E4%BE%8B%E6%A8%A1%E5%BC%8F%E4%B8%8B%E7%9A%84%E5%8F%8C%E6%A3%80%E9%94%81%E6%9C%BA%E5%88%B6%E7%9A%84%E7%90%86%E8%A7%A3/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我在学习懒汉式单例模式时，发现了懒汉双检锁的实现方式，当时不是很理解，查阅资料后得出以下结论</p>
 <span id="more"></span>
 
@@ -1048,12 +988,12 @@
   </entry>
   <entry>
     <title>My First Blog</title>
-    <url>/2023/05/26/My-First-Blog/</url>
-    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我一直都想搭建一个用于记录生活和学习的博客，但是碍于懒惰，一直拖延到现在。直到昨天我在浏览Github的开源项目时，我看到了<a href="https://crossoverjie.top/">杰哥</a>的个人博客，很佩服<a href="https://crossoverjie.top/">杰哥</a>的经历，所以我也决定搭建一个博客来记录自己在工作中遇到的问题以及自己学习技术的一个理解等。</p>
+    <url>/2022/05/26/My-First-Blog/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>我一直都想搭建一个用于记录生活和学习的博客，但是碍于懒惰，一直拖延到现在。直到昨天我在浏览Github的开源项目时，看到很多大神的博客，所以我也决定重新搭建一个博客来记录自己在工作中遇到的问题以及自己学习技术的一个理解等。</p>
 <span id="more"></span>
 
 <h2 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h2><p>我是一名Java菜鸟程序员，我在学习Java的时候一直有使用MarkDown去记录笔记。而我在之前也搭建一个基于<a href="https://minster77.github.io/">Hugo的博客</a>，上面的文章都是一些学习笔记，比较合适于初学Java的朋友们。</p>
-<h2 id="博客主题"><a href="#博客主题" class="headerlink" title="博客主题"></a>博客主题</h2><p>在这个博客中，我将主要分享关于Java技术的一些知识和个人理解，也会分享一些编程技巧和实践经验。</p>
+<h2 id="博客主题"><a href="#博客主题" class="headerlink" title="博客主题"></a>博客主题</h2><p>在这个博客中，我将主要分享关于Java技术的一些知识和个人理解，也会分享一些编程技巧和异常排查。</p>
 <p>同时我也会分享一些个人的学习方法和年度总结，希望通过这个博客能够为大家提供有价值的信息和帮助，输出一些有意义的内容！</p>
 <h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>我搭建这个博客的初衷是为了记录一下自己的程序员生涯的故事，毕竟来都来了，怎么也得留下些什么吧！其次是希望能有大神能在这个过程中指出我的错误，能让我学习到更多！</p>
 <p>在最后，祝你好运，也祝我好运！</p>
@@ -1067,7 +1007,7 @@
   </entry>
   <entry>
     <title>Eureka中的负载均衡</title>
-    <url>/2023/07/03/Eureka%E4%B8%AD%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/</url>
+    <url>/2022/07/03/Eureka%E4%B8%AD%E7%9A%84%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1/</url>
     <content><![CDATA[<h2 id="Eureka中的负载均衡"><a href="#Eureka中的负载均衡" class="headerlink" title="Eureka中的负载均衡"></a>Eureka中的负载均衡</h2><h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>Eureka是Netflix开发的一种用于构建分布式系统中的微服务架构的服务发现组件。</p>
 <p>Ribbon是一个基于HTTP和TCP协议的客户端负载均衡工具，它是Netflix开源的一个组件，旨在提供客户端侧负载均衡算法和服务实例的自动发现功能，以实现对服务调用的负载均衡。</p>
 <p>Spring官方提供了一个Spring Cloud LoadBalancer来替代Ribbon它是基于Netflix Ribbon的一个新的客户端负载均衡组件，提供更加灵活的扩展性和可配置性。</p>
@@ -1260,7 +1200,7 @@
   </entry>
   <entry>
     <title>Redis实现缓存及解决缓存产生的问题</title>
-    <url>/2023/07/22/Redis%E5%AE%9E%E7%8E%B0%E7%BC%93%E5%AD%98%E4%BB%A5%E5%8F%8A%E4%BC%98%E5%8C%96%E6%80%9D%E8%B7%AF/</url>
+    <url>/2022/07/22/Redis%E5%AE%9E%E7%8E%B0%E7%BC%93%E5%AD%98%E4%BB%A5%E5%8F%8A%E4%BC%98%E5%8C%96%E6%80%9D%E8%B7%AF/</url>
     <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文将以查询商铺信息业务为主线，使用Redis做缓存逐步提升查询商铺的效率。</p>
 <p>同时提供使用Redis缓存过程中遇到的数据一致性、缓存击穿、缓存穿透、缓存雪崩等问题的解决思路。</p>
 <span id="more"></span>
@@ -1395,6 +1335,82 @@
       </categories>
       <tags>
         <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title></title>
+    <url>/2023/08/14/%E5%BE%AE%E4%BF%A1%E7%99%BB%E5%BD%95%E7%9A%84%E5%8F%8Ctoken%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前段时间公司给了个需求，就是对接微信实现小程序的登录，以前也没有做过微信小程序相关的业务，通过一番查阅文档之后，也实现了。所以在此记录一下实现过程</p>
+<h2 id="微信小程序登录业务分析"><a href="#微信小程序登录业务分析" class="headerlink" title="微信小程序登录业务分析"></a>微信小程序登录业务分析</h2><p>通过查阅微信官方文档，我们可以知道微信小程序的具体登录业务流程。当然，他的实现与我们传统的不同之处就是在于我们需要调用微信的服务器来实现，下面是官方提供的时序图。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/api-login.jpg" alt="api-login"></p>
+<p><a href="https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/login.html">微信官网登录接口文档</a>说明</p>
+<ol>
+<li>调用 <a href="https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html">wx.login()</a> 获取 <strong>临时登录凭证code</strong> ，并回传到开发者服务器。</li>
+<li>调用 <a href="https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-login/code2Session.html">auth.code2Session</a> 接口，换取 <strong>用户唯一标识 OpenID</strong> 、 用户在微信开放平台账号下的<strong>唯一标识UnionID</strong>（若当前小程序已绑定到微信开放平台账号） 和 <strong>会话密钥 session_key</strong>。</li>
+</ol>
+<p>之后开发者服务器可以根据用户标识来生成自定义登录态，用于后续业务逻辑中前后端交互时识别用户身份。</p>
+<p>当然，现在微信用户基本都是绑定了手机号码的，所以我们也可以整合官网提供的</p>
+]]></content>
+  </entry>
+  <entry>
+    <title>使用OpenFeign时LocalDateTime反序列化失败的解决方法</title>
+    <url>/2023/05/26/%E8%AE%B0%E5%BD%95%E4%BD%BF%E7%94%A8OpenFeign%E6%97%B6LocalDateTime%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/</url>
+    <content><![CDATA[<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>​	我在使用 <code>OpenFeign</code> 进行远程调用时，发现我的调用端报错 <code>Cannot deserialize value of type </code>java.time.LocalDateTime<code> from String &quot;2022-09-13T11:34:36&quot;</code> ，下面是错误排查与修改的过程。</p>
+<span id="more"></span>
+
+<h2 id="异常描述"><a href="#异常描述" class="headerlink" title="异常描述"></a>异常描述</h2><p>​	OpenFeign使用Get远程调用服务时，返回的dto如果包含了 <code>LocalDateTime</code> 的话，会导致远程调用失败，报<code>Failed to deserialize java.time.LocalDateTime: (java.time.format.DateTimeParseException) Text &#39;2022-09-13T11:34:36&#39; could not be parsed at index 10</code> 错误。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230816072604405.png" alt="image-20230816072604405"></p>
+<h2 id="异常产生的原因"><a href="#异常产生的原因" class="headerlink" title="异常产生的原因"></a>异常产生的原因</h2><p>​	查阅资料后发现，SpringBoot中默认使用Jackson做Json序列化和反序列化，服务器使用openFeign接收数据时将日期字符串转成LocalDateTime时，因为jsr310协议的默认的反序列化器格式是解析 <code>2022-09-13T11:34:36</code> 这样格式的字符串的。</p>
+<p>​	查看源码可以知道，默认解析String字符串时，会以 <code>DEFAULT_FORMATTER</code> 的格式进行解析。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> (_formatter == DEFAULT_FORMATTER) &#123;</span><br><span class="line">                <span class="comment">// ... only allow iff lenient mode enabled since</span></span><br><span class="line">                <span class="comment">// JavaScript by default includes time and zone in JSON serialized Dates (UTC/ISO instant format).</span></span><br><span class="line">                <span class="comment">// And if so, do NOT use zoned date parsing as that can easily produce</span></span><br><span class="line">                <span class="comment">// incorrect answer.</span></span><br><span class="line">                <span class="keyword">if</span> (string.length() &gt; <span class="number">10</span> &amp;&amp; string.charAt(<span class="number">10</span>) == <span class="string">&#x27;T&#x27;</span>) &#123;</span><br><span class="line">                   <span class="keyword">if</span> (string.endsWith(<span class="string">&quot;Z&quot;</span>)) &#123;</span><br><span class="line">                       <span class="keyword">if</span> (isLenient()) &#123;</span><br><span class="line">                           <span class="keyword">return</span> LocalDateTime.parse(string.substring(<span class="number">0</span>, string.length()-<span class="number">1</span>),</span><br><span class="line">                                   _formatter);</span><br><span class="line">                       &#125;</span><br><span class="line">                       <span class="type">JavaType</span> <span class="variable">t</span> <span class="operator">=</span> getValueType(ctxt);</span><br><span class="line">                       <span class="keyword">return</span> (LocalDateTime) ctxt.handleWeirdStringValue(t.getRawClass(),</span><br><span class="line">                               string,</span><br><span class="line"><span class="string">&quot;Should not contain offset when &#x27;strict&#x27; mode set for property or type (enable &#x27;lenient&#x27; handling to allow)&quot;</span></span><br><span class="line">                               );</span><br><span class="line">                   &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">           <span class="keyword">return</span> LocalDateTime.parse(string, _formatter);</span><br></pre></td></tr></table></figure>
+
+<p>而 <code>DEFAULT_FORMATTER</code> 默认使用的日期格式为下图的 <code>ISO_LOCAL_DATE_TIME </code> 我们可以看到是带字符 T 的。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230816075102644.png" alt="image-20230816075102644"></p>
+<p>​	但是在根据根据2.12版本的[modules-base#94]的更改，我们的String时间字符串要解析成LocalDateTime格式时，不仅要第十个字符为T，还需要以字符Z结尾（这里我也不知道为什么这样设计）。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230816075705607.png" alt="image-20230816075705607"></p>
+<p>​	继续追踪源码，发现因为我们第十个字符是T，导致反序列化解析失败。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230816081428412.png" alt="image-20230816081428412"></p>
+<blockquote>
+<p>上面代码的注释意思：</p>
+<p>解析指定的文本。</p>
+<p>这将解析为一个TemporalAccessor，确保文本被完全解析。</p>
+<p><strong>参数:</strong></p>
+<ul>
+<li><p>Text -要解析的文本，不是null </p>
+</li>
+<li><p>position -要解析的位置，更新为解析的长度和任何错误的索引，如果解析整个字符串，则为null</p>
+</li>
+</ul>
+<p><strong>返回:</strong></p>
+<p>解析的结果，不是null</p>
+<p><strong>抛出:</strong></p>
+<ul>
+<li><p>DateTimeParseException:解析失败</p>
+</li>
+<li><p>DateTimeException:在解析日期或时间时发生错误</p>
+</li>
+<li><p>IndexOutOfBoundsException:位置无效</p>
+</li>
+</ul>
+</blockquote>
+<h2 id="解决办法"><a href="#解决办法" class="headerlink" title="解决办法"></a>解决办法</h2><p>在我们dto中，将我们的日期格式添加上以下代码</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@JsonFormat(shape = JsonFormat.Shape.STRING,pattern = &quot;yyyy-MM-dd HH:mm:ss&quot;)</span></span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，一定要加 <code>shape = JsonFormat.Shape.STRING</code> 这个可以帮我们把T去掉。</p>
+<p>加了之后我们在看debug看一下效果：</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230816082128025.png" alt="image-20230816082128025"></p>
+<p>可以发现这里的T不见了，并且解析结果也是成功的，至此问题解决。</p>
+<blockquote>
+<p>需要注意的是：如果你的实体类模块是与service分开的，你需要重新构建工程。比如说，你的实体类是放在xxx-domain模块下的话，你修改之后重启xxx-service模块是不会生效的，因为没有重构项目生成新的target</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>Exception</category>
+      </categories>
+      <tags>
+        <tag>Spring Cloud</tag>
+        <tag>Exception</tag>
+        <tag>openFeign</tag>
       </tags>
   </entry>
 </search>
