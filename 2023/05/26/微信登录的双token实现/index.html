@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"minster.top","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言本文从实现了微信登录的双token三验证方案。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="微信登录的双token三验证方案">
+<meta property="og:url" content="https://minster.top/2023/05/26/%E5%BE%AE%E4%BF%A1%E7%99%BB%E5%BD%95%E7%9A%84%E5%8F%8Ctoken%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="minster&#39;s Blog">
+<meta property="og:description" content="前言本文从实现了微信登录的双token三验证方案。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/api-login.jpg">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230904203819067.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230904203942639.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230904204426417.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/1687431489005.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/1687443488956.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/1687443593191.png">
+<meta property="article:published_time" content="2023-05-26T11:39:13.000Z">
+<meta property="article:modified_time" content="2023-09-04T13:22:02.976Z">
+<meta property="article:author" content="Minster">
+<meta property="article:tag" content="Wechat">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/api-login.jpg">
+
+
+<link rel="canonical" href="https://minster.top/2023/05/26/%E5%BE%AE%E4%BF%A1%E7%99%BB%E5%BD%95%E7%9A%84%E5%8F%8Ctoken%E5%AE%9E%E7%8E%B0/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://minster.top/2023/05/26/%E5%BE%AE%E4%BF%A1%E7%99%BB%E5%BD%95%E7%9A%84%E5%8F%8Ctoken%E5%AE%9E%E7%8E%B0/","path":"2023/05/26/微信登录的双token实现/","title":"微信登录的双token三验证方案"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>微信登录的双token三验证方案 | minster's Blog</title>
+  
+
+
+
+
+
+
+
+<link rel="dns-prefetch" href="my-blog-comments-nine.vercel.app">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="minster's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">minster's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录学习以及生活~</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">25</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">13</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">15</span></a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E7%99%BB%E5%BD%95%E4%B8%9A%E5%8A%A1%E5%88%86%E6%9E%90"><span class="nav-text">微信小程序登录业务分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BE%AE%E4%BF%A1%E7%99%BB%E5%BD%95%E7%9A%84%E5%8D%95token%E5%AE%9E%E7%8E%B0"><span class="nav-text">微信登录的单token实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%8C%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90"><span class="nav-text">第一步，流程分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%8C%E5%AE%9E%E7%8E%B0%E7%99%BB%E5%BD%95"><span class="nav-text">第二步，实现登录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%B8%89%E6%AD%A5%EF%BC%8C%E8%8E%B7%E5%8F%96openid"><span class="nav-text">第三步，获取openid</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E5%9B%9B%E6%AD%A5%EF%BC%8C%E8%8E%B7%E5%8F%96%E6%89%8B%E6%9C%BA%E5%8F%B7"><span class="nav-text">第四步，获取手机号</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AC%AC%E4%BA%94%E6%AD%A5%EF%BC%8C%E7%94%9F%E6%88%90token"><span class="nav-text">第五步，生成token</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%8CToken%E4%B8%89%E9%AA%8C%E8%AF%81%E7%9A%84%E7%99%BB%E5%BD%95%E5%AE%9E%E7%8E%B0"><span class="nav-text">双Token三验证的登录实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%9F%E6%88%90%E5%88%B7%E6%96%B0token"><span class="nav-text">生成刷新token</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%B7%E6%96%B0token%E4%B8%9A%E5%8A%A1"><span class="nav-text">刷新token业务</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Minster"
+      src="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/avatar.png">
+  <p class="site-author-name" itemprop="name">Minster</p>
+  <div class="site-description" itemprop="description">祝你好运</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/minsterZnhy" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;minsterZnhy" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:minster8And24@outlook,com" title="E-Mail → mailto:minster8And24@outlook,com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://minster.top/2023/05/26/%E5%BE%AE%E4%BF%A1%E7%99%BB%E5%BD%95%E7%9A%84%E5%8F%8Ctoken%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/avatar.png">
+      <meta itemprop="name" content="Minster">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="minster's Blog">
+      <meta itemprop="description" content="祝你好运">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="微信登录的双token三验证方案 | minster's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          微信登录的双token三验证方案
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2023-05-26 19:39:13" itemprop="dateCreated datePublished" datetime="2023-05-26T19:39:13+08:00">2023-05-26</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-09-04 21:22:02" itemprop="dateModified" datetime="2023-09-04T21:22:02+08:00">2023-09-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88/" itemprop="url" rel="index"><span itemprop="name">实现方案</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="far fa-comment"></i>
+    </span>
+    <span class="post-meta-item-text">Waline: </span>
+  
+    <a title="waline" href="/2023/05/26/%E5%BE%AE%E4%BF%A1%E7%99%BB%E5%BD%95%E7%9A%84%E5%8F%8Ctoken%E5%AE%9E%E7%8E%B0/#waline" itemprop="discussionUrl">
+      <span class="post-comments-count waline-comment-count" data-path="/2023/05/26/%E5%BE%AE%E4%BF%A1%E7%99%BB%E5%BD%95%E7%9A%84%E5%8F%8Ctoken%E5%AE%9E%E7%8E%B0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>8.5k</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本文从实现了微信登录的双token三验证方案。</p>
+<span id="more"></span>
+<h2 id="微信小程序登录业务分析"><a href="#微信小程序登录业务分析" class="headerlink" title="微信小程序登录业务分析"></a>微信小程序登录业务分析</h2><p>通过查阅微信官方文档，我们可以知道微信小程序的具体登录业务流程。当然，他的实现与我们传统的不同之处就是在于我们需要调用微信的服务器来实现，下面是官方提供的时序图。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/api-login.jpg" alt="api-login"></p>
+<p><a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/login.html">微信官网登录接口文档</a>说明</p>
+<ol>
+<li>调用 <a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/miniprogram/dev/api/open-api/login/wx.login.html">wx.login()</a> 获取 <strong>临时登录凭证code</strong> ，并回传到开发者服务器。</li>
+<li>调用 <a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-login/code2Session.html">auth.code2Session</a> 接口，换取 <strong>用户唯一标识 OpenID</strong> 、 用户在微信开放平台账号下的<strong>唯一标识UnionID</strong>（若当前小程序已绑定到微信开放平台账号） 和 <strong>会话密钥 session_key</strong>。</li>
+</ol>
+<p>之后开发者服务器可以根据用户标识（<code>OpenID</code>）来生成自定义登录态，用于后续业务逻辑中前后端交互时识别用户身份。</p>
+<p>当然，现在微信用户基本都是绑定了手机号码的，所以我们也可以整合官网提供的<a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-number/getPhoneNumber.html">手机号码接口</a>，来获取用户登录时候的手机号码，保存到我们的数据库中。</p>
+<blockquote>
+<p>需要注意的是，手机号码的获取需要先去获取 <code>access_token</code> </p>
+</blockquote>
+<h2 id="微信登录的单token实现"><a href="#微信登录的单token实现" class="headerlink" title="微信登录的单token实现"></a>微信登录的单token实现</h2><p>用户端通过集成微信小程序进行登录，流程图如下：</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230904203819067.png" alt="image-20230904203819067"></p>
+<p>流程图分析：</p>
+<ul>
+<li>微信小程序通过http请求访问用户端web服务</li>
+<li>然后通过OpenFeign远程调用用户微服务</li>
+<li>用户业务微服务直接连接Mysql数据执行CRUD操作</li>
+</ul>
+<p><strong>user表</strong></p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230904203942639.png" alt="image-20230904203942639"></p>
+<h3 id="第一步，流程分析"><a href="#第一步，流程分析" class="headerlink" title="第一步，流程分析"></a>第一步，流程分析</h3><p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230904204426417.png" alt="image-20230904204426417"></p>
+<p>实现流程步骤：</p>
+<ol>
+<li>调用微信后台接口，根据临时code获取openid【第三步】</li>
+<li>通过openid查询用户，判断是否为新用户，新用户则注册，老用户不需要注册</li>
+<li>调用微信后台接口，获取用户手机号【第四步】</li>
+<li>如果用户手机号有更新，需要进行修改操作</li>
+<li>生成token【第五步】</li>
+<li>封装数据并返回</li>
+</ol>
+<h3 id="第二步，实现登录"><a href="#第二步，实现登录" class="headerlink" title="第二步，实现登录"></a><strong>第二步，实现登录</strong></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 登录</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> userLoginRequestVO 登录code</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 用户信息</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> UserLoginVO <span class="title function_">login</span><span class="params">(UserLoginRequestVO userLoginRequestVO)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    <span class="comment">//1、调用微信后台接口，根据临时code获取openid</span></span><br><span class="line">    <span class="type">JSONObject</span> <span class="variable">jsonObject</span> <span class="operator">=</span> wechatService.getOpenid(userLoginRequestVO.getCode());</span><br><span class="line">    <span class="type">String</span> <span class="variable">openid</span> <span class="operator">=</span> jsonObject.getStr(<span class="string">&quot;openid&quot;</span>);</span><br><span class="line">    <span class="comment">//2.通过openid查询用户，判断是否为新用户，新用户则注册，老用户不需要注册</span></span><br><span class="line">    <span class="type">MemberDTO</span> <span class="variable">memberDTO</span> <span class="operator">=</span> <span class="built_in">this</span>.getByOpenid(openid);</span><br><span class="line">    <span class="comment">//新用户</span></span><br><span class="line">    <span class="keyword">if</span>(ObjectUtil.isEmpty(memberDTO))&#123;</span><br><span class="line">        memberDTO=MemberDTO.builder()</span><br><span class="line">                .openId(openid)<span class="comment">//设置微信openid</span></span><br><span class="line">                .authId(jsonObject.getStr(<span class="string">&quot;unionid&quot;</span>))<span class="comment">//如果有值，则复制，没有值则为空</span></span><br><span class="line">                .build();</span><br><span class="line">        <span class="built_in">this</span>.save(memberDTO);</span><br><span class="line"></span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         *  再次查询数据库表，这样就就可以获取对应的主键和其他属性了，方便后面使用</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">       memberDTO = <span class="built_in">this</span>.getByOpenid(openid);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//3.调用微信后台接口，获取用户手机号</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">phone</span> <span class="operator">=</span> wechatService.getPhone(userLoginRequestVO.getPhoneCode());</span><br><span class="line"></span><br><span class="line">    <span class="comment">//4.如果用户手机号有更新，需要进行修改操作</span></span><br><span class="line">    <span class="keyword">if</span> (!StrUtil.equals(phone,memberDTO.getPhone())) &#123;</span><br><span class="line">        memberDTO.setPhone(phone);</span><br><span class="line">        memberFeign.update(memberDTO.getId(),memberDTO);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//5.生成token</span></span><br><span class="line">    Map&lt;String, Object&gt; claims=<span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">    claims.put(Constants.GATEWAY.USER_ID,memberDTO.getId());</span><br><span class="line">    <span class="type">String</span> <span class="variable">accessToken</span> <span class="operator">=</span> tokenService.createAccessToken(claims);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//6.封装数据并返回</span></span><br><span class="line">    UserLoginVO userLoginVO= UserLoginVO.builder()</span><br><span class="line">            .accessToken(accessToken)</span><br><span class="line">            .openid(openid)</span><br><span class="line">            .binding(StatusEnum.NORMAL.getCode())<span class="comment">//绑定了手机号</span></span><br><span class="line">            .build();</span><br><span class="line">    <span class="keyword">return</span> userLoginVO;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第三步，获取openid"><a href="#第三步，获取openid" class="headerlink" title="第三步，获取openid"></a>第三步，获取openid</h3><p>参考<a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-login/code2Session.html">小程序登录 | 微信开放文档 (qq.com)</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取openid的访问路径地址</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String URL=<span class="string">&quot;https://api.weixin.qq.com/sns/jscode2session&quot;</span>;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Value(&quot;$&#123;sl.wechat.appid&#125;&quot;)</span></span><br><span class="line"><span class="keyword">private</span> String appid;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Value(&quot;$&#123;sl.wechat.secret&#125;&quot;)</span></span><br><span class="line"><span class="keyword">private</span> String secret;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获取openid</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> code 登录凭证</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 唯一标识</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@throws</span> IOException IO异常</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> JSONObject <span class="title function_">getOpenid</span><span class="params">(String code)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">    <span class="comment">//2.封装参数</span></span><br><span class="line">    Map&lt;String, Object&gt; paramMap=<span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">    paramMap.put(<span class="string">&quot;appid&quot;</span>,appid);</span><br><span class="line">    paramMap.put(<span class="string">&quot;secret&quot;</span>,secret);</span><br><span class="line">    paramMap.put(<span class="string">&quot;js_code&quot;</span>,code);</span><br><span class="line">    paramMap.put(<span class="string">&quot;grant_type&quot;</span>,<span class="string">&quot;authorization_code&quot;</span>);</span><br><span class="line">    <span class="comment">//1.发起http请求</span></span><br><span class="line">    <span class="type">HttpResponse</span> <span class="variable">response</span> <span class="operator">=</span> HttpRequest.get(URL)</span><br><span class="line">            .form(paramMap)<span class="comment">//设置表单参数</span></span><br><span class="line">            .execute();</span><br><span class="line">    <span class="comment">//3.解析结果</span></span><br><span class="line">    <span class="comment">//3.1 如果响应成功</span></span><br><span class="line">    <span class="keyword">if</span> (response.isOk()) &#123;</span><br><span class="line">        <span class="comment">//获取到响应主体内容json字符串</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">body</span> <span class="operator">=</span> response.body();</span><br><span class="line">        <span class="comment">//解析成json对象</span></span><br><span class="line">        <span class="type">JSONObject</span> <span class="variable">jsonObject</span> <span class="operator">=</span> JSONUtil.parseObj(body);</span><br><span class="line">        <span class="comment">//如果包含errcode说明报错了</span></span><br><span class="line">        <span class="keyword">if</span>(jsonObject.containsKey(<span class="string">&quot;errcode&quot;</span>))&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SLWebException</span>(jsonObject.toString());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> jsonObject;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//3.2 响应失败</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">errMsg</span> <span class="operator">=</span> StrUtil.format(<span class="string">&quot;调用微信登录接口出错！ code = &#123;&#125;&quot;</span>, code);</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SLWebException</span>(errMsg);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="第四步，获取手机号"><a href="#第四步，获取手机号" class="headerlink" title="第四步，获取手机号"></a>第四步，获取手机号</h3><p>参考<a target="_blank" rel="noopener" href="https://developers.weixin.qq.com/miniprogram/dev/OpenApiDoc/user-info/phone-number/getPhoneNumber.html">手机号快速验证 | 微信开放文档 (qq.com)</a></p>
+<p>注意：要想获取用户手机号，需要先获取到微信access_token,然后才能获取到手机号</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取token的接口地址</span></span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String ACCESS_TOKEN_URL=<span class="string">&quot;https://api.weixin.qq.com/cgi-bin/token&quot;</span>;</span><br><span class="line"> <span class="comment">//获取手机号的接口地址</span></span><br><span class="line"> <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String PHONE_URL=<span class="string">&quot;https://api.weixin.qq.com/wxa/business/getuserphonenumber?access_token=&quot;</span>;</span><br><span class="line"> <span class="comment">/**</span></span><br><span class="line"><span class="comment">  * 获取手机号</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@param</span> code 手机号凭证</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@return</span> 唯一标识</span></span><br><span class="line"><span class="comment">  * <span class="doctag">@throws</span> IOException IO异常</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line"> <span class="meta">@Override</span></span><br><span class="line"> <span class="keyword">public</span> String <span class="title function_">getPhone</span><span class="params">(String code)</span> <span class="keyword">throws</span> IOException &#123;</span><br><span class="line">     <span class="comment">//2.封装数据</span></span><br><span class="line">     Map&lt;String,Object&gt; paramMap=<span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">     paramMap.put(<span class="string">&quot;code&quot;</span>,code);</span><br><span class="line">     String paramBody=JSONUtil.toJsonStr(paramMap);</span><br><span class="line">     <span class="comment">//1.调获取手机号的接口</span></span><br><span class="line">     <span class="type">HttpResponse</span> <span class="variable">response</span> <span class="operator">=</span> HttpRequest.post(PHONE_URL+<span class="built_in">this</span>.accessToken())</span><br><span class="line">            .body(paramBody)<span class="comment">//设置请求参数,json字符串类型</span></span><br><span class="line">            .execute();</span><br><span class="line">     <span class="comment">//3.解析结果</span></span><br><span class="line">     <span class="keyword">if</span> (response.isOk()) &#123;</span><br><span class="line">         <span class="type">String</span> <span class="variable">body</span> <span class="operator">=</span> response.body();</span><br><span class="line">         <span class="type">JSONObject</span> <span class="variable">jsonObject</span> <span class="operator">=</span> JSONUtil.parseObj(body);</span><br><span class="line"></span><br><span class="line">         <span class="comment">//获取手机号，然后返回</span></span><br><span class="line">         <span class="keyword">return</span> jsonObject.getByPath(<span class="string">&quot;phone_info.phoneNumber&quot;</span>,String.class);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="type">String</span> <span class="variable">errMsg</span> <span class="operator">=</span> StrUtil.format(<span class="string">&quot;调用获取手机号接口出错！&quot;</span>);</span><br><span class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SLWebException</span>(errMsg);</span><br><span class="line"> &#125;</span><br><span class="line"> <span class="comment">//获取token值</span></span><br><span class="line"> <span class="keyword">private</span> String <span class="title function_">accessToken</span><span class="params">()</span>&#123;</span><br><span class="line">     <span class="comment">//2、封装数据</span></span><br><span class="line">     Map&lt;String,Object&gt; paramMap=<span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">     paramMap.put(<span class="string">&quot;grant_type&quot;</span>,<span class="string">&quot;client_credential&quot;</span>);</span><br><span class="line">     paramMap.put(<span class="string">&quot;appid&quot;</span>,appid);</span><br><span class="line">     paramMap.put(<span class="string">&quot;secret&quot;</span>,secret);</span><br><span class="line">     <span class="comment">//1.获取token</span></span><br><span class="line">     <span class="type">HttpResponse</span> <span class="variable">response</span> <span class="operator">=</span> HttpRequest.get(ACCESS_TOKEN_URL)</span><br><span class="line">             .form(paramMap)</span><br><span class="line">             .execute();</span><br><span class="line">     <span class="comment">//3.解析数据</span></span><br><span class="line">     <span class="keyword">if</span> (response.isOk()) &#123;</span><br><span class="line">         <span class="type">String</span> <span class="variable">body</span> <span class="operator">=</span> response.body();</span><br><span class="line">         <span class="type">JSONObject</span> <span class="variable">jsonObject</span> <span class="operator">=</span> JSONUtil.parseObj(body);</span><br><span class="line">         <span class="keyword">return</span> jsonObject.getStr(<span class="string">&quot;access_token&quot;</span>);</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="type">String</span> <span class="variable">errMsg</span> <span class="operator">=</span> StrUtil.format(<span class="string">&quot;调用获取接口调用凭据接口出错！&quot;</span>);</span><br><span class="line">     <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">SLWebException</span>(errMsg);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="第五步，生成token"><a href="#第五步，生成token" class="headerlink" title="第五步，生成token"></a>第五步，生成token</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Resource</span></span><br><span class="line"><span class="keyword">private</span> JwtProperties jwtProperties;</span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">public</span> String <span class="title function_">createAccessToken</span><span class="params">(Map&lt;String, Object&gt; claims)</span> &#123;</span><br><span class="line">    <span class="comment">//生成短令牌的有效期时间单位为：分钟</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">token</span> <span class="operator">=</span> JwtUtils.createToken(claims,</span><br><span class="line">            jwtProperties.getPrivateKey(),<span class="comment">//加入RSA私钥</span></span><br><span class="line">            jwtProperties.getAccessTtl(),<span class="comment">//设置过期时间</span></span><br><span class="line">            DateField.MINUTE<span class="comment">//设置时间单位，分钟</span></span><br><span class="line">    );</span><br><span class="line">    <span class="keyword">return</span> token;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>注意：这里使用的是非对称加密算法的方式，其实就是公钥加密，私钥解密。</p>
+</blockquote>
+<p>但是，上面的实现是存在一定的问题的，大家试想一下：我们的token有效期该怎么去设置呢？</p>
+<ul>
+<li><p>如果设置的比较短，用户会频繁的登录，如果设置的比较长，会不太安全，因为token一旦被黑客截取的话，就可以通过此token与服务端进行交互了。</p>
+</li>
+<li><p>另外一方面，token是无状态的，也就是说，服务端一旦颁发了token就无法让其失效（除非过了有效期），这样的话，如果我们检测到token异常也无法使其失效，所以这也是无状态token存在的问题。</p>
+</li>
+</ul>
+<p>下面我们可以通过双Token三验证的方式来解决上述问题。</p>
+<h2 id="双Token三验证的登录实现"><a href="#双Token三验证的登录实现" class="headerlink" title="双Token三验证的登录实现"></a>双Token三验证的登录实现</h2><p>为了解决单token模式下存在的问题，所以我们可以通过【双token三验证】的模式进行改进实现，主要解决的两个问题如下：</p>
+<ul>
+<li><p>token有效期长不安全</p>
+</li>
+<li><ul>
+<li>登录成功后，生成2个token，分别是：access_token、refresh_token，前者有效期短（如：5分钟），后者的有效期长（如：24小时）</li>
+<li>正常请求后端服务时，携带access_token，如果发现access_token失效，就通过refresh_token到后台服务中换取新的access_token和refresh_token，这个可以理解为token的续签</li>
+<li>以此往复，直至refresh_token过期，需要用户重新登录</li>
+</ul>
+</li>
+<li><p>token的无状态性</p>
+</li>
+<li><ul>
+<li>为了使token有状态，也就是后端可以控制其提前失效，需要将refresh_token设计成只能<strong>使用一次</strong></li>
+<li>需要将refresh_token存储到redis中，并且要设置过期时间</li>
+<li>这样的话，服务端如果检测到用户token有安全隐患（如：异地登录），只需要将refresh_token失效即可</li>
+</ul>
+</li>
+</ul>
+<p><strong>详细流程如下：</strong></p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/1687431489005.png" alt="1687431489005"></p>
+<h3 id="生成刷新token"><a href="#生成刷新token" class="headerlink" title="生成刷新token"></a>生成刷新token</h3><p>注意：目前我们再此之前已经实现了创建access-token了，那么此步是为了实现refresh-token的</p>
+<p>实现的步骤：</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/1687443488956.png" alt="1687443488956"></p>
+<p>生成刷新refresh_token的主要逻辑有两点：</p>
+<ul>
+<li>生成jwt格式的token，有效期时间一般小时为单位</li>
+<li>将token存入到redis，使token有状态，并且确保只能使用一次</li>
+</ul>
+<p>在tokenServiceImpl中添加有以下实现</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 生成长令牌</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> claims token中存储的数据</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span> 长令牌</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="keyword">public</span> String <span class="title function_">createRefreshToken</span><span class="params">(Map&lt;String, Object&gt; claims)</span> &#123;</span><br><span class="line">       <span class="comment">//生成长令牌的有效期时间单位为：小时</span></span><br><span class="line">       <span class="comment">//1、生成刷新token</span></span><br><span class="line">       <span class="type">Integer</span> <span class="variable">refreshTtl</span> <span class="operator">=</span> jwtProperties.getRefreshTtl();</span><br><span class="line">       <span class="type">String</span> <span class="variable">refreshToken</span> <span class="operator">=</span> JwtUtils.createToken(claims, jwtProperties.getPrivateKey(),refreshTtl );</span><br><span class="line">       <span class="comment">//2.长令牌只能使用一次，需要将其存储到redis中，变成有状态的</span></span><br><span class="line">       String redisKey=REDIS_REFRESH_TOKEN_PREFIX+ SecureUtil.md5(refreshToken);</span><br><span class="line">       stringRedisTemplate.opsForValue().set(redisKey,refreshToken, Duration.ofHours(refreshTtl));</span><br><span class="line">       <span class="comment">//3.返回刷新token</span></span><br><span class="line">       <span class="keyword">return</span> refreshToken;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="刷新token业务"><a href="#刷新token业务" class="headerlink" title="刷新token业务"></a>刷新token业务</h3><p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/1687443593191.png" alt="1687443593191"></p>
+<p>刷新token的动作是在refresh_token过期之后进行的，主要实现关键点有：</p>
+<ul>
+<li>校验refresh_token是否被伪造以及是否在有效期内</li>
+<li>从redis中查询，是否不存在，如果不存在说明已经失效或已经使用过，如果存在，就需要将其删除</li>
+<li>重新生成一对token，响应结果</li>
+</ul>
+<p>refreshToken方法实现以下业务</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 刷新token动作</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@param</span> refreshToken 原长令牌，需要否则校验其合法性以及可用性</span></span><br><span class="line"><span class="comment">   * <span class="doctag">@return</span> 登录对象，包含长短令牌</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="keyword">public</span> UserLoginVO <span class="title function_">refreshToken</span><span class="params">(String refreshToken)</span> &#123;</span><br><span class="line">      <span class="comment">//1.非空判断</span></span><br><span class="line">      <span class="keyword">if</span> (StringUtils.isEmpty(refreshToken)) &#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//2.校验token是否存在,第二次校验</span></span><br><span class="line">      Map&lt;String, Object&gt; checkTokenMap = JwtUtils.checkToken(refreshToken, jwtProperties.getPublicKey());</span><br><span class="line">      <span class="comment">//token无效</span></span><br><span class="line">      <span class="keyword">if</span>(checkTokenMap==<span class="literal">null</span> || checkTokenMap.size()==<span class="number">0</span>)&#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//3.否则有效，则校验redis中的token是否使用过，第三次校验</span></span><br><span class="line">      String redisKey=REDIS_REFRESH_TOKEN_PREFIX+ SecureUtil.md5(refreshToken);</span><br><span class="line">      <span class="type">Boolean</span> <span class="variable">flag</span> <span class="operator">=</span> stringRedisTemplate.hasKey(redisKey);</span><br><span class="line">      <span class="comment">//如果等于false,表示过期或者使用过</span></span><br><span class="line">      <span class="keyword">if</span>(!flag)&#123;</span><br><span class="line">          <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">//4.重新生成长短令牌</span></span><br><span class="line">      <span class="type">String</span> <span class="variable">accessToken</span> <span class="operator">=</span> createAccessToken(checkTokenMap);</span><br><span class="line">          <span class="comment">//生成新的长令牌，并重新存储新的令牌到redis中</span></span><br><span class="line">      <span class="type">String</span> <span class="variable">newRefreshToken</span> <span class="operator">=</span> createRefreshToken(checkTokenMap);</span><br><span class="line">      <span class="comment">//5.删除redis中的原token，只能使用一次</span></span><br><span class="line">      stringRedisTemplate.delete(redisKey);</span><br><span class="line">      <span class="comment">//6.封装数据并返回</span></span><br><span class="line">      <span class="type">UserLoginVO</span> <span class="variable">userLoginVO</span> <span class="operator">=</span> UserLoginVO.builder()</span><br><span class="line">              .refreshToken(newRefreshToken)</span><br><span class="line">              .accessToken(accessToken)</span><br><span class="line">              .build();</span><br><span class="line">      <span class="keyword">return</span> userLoginVO;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
+
+<p>注意：该刷新token的业务动作，是由前端主动发起请求的，所以我们要完成对应的userController中的方法填充</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 刷新token，校验请求头中的长令牌，生成新的长短令牌</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> refreshToken 原令牌</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span> 登录结果</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="meta">@PostMapping(&quot;/refresh&quot;)</span></span><br><span class="line">   <span class="meta">@ApiOperation(&quot;刷新token&quot;)</span></span><br><span class="line">   <span class="keyword">public</span> R&lt;UserLoginVO&gt; <span class="title function_">refresh</span><span class="params">(<span class="meta">@RequestHeader(Constants.GATEWAY.REFRESH_TOKEN)</span> String refreshToken)</span> &#123;</span><br><span class="line">       <span class="type">UserLoginVO</span> <span class="variable">loginVO</span> <span class="operator">=</span> memberService.refresh(refreshToken);</span><br><span class="line">       <span class="keyword">return</span> R.success(loginVO);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+<p>refresh方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 刷新token</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@param</span> refreshToken 原长令牌</span></span><br><span class="line"><span class="comment">    * <span class="doctag">@return</span> 长/短令牌</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   <span class="meta">@Override</span></span><br><span class="line">   <span class="keyword">public</span> UserLoginVO <span class="title function_">refresh</span><span class="params">(String refreshToken)</span> &#123;</span><br><span class="line">       <span class="keyword">return</span> tokenService.refreshToken(refreshToken);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Minster WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Minster Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="followme">
+  <span>Welcome to my other publishing channels</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Wechat/" rel="tag"># Wechat</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2023/05/26/%E8%AE%B0%E5%BD%95%E4%BD%BF%E7%94%A8OpenFeign%E6%97%B6LocalDateTime%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95/" rel="prev" title="使用OpenFeign时LocalDateTime反序列化失败的解决方法">
+                  <i class="fa fa-chevron-left"></i> 使用OpenFeign时LocalDateTime反序列化失败的解决方法
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2023/07/07/HashMap%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%9A%E8%BF%87(n%20-%201)%20&%20hash%20%E8%8E%B7%E5%8F%96%E5%93%88%E5%B8%8C%E6%A1%B6%E6%95%B0%E7%BB%84%E4%B8%8B%E6%A0%87%EF%BC%9F/" rel="next" title="HashMap为什么通过(n - 1) & hash 获取哈希桶数组下标？">
+                  HashMap为什么通过(n - 1) & hash 获取哈希桶数组下标？ <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="waline"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Minster</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Word count total: </span>
+    <span title="Word count total">133k</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"my-blog-comments-nine.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":true,"pageview":false,"placeholder":"疑义相与析，畅所欲言，不登录也没关系~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"visitor":true,"comment_count":true,"requiredFields":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2023/05/26/%E5%BE%AE%E4%BF%A1%E7%99%BB%E5%BD%95%E7%9A%84%E5%8F%8Ctoken%E5%AE%9E%E7%8E%B0/"}</script>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
+<script>
+document.addEventListener('page:loaded', () => {
+  NexT.utils.loadComments(CONFIG.waline.el).then(() =>
+    NexT.utils.getScript(CONFIG.waline.libUrl, { condition: window.Waline })
+  ).then(() => 
+    Waline.init(Object.assign({}, CONFIG.waline,{ el: document.querySelector(CONFIG.waline.el) }))
+  );
+});
+</script>
+
+  <script type="text/javascript" src="lib/clipboard/src/clipboard.js"></script>
+<script type="text/javascript" src="js/src/custom.js"></script>
+</body>
+</html>

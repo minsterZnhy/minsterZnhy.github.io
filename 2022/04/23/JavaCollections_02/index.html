@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"minster.top","root":"/","images":"/images","scheme":"Muse","darkmode":false,"version":"8.16.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}","hits_time":"${hits} results found in ${time} ms","hits":"${hits} results found"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言本章内容为Java集合中的Set集合的常见用法和源码解析~">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Set集合的用法及源码解析">
+<meta property="og:url" content="https://minster.top/2022/04/23/JavaCollections_02/index.html">
+<meta property="og:site_name" content="minster&#39;s Blog">
+<meta property="og:description" content="前言本章内容为Java集合中的Set集合的常见用法和源码解析~">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202003956.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202014398.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202020462.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202027186.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202036032.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202054144.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202059520.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202111028.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202118999.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202124154.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202129297.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202138380.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202143829.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202148947.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202158573.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202212222.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202221500.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202227394.png">
+<meta property="og:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202233135.png">
+<meta property="article:published_time" content="2022-04-23T00:49:12.000Z">
+<meta property="article:modified_time" content="2023-09-04T13:20:33.027Z">
+<meta property="article:author" content="Minster">
+<meta property="article:tag" content="Java">
+<meta property="article:tag" content="Set">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202003956.png">
+
+
+<link rel="canonical" href="https://minster.top/2022/04/23/JavaCollections_02/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"en","comments":true,"permalink":"https://minster.top/2022/04/23/JavaCollections_02/","path":"2022/04/23/JavaCollections_02/","title":"Set集合的用法及源码解析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Set集合的用法及源码解析 | minster's Blog</title>
+  
+
+
+
+
+
+
+
+<link rel="dns-prefetch" href="my-blog-comments-nine.vercel.app">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+<link rel="alternate" href="/atom.xml" title="minster's Blog" type="application/atom+xml">
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">minster's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">记录学习以及生活~</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="Search" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">25</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">13</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">15</span></a></li><li class="menu-item menu-item-schedule"><a href="/schedule/" rel="section"><i class="fa fa-calendar fa-fw"></i>Schedule</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>Search
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="Searching..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Set%E6%8E%A5%E5%8F%A3%E5%92%8C%E5%B8%B8%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-text">Set接口和常用方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#HashSet%E5%85%A8%E9%9D%A2%E8%AF%B4%E6%98%8E"><span class="nav-text">HashSet全面说明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%80%9D%E8%80%83"><span class="nav-text">思考</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HashSet%E5%BA%95%E5%B1%82%E8%A7%A3%E6%9E%90"><span class="nav-text">HashSet底层解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HashSet%E5%BA%95%E5%B1%82%E6%B7%BB%E5%8A%A0%E5%85%83%E7%B4%A0%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-text">HashSet底层添加元素源码分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#HashSet%E6%89%A9%E5%AE%B9%E6%9C%BA%E5%88%B6%E5%92%8C%E8%BD%AC%E6%8D%A2%E7%BA%A2%E9%BB%91%E6%A0%91%E6%9C%BA%E5%88%B6%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90"><span class="nav-text">HashSet扩容机制和转换红黑树机制源码解析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#threshold%E8%A1%A5%E5%85%85%E8%AF%B4%E6%98%8E"><span class="nav-text">threshold补充说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LinkedHashSet%E8%AF%B4%E6%98%8E%E5%8F%8A%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-text">LinkedHashSet说明及源码分析</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LinkedHashSet%E5%85%A8%E9%9D%A2%E8%AF%B4%E6%98%8E"><span class="nav-text">LinkedHashSet全面说明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LinkedHashSet%E5%BA%95%E5%B1%82%E6%9C%BA%E5%88%B6%E7%A4%BA%E6%84%8F%E5%9B%BE"><span class="nav-text">LinkedHashSet底层机制示意图</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LinkedHashSet%E5%BA%95%E5%B1%82%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="nav-text">LinkedHashSet底层源码分析</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Minster"
+      src="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/avatar.png">
+  <p class="site-author-name" itemprop="name">Minster</p>
+  <div class="site-description" itemprop="description">祝你好运</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">25</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/minsterZnhy" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;minsterZnhy" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:minster8And24@outlook,com" title="E-Mail → mailto:minster8And24@outlook,com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="Back to top">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://minster.top/2022/04/23/JavaCollections_02/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/avatar.png">
+      <meta itemprop="name" content="Minster">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="minster's Blog">
+      <meta itemprop="description" content="祝你好运">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Set集合的用法及源码解析 | minster's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Set集合的用法及源码解析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">Posted on</span>
+
+      <time title="Created: 2022-04-23 08:49:12" itemprop="dateCreated datePublished" datetime="2022-04-23T08:49:12+08:00">2022-04-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">Edited on</span>
+      <time title="Modified: 2023-09-04 21:20:33" itemprop="dateModified" datetime="2023-09-04T21:20:33+08:00">2023-09-04</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">In</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Collection/" itemprop="url" rel="index"><span itemprop="name">Collection</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">Views: </span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="far fa-comment"></i>
+    </span>
+    <span class="post-meta-item-text">Waline: </span>
+  
+    <a title="waline" href="/2022/04/23/JavaCollections_02/#waline" itemprop="discussionUrl">
+      <span class="post-comments-count waline-comment-count" data-path="/2022/04/23/JavaCollections_02/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+    <span class="post-meta-item" title="Word count in article">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">Word count in article: </span>
+      <span>13k</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>本章内容为Java集合中的Set集合的常见用法和源码解析~</p>
+<span id="more"></span>
+<hr>
+<ol>
+<li>Set接口和常用方法</li>
+<li>HashSet全面说明<ol>
+<li>思考</li>
+<li>HashSet底层解析</li>
+<li>HashSet底层添加元素源码分析</li>
+<li>HashSet扩容机制和转换红黑树机制源码解析</li>
+<li>threshold补充说明</li>
+</ol>
+</li>
+<li>LinkedHashSet说明及源码分析<ol>
+<li>LinkedHashSet全面说明</li>
+<li>LinkedHashSet底层机制示意图</li>
+<li>LinkedHashSet底层源码分析</li>
+</ol>
+</li>
+</ol>
+<hr>
+<h3 id="Set接口和常用方法"><a href="#Set接口和常用方法" class="headerlink" title="Set接口和常用方法"></a>Set接口和常用方法</h3><ul>
+<li><p>Set接口基本介绍</p>
+<ol>
+<li>无序（添加和取出的顺序不一致），没有索引</li>
+<li>不允许重复元素，所以最多包含一个null</li>
+<li>JDK API中Set接口常用的实现类有：HashSet、TreeSet等</li>
+</ol>
+</li>
+<li><p>Set接口的常用方法</p>
+<ul>
+<li>和List接口一样，Set接口也是Collection的子接口，因此，常用方法和Collection接口一样。（详情见Java集合类(一)）</li>
+</ul>
+</li>
+<li><p>以Set接口的实现类HashSet来讲解Set接口的方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.conllection_.sets;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SetMethod</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Set</span> <span class="variable">set</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashSet</span>();</span><br><span class="line">        set.add(<span class="string">&quot;john&quot;</span>);</span><br><span class="line">        set.add(<span class="string">&quot;jack&quot;</span>);</span><br><span class="line">        set.add(<span class="string">&quot;tom&quot;</span>);</span><br><span class="line">        set.add(<span class="string">&quot;john&quot;</span>);</span><br><span class="line">        set.add(<span class="literal">null</span>);</span><br><span class="line">        set.add(<span class="literal">null</span>);</span><br><span class="line">        System.out.println(<span class="string">&quot;set = &quot;</span> + set);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202003956.png" alt="image-20230903202003956"></p>
+<p>结论：</p>
+<ol>
+<li>set接口的实现类的对象（set接口对象），不能存放重复的元素，可以添加null</li>
+<li>set接口对象存放数据是无序（即添加的顺序和取出的顺序不一致）</li>
+<li>取出的顺序虽然不是添加的属性，但是顺序是固定的！</li>
+</ol>
+</li>
+<li><p>Set接口的遍历方式</p>
+<p>同Collection的便利方式一样，因为Set接口是Collection接口的子接口。</p>
+<ul>
+<li><p>使用迭代器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(<span class="string">&quot;===迭代器遍历===&quot;</span>);</span><br><span class="line"><span class="type">Iterator</span> <span class="variable">iterator</span> <span class="operator">=</span> set.iterator();</span><br><span class="line"><span class="keyword">while</span> (iterator.hasNext()) &#123;</span><br><span class="line">    <span class="type">Object</span> <span class="variable">next</span> <span class="operator">=</span>  iterator.next();</span><br><span class="line">    System.out.println(<span class="string">&quot;set = &quot;</span>+next);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>增强for</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(<span class="string">&quot;增强for遍历&quot;</span>);</span><br><span class="line"><span class="keyword">for</span> (Object o: set) &#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;set = &quot;</span>+o);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><strong>不能使用</strong>索引的方式来获取</p>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="HashSet全面说明"><a href="#HashSet全面说明" class="headerlink" title="HashSet全面说明"></a>HashSet全面说明</h3><ol>
+<li><p>HashSet实现了Set接口</p>
+</li>
+<li><p>HashSet实际上是HashMap</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">HashSet</span><span class="params">()</span> &#123;</span><br><span class="line">    map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>可以存放null值，但是只能有一个</p>
+</li>
+<li><p>HashSet不保证元素是有序的，取决于hash后，再确定索引的结果（即不保证存放元素的顺序与取出顺序一致）</p>
+</li>
+<li><p>不能有重复元素或对象</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.conllection_.sets;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HashSet01</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Set</span> <span class="variable">hashSet</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashSet</span>();</span><br><span class="line">        <span class="comment">/*说明</span></span><br><span class="line"><span class="comment">        * 1. 在执行add方法后，会返回一个Boolean值</span></span><br><span class="line"><span class="comment">        * 2. 如果添加成功，返回true，否则返回false</span></span><br><span class="line"><span class="comment">        * 3. 可以通过remove指定删除哪个对象</span></span><br><span class="line"><span class="comment">        * */</span></span><br><span class="line">        System.out.println(hashSet.add(<span class="string">&quot;mary&quot;</span>));<span class="comment">//T</span></span><br><span class="line">        System.out.println(hashSet.add(<span class="string">&quot;mary&quot;</span>));<span class="comment">//F</span></span><br><span class="line"></span><br><span class="line">        hashSet.add(<span class="string">&quot;jack&quot;</span>);<span class="comment">//可以添加</span></span><br><span class="line">        hashSet.add(<span class="string">&quot;jack&quot;</span>);<span class="comment">//添加失败</span></span><br><span class="line">        <span class="comment">//由于下面每一次add都新建了一个Dog对象</span></span><br><span class="line">        <span class="comment">//所以下面两个Dog对象都会添加成功</span></span><br><span class="line">        hashSet.add(<span class="keyword">new</span> <span class="title class_">Dog</span>(<span class="string">&quot;tom&quot;</span>));</span><br><span class="line">        hashSet.add(<span class="keyword">new</span> <span class="title class_">Dog</span>(<span class="string">&quot;tom&quot;</span>));</span><br><span class="line">        System.out.println(<span class="string">&quot;HashSet = &quot;</span>+ hashSet);</span><br><span class="line">        hashSet.remove(<span class="string">&quot;mary&quot;</span>);<span class="comment">//删除mary</span></span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;HashSet = &quot;</span>+ hashSet);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202014398.png" alt="image-20230903202014398"></p>
+</li>
+</ol>
+<h4 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h4><ul>
+<li><p><strong>下面两个String对象都会被添加到HashSet集合里面去吗？</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hashSet.add(<span class="keyword">new</span> <span class="title class_">String</span>(<span class="string">&quot;czh&quot;</span>));</span><br><span class="line">hashSet.add(<span class="keyword">new</span> <span class="title class_">String</span>(<span class="string">&quot;czh&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>运行的结果是仅有一个数据被添加，为什么呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">    ((k = p.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br></pre></td></tr></table></figure>
+
+<p>因为此时String类型重写的equals()方法是比较其字符串内容是否相同，所以此时添加的两个“czh”数据只有一个能被添加进去。</p>
+<p>而上述Dog对象的添加原理也是类似。</p>
+<p>下面我们通过解读HashSet的底层结构解决这个问题！</p>
+</li>
+</ul>
+<h4 id="HashSet底层解析"><a href="#HashSet底层解析" class="headerlink" title="HashSet底层解析"></a>HashSet底层解析</h4><ul>
+<li><p>因为HashSet的底层是HashMap，所以分析HashMap底层是（数组+链表+红黑树）即可</p>
+<p>为了更好理解HashMap的底层，下面模拟一个简单的数组+链表结构</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202020462.png" alt="image-20230903202020462"></p>
+<p>创建Node结点</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//结点Node，item存储数据，next指向下一个结点，可以形成链表</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Node</span>&#123;</span><br><span class="line">    Object item;</span><br><span class="line">    Node next;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Node</span><span class="params">(Object item, Node next)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.item = item;</span><br><span class="line">        <span class="built_in">this</span>.next = next;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>创建HashSetStructure类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.conllection_.sets;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HashSetStructure</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="comment">//1. 创建一个类型为Node的数组</span></span><br><span class="line">        Node[] nodes = <span class="keyword">new</span> <span class="title class_">Node</span>[<span class="number">16</span>];</span><br><span class="line">        <span class="comment">//2. 创建结点</span></span><br><span class="line">        <span class="type">Node</span> <span class="variable">john</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Node</span>(<span class="string">&quot;john&quot;</span>, <span class="literal">null</span>);</span><br><span class="line">        nodes[<span class="number">2</span>] = john;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">jack</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Node</span>(<span class="string">&quot;jack&quot;</span>, <span class="literal">null</span>);</span><br><span class="line">        john.next = jack;</span><br><span class="line">        <span class="type">Node</span> <span class="variable">mary</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Node</span>(<span class="string">&quot;mary&quot;</span>, <span class="literal">null</span>);</span><br><span class="line">        jack.next = mary;</span><br><span class="line"></span><br><span class="line">        <span class="type">Node</span> <span class="variable">lucy</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Node</span>(<span class="string">&quot;lucy&quot;</span>, <span class="literal">null</span>);</span><br><span class="line">        nodes[<span class="number">3</span>] = lucy;</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;node = &quot;</span>+nodes);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202027186.png" alt="image-20230903202027186"></p>
+</li>
+</ul>
+<h4 id="HashSet底层添加元素源码分析"><a href="#HashSet底层添加元素源码分析" class="headerlink" title="HashSet底层添加元素源码分析"></a>HashSet底层添加元素源码分析</h4><ul>
+<li><p>分析HashSet添加元素的底层是如何实现的（hash()+equals()）</p>
+<ol>
+<li>HashSet底层就是HashMap</li>
+<li>添加一个元素时，先通过hash()得到hash值，然后转换成索引值</li>
+<li>找到存储数据表table，看这个索引位置是否已经存放了元素<ol>
+<li>如果没有，直接添加</li>
+<li>如果有元素，调用equals比较，如果元素内容相同，就放弃添加，如果不相同，则添加到最后</li>
+</ol>
+</li>
+<li>在Java8中，如果一条链表的元素个数到达TREEIFY_THRESHOLD（默认是8），并且table的大小&gt;&#x3D;MIN_TREEIFY_CAPACITY(默认64)，就会进行树化（红黑树）。</li>
+<li>当元素个数到达TREEIFY_THRESHOLD但table的大小小于MIN_TREEIFY_CAPACITY(默认64)时，系统会把table表填扩容到64，然后进行树化。</li>
+</ol>
+</li>
+<li><p>HashSet添加元素的源码解读</p>
+<p>创建HashSetSource类，用于debug</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.conllection_.sets;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HashSetSource</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">HashSet</span> <span class="variable">hashSet</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashSet</span>();</span><br><span class="line">        hashSet.add(<span class="string">&quot;jack&quot;</span>);</span><br><span class="line">        hashSet.add(<span class="string">&quot;tom&quot;</span>);</span><br><span class="line">        hashSet.add(<span class="string">&quot;jack&quot;</span>);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;set = &quot;</span> + hashSet);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p>执行构造器</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">HashSet</span><span class="params">()</span> &#123;</span><br><span class="line">    map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以清晰地知道HashSet的底层就是HashMap</p>
+</li>
+<li><p>执行add()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">add</span><span class="params">(E e)</span> &#123;<span class="comment">//e=&quot;jack&quot;</span></span><br><span class="line">    <span class="keyword">return</span> map.put(e, PRESENT)==<span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>PRESENT是hashSet为了能使用hashMap而定义的一个常量（定值），无论添加了多少的元素它都不会变化</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">Object</span> <span class="variable">PRESENT</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Object</span>();</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>执行put()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> V <span class="title function_">put</span><span class="params">(K key, V value)</span> &#123;<span class="comment">//key = &quot;jack&quot;</span></span><br><span class="line">    <span class="keyword">return</span> putVal(hash(key), key, value, <span class="literal">false</span>, <span class="literal">true</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>value为PRESENT,是共享的。</p>
+</li>
+<li><p>执行hash方法，计算key的hash值</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="title function_">hash</span><span class="params">(Object key)</span> &#123;</span><br><span class="line">    <span class="type">int</span> h;</span><br><span class="line">    <span class="keyword">return</span> (key == <span class="literal">null</span>) ? <span class="number">0</span> : (h = key.hashCode()) ^ (h &gt;&gt;&gt; <span class="number">16</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果key !&#x3D; null，程序会执行Object类中的hashCode()方法来获取key的值，并将它进行无符号右移16位（为了防止key的hashCode值发生冲突），最后得到的h为key对应的hash值。</p>
+<p><strong>hash值并不是hashCode，因为(h &#x3D; key.hashCode()) ^ (h &gt;&gt;&gt; 16)</strong></p>
+</li>
+<li><p>获取到hash值后，执行putVal方法（<strong>重要！</strong>）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> V <span class="title function_">putVal</span><span class="params">(<span class="type">int</span> hash, K key, V value, <span class="type">boolean</span> onlyIfAbsent,</span></span><br><span class="line"><span class="params">               <span class="type">boolean</span> evict)</span> &#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="type">int</span> n, i;<span class="comment">//定义了辅助变量</span></span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="literal">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">        n = (tab = resize()).length;</span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="literal">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        Node&lt;K,V&gt; e; K k;</span><br><span class="line">        <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">            ((k = p.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">            e = p;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">            e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="built_in">this</span>, tab, hash, key, value);</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">binCount</span> <span class="operator">=</span> <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">                <span class="keyword">if</span> ((e = p.next) == <span class="literal">null</span>) &#123;</span><br><span class="line">                    p.next = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">                    <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">                        treeifyBin(tab, hash);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">                    ((k = e.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                p = e;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (e != <span class="literal">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">            <span class="type">V</span> <span class="variable">oldValue</span> <span class="operator">=</span> e.value;</span><br><span class="line">            <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="literal">null</span>)</span><br><span class="line">                e.value = value;</span><br><span class="line">            afterNodeAccess(e);</span><br><span class="line">            <span class="keyword">return</span> oldValue;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    ++modCount;</span><br><span class="line">    <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">        resize();</span><br><span class="line">    afterNodeInsertion(evict);</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在此方法中，因为辅助变量tab的初始值为null，所以进入到resize()方法，给tab表赋予初始大小。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((tab = table) == <span class="literal">null</span> || (n = tab.length) == <span class="number">0</span>)&#123;</span><br><span class="line">    n = (tab = resize()).length;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述代码中的table为hashMap的一个属性，类型为Node[]</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202036032.png" alt="image-20230903202036032"></p>
+<p>因为初始的table为null，所以执行resize()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//下面代码为resize()方法的一些初始赋值</span></span><br><span class="line">Node&lt;K,V&gt;[] oldTab = table;<span class="comment">//结点oleTab表示原先的表</span></span><br><span class="line"><span class="comment">//oldCap表示初始表的容量大小</span></span><br><span class="line"><span class="type">int</span> <span class="variable">oldCap</span> <span class="operator">=</span> (oldTab == <span class="literal">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line"><span class="comment">//oldThr为当前表的一个临界值，当达到临界值时会扩容</span></span><br><span class="line"><span class="type">int</span> <span class="variable">oldThr</span> <span class="operator">=</span> threshold;</span><br><span class="line"><span class="type">int</span> newCap, newThr = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+
+<p>因为初始的table为null，所以oldCap为0，所以进入到下述语句</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> &#123;        <span class="comment">// zero initial threshold signifies using defaults</span></span><br><span class="line">    newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">    newThr = (<span class="type">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>DEFAULT_INITIAL_CAPACITY为hashMap定义的常量，大小为16</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="type">int</span> <span class="variable">DEFAULT_INITIAL_CAPACITY</span> <span class="operator">=</span> <span class="number">1</span> &lt;&lt; <span class="number">4</span>; <span class="comment">// aka 16</span></span><br></pre></td></tr></table></figure>
+
+<p>所以newCap&#x3D; 16，即第一次扩容大小为16</p>
+<p>newThr为表的一个临界值，是使用负载因子DEFAULT_LOAD_FACTOR乘以初始大小等到的一个值。</p>
+<blockquote>
+<p>默认负载因子（0.75）在时间和空间成本上提供了很好的折衷。较高的值会降低空间开销，但提高查找成本（体现在大多数的HashMap类的操作，包括get和put）。设置初始大小时，应该考虑预计的entry数在map及其负载系数，并且尽量减少rehash操作的次数。如果初始容量大于最大条目数除以负载因子，rehash操作将不会发生。</p>
+</blockquote>
+<p>使用newThr是为了减少冲突，增加一个缓冲区，避免在多线程向表中增加数据时，表的内存不够而导致死锁。</p>
+<p>初始化tap的大小之后，会判断**(p &#x3D; tab[i &#x3D; (n - 1) &amp; hash])**是否为null，(n - 1) &amp; hash是位运算，详解见<a target="_blank" rel="noopener" href="https://minster77.github.io/p/java%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3%E9%9B%86%E5%90%88%E7%AF%87%E4%BA%8C/">HashMap数学原理</a>。计算出来的i为该key值在table表中的索引位置。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="literal">null</span>)&#123;</span><br><span class="line">    tab[i] = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果p&#x3D;null，表示还没有存放元素，执行**tab[i] &#x3D; newNode(hash, key, value, null);**创建一个Node（key&#x3D;“jack”,value&#x3D;PRESENT）把hash也放进Node是为了下次添加元素时比较。</p>
+<p>执行完毕，此时我们可以发现此时table表中已经在刚刚计算出来的索引值上添加了“jack”。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202054144.png" alt="image-20230903202054144"></p>
+<p>到此为止，HashMap的<strong>第一次</strong>添加元素分析完毕。</p>
+<p>当我们向HashMap集合表再次添加数据时，系统会计算其hash值，然后通过</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="literal">null</span>)&#123;</span><br><span class="line">    tab[i] = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>方法判断该hash值对应的索引位置上是否已经存在值，<strong>如果不存在</strong>，即把新增的key添加到表中的该索引位置上。</p>
+<p>此时可以发现，table表上多了一个数据</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202059520.png" alt="image-20230903202059520"></p>
+<p>如果该hash值对应的索引位置上已经存在值，程序会跳到下面语句</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//p为当前索引位置上对应的链表的第一个元素，即已经添加的值</span></span><br><span class="line"><span class="comment">//所以p.hash为已存在值得hash值，p.key为已存在值得key值</span></span><br><span class="line"><span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">    ((k = p.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))&#123;</span><br><span class="line">    e = p;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果<strong>当前索引位置上对应的链表的第一个元素的hash值</strong>与需要添加的key的hash值一样</p>
+<p>且满足以下两个条件之一：</p>
+<ul>
+<li>准备添加的key值与p指向的Node结点的key是同一个对象</li>
+<li>p指向的Node结点的key的equals()和准备假如的key比较后相同。</li>
+</ul>
+<p><strong>需要注意的是，此时equals()方法不能理解为只比较字符串内容是否相同，因为每一个类都会有其对应的equals()方法，所以equals()方法的比较内容可以由程序员所重写的方法来决定！</strong></p>
+<p>此时说明新增加的key值已存在，所以该key值不会被添加到table中。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202111028.png" alt="image-20230903202111028"></p>
+<p>若不满足上述条件，程序会继续往下走，执行下面语句。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)&#123;</span><br><span class="line">    e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="built_in">this</span>, tab, hash, key, value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述语句会判断p是否为红黑树，如果是红黑树，就调用putTreeVal进行添加。</p>
+<p>如果p不是红黑树，执行以下代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">binCount</span> <span class="operator">=</span> <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">        <span class="comment">//这是条件1</span></span><br><span class="line">        <span class="keyword">if</span> ((e = p.next) == <span class="literal">null</span>) &#123;</span><br><span class="line">            p.next = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">            <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">                treeifyBin(tab, hash);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//这是条件2</span></span><br><span class="line">        <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">            ((k = e.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        p = e;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>因为在可以执行上述代码时，说明此时<strong>table表中是使用链表的方式来存储数据</strong> 。</p>
+<p>此时进入一个死循环，退出的条件：</p>
+<ol>
+<li><p>条件1：在要加入的位置i &#x3D; (n - 1) &amp; hash处所形成的链表没有一个结点与要加入的结点相同时，退出循环，此时就加在最末尾。添加成功</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202118999.png" alt="image-20230903202118999"></p>
+</li>
+<li><p>条件2 :在要加入的位置i &#x3D; (n - 1) &amp; hash处所形成的链表有结点与要加入的结点相同，此时退出循环，添加失败</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202124154.png" alt="image-20230903202124154"></p>
+</li>
+</ol>
+<p>两个条件结合起来使用</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202129297.png" alt="image-20230903202129297"></p>
+<p>需要注意的是当我们把元素添加到聊表后，会进行以下判断</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>)&#123; <span class="comment">// -1 for 1st</span></span><br><span class="line">	treeifyBin(tab, hash);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>判断链表是否<strong>已经达到</strong>8个结点（TREEIFY_THRESHOLD&#x3D;8）。如果到达，则调用treeifyBin(tab, hash)方法对当前链表进行树化（转换成红黑树）。</p>
+<p>注意，在转换成红黑树时，treeifyBin(tab, hash)方法会进行判断</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (tab == <span class="literal">null</span> || (n = tab.length) &lt; MIN_TREEIFY_CAPACITY)&#123;</span><br><span class="line">    resize();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>判断table表大小是否&lt;64，如果小于64，会先将table表进行扩容，再进行树化。</p>
+</li>
+</ol>
+</li>
+</ul>
+<h4 id="HashSet扩容机制和转换红黑树机制源码解析"><a href="#HashSet扩容机制和转换红黑树机制源码解析" class="headerlink" title="HashSet扩容机制和转换红黑树机制源码解析"></a>HashSet扩容机制和转换红黑树机制源码解析</h4><ol>
+<li><p>HashSet底层是HashMap，第一次添加时，table数组扩容到16，临界值（threshold）&#x3D;16*负载因子（loadFactor）0.75 &#x3D; 12</p>
+</li>
+<li><p>如果数组使用到了临界值12，就会扩容到16*2&#x3D;32，新的临界值就是 32 * 0.75 &#x3D; 24，依次类推</p>
+</li>
+<li><p>在Java8中，如果一条链表的元素个数到达TREEIFY_THRESHOLD(默认是8)，并且table的大小&gt;&#x3D;MIN_TREEIFY_CAPACITY(默认是64)，就会进行树化（转换红黑树），<strong>否则任然采用数组扩容机制</strong></p>
+<p>创建测试类HashSetIncrement.java</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.conllection_.sets;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Objects;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HashSetIncrement</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">HashSet</span> <span class="variable">hashSet</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashSet</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>; i &lt;=<span class="number">12</span>; i++) &#123;</span><br><span class="line">            hashSet.add(<span class="keyword">new</span> <span class="title class_">A</span>(i));</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;hashSet = &quot;</span>+ hashSet);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Class A</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> n ;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">A</span><span class="params">(<span class="type">int</span> n)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.n = n;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">hashCode</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">100</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在HashSetIncrement类中的for循环处加一个断点，debug。可以发现，当i&#x3D;9时，即满足一条链表的元素个数到达TREEIFY_THRESHOLD(默认是8)，此时触发转换红黑树机制。</p>
+<p>但是此时不满足table表大小&gt;&#x3D;64</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (tab == <span class="literal">null</span> || (n = tab.length) &lt; MIN_TREEIFY_CAPACITY)&#123;</span><br><span class="line">    resize();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以此时table表会进行扩容。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202138380.png" alt="image-20230903202138380"></p>
+<p>继续执行，可以发现table再次扩容。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202143829.png" alt="image-20230903202143829"></p>
+<p>再继续执行，可以发现此时链表已经发生树化（转换成红黑树）</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202148947.png" alt="image-20230903202148947"></p>
+<p>树化过程的源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">else</span> <span class="keyword">if</span> ((e = tab[index = (n - <span class="number">1</span>) &amp; hash]) != <span class="literal">null</span>) &#123;</span><br><span class="line">    TreeNode&lt;K,V&gt; hd = <span class="literal">null</span>, tl = <span class="literal">null</span>;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        TreeNode&lt;K,V&gt; p = replacementTreeNode(e, <span class="literal">null</span>);</span><br><span class="line">        <span class="keyword">if</span> (tl == <span class="literal">null</span>)</span><br><span class="line">            hd = p;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            p.prev = tl;</span><br><span class="line">            tl.next = p;</span><br><span class="line">        &#125;</span><br><span class="line">        tl = p;</span><br><span class="line">    &#125; <span class="keyword">while</span> ((e = e.next) != <span class="literal">null</span>);</span><br><span class="line">    <span class="keyword">if</span> ((tab[index] = hd) != <span class="literal">null</span>)</span><br><span class="line">        hd.treeify(tab);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>详细解释见<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_40255793/article/details/80748946">Jdk1.8集合框架之HashMap源码解析</a></p>
+</li>
+</ol>
+<h4 id="threshold补充说明"><a href="#threshold补充说明" class="headerlink" title="threshold补充说明"></a>threshold补充说明</h4><ul>
+<li><p>在putVal方法中，有这么一行代码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">++modCount;</span><br><span class="line"><span class="keyword">if</span> (++size &gt; threshold)&#123;</span><br><span class="line">    resize();</span><br><span class="line">&#125;</span><br><span class="line">afterNodeInsertion(evict);</span><br></pre></td></tr></table></figure>
+
+<p>modCount代表我们对table表修改的次数。</p>
+<p>其中size是每当我们加入一个结点Node(key,value,hash,next)，size++。</p>
+<p>所以当我们想table表中加入指定数量的Node结点是，也会触发扩容机制。</p>
+<p>代码演示HashSetIncrement类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.conllection_.sets;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.HashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Objects;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">HashSetIncrement</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">HashSet</span> <span class="variable">hashSet</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashSet</span>();</span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>; i &lt;=<span class="number">7</span>; i++) &#123;</span><br><span class="line">            hashSet.add(<span class="keyword">new</span> <span class="title class_">A</span>(i));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>; i &lt;=<span class="number">7</span>; i++) &#123;</span><br><span class="line">            hashSet.add(<span class="keyword">new</span> <span class="title class_">B</span>(i));</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;hashSet = &quot;</span>+ hashSet);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>Class A 与 Class B</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">B</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> n ;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">B</span><span class="params">(<span class="type">int</span> n)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.n = n;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">hashCode</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">200</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">class</span> <span class="title class_">A</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> n ;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">A</span><span class="params">(<span class="type">int</span> n)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.n = n;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">hashCode</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">100</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行调试，可以发现，虽然我们在一条链表上增加了7个元素，然后第二条链表增加到第五个元素时size&#x3D;12，也触发了扩容机制</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202158573.png" alt="image-20230903202158573"></p>
+<p>所以触发扩容机制的前提是累积添加元素到达threshold。</p>
+</li>
+</ul>
+<p>​	</p>
+<h3 id="LinkedHashSet说明及源码分析"><a href="#LinkedHashSet说明及源码分析" class="headerlink" title="LinkedHashSet说明及源码分析"></a>LinkedHashSet说明及源码分析</h3><h4 id="LinkedHashSet全面说明"><a href="#LinkedHashSet全面说明" class="headerlink" title="LinkedHashSet全面说明"></a>LinkedHashSet全面说明</h4><ol>
+<li>LinkedHashSet是HashSet的子类。</li>
+<li>LinkedHashSet底层是一个LinkedHashMap，底层维护了一个数组+双向链表。</li>
+<li>LinkedHashSet根据元素的HashCode值来决定元素的存储位置，同时使用链表维护元素的次序，这使得元素看起来是一插入顺序保存的。</li>
+<li>LinkedHashSet不允许添加重复元素。</li>
+</ol>
+<h4 id="LinkedHashSet底层机制示意图"><a href="#LinkedHashSet底层机制示意图" class="headerlink" title="LinkedHashSet底层机制示意图"></a>LinkedHashSet底层机制示意图</h4><ul>
+<li><p>示意图</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202212222.png" alt="image-20230903202212222"></p>
+</li>
+<li><p>双向链表具体机制与<a target="_blank" rel="noopener" href="https://minster77.github.io/p/java%E9%9B%86%E5%90%88%E7%B1%BB%E4%B8%80/#linkedlist%E5%BA%95%E5%B1%82%E7%BB%93%E6%9E%84%E5%92%8C%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90">LinkedList底层结构</a>类似。</p>
+</li>
+</ul>
+<h4 id="LinkedHashSet底层源码分析"><a href="#LinkedHashSet底层源码分析" class="headerlink" title="LinkedHashSet底层源码分析"></a>LinkedHashSet底层源码分析</h4><p><strong>说明</strong></p>
+<ul>
+<li><p>在LInkedHashSet中维护了一个hash表和双向链表（LinkedHashSet有head和tail）</p>
+</li>
+<li><p>每个节点有before和after属性，这样可以形成双向链表</p>
+</li>
+<li><p>在添加一个元素时，先求hash值，再求索引。确定该元素在hashtable的位置，然后将添加的元素加入到双向链表（如果已经存在，不添加；原则跟hashset一样）</p>
+</li>
+<li><p>所以，我们遍历LinkedHash可以确定插入顺序和取出顺序一致</p>
+<p>创建LinkedHashSetSource类，用于分析源码</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.conllection_.sets;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.LinkedHashSet;</span><br><span class="line"><span class="keyword">import</span> java.util.Set;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">LinkedHashSetSource</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">Set</span> <span class="variable">set</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">LinkedHashSet</span>();</span><br><span class="line"></span><br><span class="line">        set.add(<span class="keyword">new</span> <span class="title class_">String</span>(<span class="string">&quot;AA&quot;</span>));</span><br><span class="line">        set.add(<span class="number">456</span>);</span><br><span class="line">        set.add(<span class="number">456</span>);</span><br><span class="line">        set.add(<span class="number">123</span>);</span><br><span class="line">        set.add(<span class="string">&quot;czh&quot;</span>);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">&quot;LinkedHashSet = &quot;</span> + set);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以知道，添加第一次时，系统会将数组table扩容到16，存放的结点类型是LinkedHashMap$Entry</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202221500.png" alt="image-20230903202221500"></p>
+<p>为什么数组时HashMap$Node[]类型，而存放的元素&#x2F;数据却是LinkedHashMap$​​​​Entry呢？</p>
+<p>下面我们查看LinkedHashMap底层源码来解决这个问题。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">class</span> <span class="title class_">Entry</span>&lt;K,V&gt; <span class="keyword">extends</span> <span class="title class_">HashMap</span>.Node&lt;K,V&gt; &#123;</span><br><span class="line">    Entry&lt;K,V&gt; before, after;</span><br><span class="line">    Entry(<span class="type">int</span> hash, K key, V value, Node&lt;K,V&gt; next) &#123;</span><br><span class="line">        <span class="built_in">super</span>(hash, key, value, next);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以发现上面这个在LinkedHashMap源码中的静态内部类Entry继承了HashMap.Node。即数组的多态。双向链表实现的关键也是在这里。</p>
+<p>继续往下调试</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202227394.png" alt="image-20230903202227394"></p>
+<p>此时的map与hashSet的不一样，多了几个属性。其中head表示双向链表中的头结点，tail表示尾结点。</p>
+<p>而每一个结点又有before与after属性，指向上一个结点与下一个结点。</p>
+<p><img src="http://minsterznhy-blog-image.oss-cn-beijing.aliyuncs.com/img/image-20230903202233135.png" alt="image-20230903202233135"></p>
+<p>所以LinkedHashSet可以实现按顺序插入及取出。</p>
+<p>进入add()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">add</span><span class="params">(E e)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> map.put(e, PRESENT)==<span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以知道LinkedHashSet添加元素底层就是<a href="#HashSet%E5%BA%95%E5%B1%82%E6%B7%BB%E5%8A%A0%E5%85%83%E7%B4%A0%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90">HashSet添加元素</a>的底层（<strong>因为LinkedHashSet是HashSet的实现子类</strong>）</p>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="reward-container">
+  <div>Buy me a coffee</div>
+  <button>
+    Donate
+  </button>
+  <div class="post-reward">
+      <div>
+        <img src="/images/wechatpay.png" alt="Minster WeChat Pay">
+        <span>WeChat Pay</span>
+      </div>
+      <div>
+        <img src="/images/alipay.png" alt="Minster Alipay">
+        <span>Alipay</span>
+      </div>
+
+  </div>
+</div>
+
+          <div class="followme">
+  <span>Welcome to my other publishing channels</span>
+
+  <div class="social-list">
+
+      <div class="social-item">
+          <a target="_blank" class="social-link" href="/atom.xml">
+            <span class="icon">
+              <i class="fa fa-rss"></i>
+            </span>
+
+            <span class="label">RSS</span>
+          </a>
+      </div>
+  </div>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Java/" rel="tag"># Java</a>
+              <a href="/tags/Set/" rel="tag"># Set</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/04/22/JavaCollections_01/" rel="prev" title="List集合的用法及源码解析">
+                  <i class="fa fa-chevron-left"></i> List集合的用法及源码解析
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/04/24/JavaCollections_04/" rel="next" title="集合总结">
+                  集合总结 <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="waline"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Minster</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+      <span>Word count total: </span>
+    <span title="Word count total">133k</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js" integrity="sha256-oP6HI9z1XaZNBrJURtCoUT5SUnxFr8s3BzRl+cbzUq8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"my-blog-comments-nine.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":true,"pageview":false,"placeholder":"疑义相与析，畅所欲言，不登录也没关系~","avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"visitor":true,"comment_count":true,"requiredFields":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2022/04/23/JavaCollections_02/"}</script>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
+<script>
+document.addEventListener('page:loaded', () => {
+  NexT.utils.loadComments(CONFIG.waline.el).then(() =>
+    NexT.utils.getScript(CONFIG.waline.libUrl, { condition: window.Waline })
+  ).then(() => 
+    Waline.init(Object.assign({}, CONFIG.waline,{ el: document.querySelector(CONFIG.waline.el) }))
+  );
+});
+</script>
+
+  <script type="text/javascript" src="lib/clipboard/src/clipboard.js"></script>
+<script type="text/javascript" src="js/src/custom.js"></script>
+</body>
+</html>
